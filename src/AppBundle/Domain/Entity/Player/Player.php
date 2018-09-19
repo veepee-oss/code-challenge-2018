@@ -4,7 +4,7 @@ namespace AppBundle\Domain\Entity\Player;
 
 use AppBundle\Domain\Entity\Maze\MazeObject;
 use AppBundle\Domain\Entity\Position\Position;
-use J20\Uuid\Uuid;
+use Ramsey\Uuid\Uuid;
 
 /**
  * Domain Entity: Player
@@ -66,7 +66,7 @@ class Player extends MazeObject
         $this->type = $type;
         $this->status = $status ?: static::STATUS_PLAYING;
         $this->timestamp = $timestamp ?: new \DateTime();
-        $this->uuid = $uuid ?: Uuid::v4();
+        $this->uuid = $uuid ?: Uuid::uuid4()->toString();
         $this->name = $name ?: $this->uuid;
         $this->email = $email;
     }

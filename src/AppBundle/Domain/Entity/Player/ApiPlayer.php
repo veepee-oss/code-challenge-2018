@@ -3,7 +3,6 @@
 namespace AppBundle\Domain\Entity\Player;
 
 use AppBundle\Domain\Entity\Position\Position;
-use J20\Uuid\Uuid;
 
 /**
  * Domain entity; ApiPlayer

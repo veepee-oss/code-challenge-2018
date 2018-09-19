@@ -29,9 +29,9 @@
         "symfony/swiftmailer-bundle": "^2.3.10",
         "symfony/symfony": "3.4.*",
         "twig/twig": "^1.0||^2.0",
-        "j20/php-uuid": "dev-master",
         "davamigo/simple-http-client": "~1",
-        "knplabs/knp-time-bundle": "^1.7"
+        "knplabs/knp-time-bundle": "^1.7",
+        "ramsey/uuid": "^3.8"
     },
     "require-dev": {
         "symfony/phpunit-bridge": "^3.0",

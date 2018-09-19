@@ -8,7 +8,7 @@ use AppBundle\Domain\Entity\Maze as DomainMaze;
 use AppBundle\Domain\Entity\Player as DomainPlayer;
 use AppBundle\Domain\Entity\Position\Position;
 use Doctrine\ORM\Mapping as ORM;
-use J20\Uuid\Uuid;
+use Ramsey\Uuid\Uuid;
 
 /**
  * Entity Game
@@ -142,7 +142,7 @@ class Game
     {
         if (null === $source) {
             $this->id = null;
-            $this->uuid = Uuid::v4();
+            $this->uuid = Uuid::uuid4()->toString();
             $this->name = $this->uuid;
             $this->status = null;
             $this->width = null;

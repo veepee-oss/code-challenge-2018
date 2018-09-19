@@ -5,7 +5,7 @@ namespace AppBundle\Domain\Entity\Game;
 use AppBundle\Domain\Entity\Ghost\Ghost;
 use AppBundle\Domain\Entity\Maze\Maze;
 use AppBundle\Domain\Entity\Player\Player;
-use J20\Uuid\Uuid;
+use Ramsey\Uuid\Uuid;
 
 /**
  * Domain entity: Game
@@ -76,7 +76,7 @@ class Game
         $this->minGhosts = $minGhosts;
         $this->status = $status;
         $this->moves = $moves;
-        $this->uuid = $uuid ?: Uuid::v4();
+        $this->uuid = $uuid ?: Uuid::uuid4()->toString();
         $this->name = $name ?: $this->uuid;
     }
 
