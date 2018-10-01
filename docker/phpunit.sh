@@ -1,23 +1,24 @@
 #!/bin/bash
 
-user="david"
-service="docker_code_challenge_server";
+DIR=$(dirname $0)
+cd ${DIR}
+source ./includes
 
-enabled=$( docker ps --format "{{.Names}}" | grep -i "$service" )
+APP_PHPUNIT="bin/phpunit"
+
+enabled=$( docker ps --format "{{.Names}}" | grep -i "${DOCKER_SERVER}" )
 if [ "$enabled" == "" ]
 then
-    echo -e "\033[31mContainer \033[33m$service\033[31m not started!\033[0m\n";
+    echo -e "\033[31mContainer \033[33m${DOCKER_SERVER}\033[31m not started!\033[0m\n";
     exit 1;
 fi;
 
-dir=$(dirname $0)
-cd $dir
-
-args=""
-while [[ $# -ge 1 ]]
-do
-    args="$args $1"
+ARGS=""
+while [[ $# -ge 1 ]]; do
+    ARGS="${ARGS} $1"
     shift
-done
+done;
 
-docker exec -it -u $user $service /usr/local/bin/php bin/phpunit $args
+docker exec -it -u ${DOCKER_SERVER_USER} ${DOCKER_SERVER} ${APP_PHP} ${APP_PHPUNIT} $args
+
+echo -e ""

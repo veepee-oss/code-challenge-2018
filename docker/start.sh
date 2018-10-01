@@ -1,14 +1,16 @@
 #!/bin/bash
 
-dockerfile="docker-compose.yml"
-dir=$(dirname $0)
-cd $dir
+DIR=$(dirname $0)
+cd ${DIR}
+source ./includes
 
-echo -e "Starting $dockerfile..."
+echo -e "Starting ${DOCKER_FILE}..."
 
-docker-compose -f $dockerfile build
+docker-compose -f ${DOCKER_FILE} build
 if [ $? -ne 0 ]; then
     exit 1
 fi
 
-docker-compose -f $dockerfile up -d --remove-orphans
+docker-compose -f ${DOCKER_FILE} up -d --remove-orphans
+
+echo -e ""

@@ -1,9 +1,11 @@
 #!/bin/bash
 
-dockerfile="docker-compose.yml"
-dir=$(dirname $0)
-cd $dir
+DIR=$(dirname $0)
+cd ${DIR}
+source ./includes
 
-echo -e "Stopping $dockerfile..."
+echo -e "Stopping ${DOCKER_FILE}..."
 
-docker-compose -f $dockerfile down
+docker-compose -f ${DOCKER_FILE} down --remove-orphans
+
+echo -e ""

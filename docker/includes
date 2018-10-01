@@ -1,0 +1,9 @@
+#!/bin/bash
+
+DOCKER_FILE="docker-compose.yml"
+
+DOCKER_SERVER="docker_cc18_server"
+
+DOCKER_SERVER_USER="david"
+
+APP_PHP="/usr/local/bin/php"
