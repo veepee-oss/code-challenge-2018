@@ -21,7 +21,7 @@ parameters:
 
     # Defaults: mail address, time limit, timeout
     default_email:       "david.amigo@privalia.com"
-    default_time_limit:  "2017-06-09 00:00:00"
+    default_time_limit:  "2018-12-14 00:00:00"
     default_time_format: "Y-m-d H:i:s"
     default_timeout:     3
 
