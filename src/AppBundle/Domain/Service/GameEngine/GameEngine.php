@@ -9,8 +9,8 @@ use AppBundle\Domain\Entity\Player\Player;
 use AppBundle\Domain\Entity\Position\Position;
 use AppBundle\Domain\Service\MoveGhost\MoveGhostException;
 use AppBundle\Domain\Service\MoveGhost\MoveGhostFactory;
+use AppBundle\Domain\Service\MovePlayer\MoveAllPlayersServiceInterface;
 use AppBundle\Domain\Service\MovePlayer\MovePlayerException;
-use AppBundle\Domain\Service\MovePlayer\MovePlayerServiceInterface;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -20,8 +20,8 @@ use Psr\Log\LoggerInterface;
  */
 class GameEngine
 {
-    /** @var  MovePlayerServiceInterface */
-    protected $movePlayer;
+    /** @var  MoveAllPlayersServiceInterface */
+    protected $moveAllPlayersService;
 
     /** @var  MoveGhostFactory */
     protected $moveGhostFactory;
@@ -32,16 +32,16 @@ class GameEngine
     /**
      * GameEngine constructor.
      *
-     * @param MovePlayerServiceInterface $movePlayer
+     * @param MoveAllPlayersServiceInterface $moveAllPlayersService
      * @param MoveGhostFactory $moveGhostFactory
      * @param LoggerInterface $logger
      */
     public function __construct(
-        MovePlayerServiceInterface $movePlayer,
+        MoveAllPlayersServiceInterface $moveAllPlayersService,
         MoveGhostFactory $moveGhostFactory,
         LoggerInterface $logger
     ) {
-        $this->movePlayer = $movePlayer;
+        $this->moveAllPlayersService = $moveAllPlayersService;
         $this->moveGhostFactory = $moveGhostFactory;
         $this->logger = $logger;
     }
@@ -90,24 +90,12 @@ class GameEngine
      */
     protected function movePlayers(Game &$game)
     {
-        /** @var Player[] $players */
-        $players = $game->players();
-        shuffle($players);
-
-        foreach ($players as $player) {
-            if ($player->status() == Player::STATUS_PLAYING) {
-                try {
-                    $this->movePlayer->move($player, $game);
-                    if ($game->isGoalReached($player)) {
-                        $player->wins();
-                    }
-                } catch (MovePlayerException $exc) {
-                    $this->logger->error('Error moving player ' . $player->uuid());
-                    $this->logger->error($exc);
-                }
-            }
+        try {
+            $this->moveAllPlayersService->move($game);
+        } catch (MovePlayerException $exc) {
+            $this->logger->error('Error moving players in class: ' . get_class($this->moveAllPlayersService));
+            $this->logger->error($exc);
         }
-
         return $this;
     }
 

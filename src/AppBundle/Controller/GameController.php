@@ -12,7 +12,7 @@ use AppBundle\Domain\Service\MovePlayer\ValidatePlayerServiceInterface;
 use AppBundle\Form\CreateGame\GameEntity;
 use AppBundle\Form\CreateGame\GameForm;
 use AppBundle\Form\CreateGame\PlayerEntity;
-use AppBundle\Service\GameEngine\GameEngineDaemon;
+use AppBundle\Service\GameEngine\GameDaemon;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -526,8 +526,8 @@ class GameController extends Controller
      */
     private function checkDaemon()
     {
-        /** @var GameEngineDaemon $daemon */
-        $daemon = $this->get('app.game.engine.daemon');
+        /** @var GameDaemon $daemon */
+        $daemon = $this->get('app.game.daemon');
         $daemon->start();
     }
 
@@ -539,8 +539,8 @@ class GameController extends Controller
      */
     public function adminAction()
     {
-        /** @var GameEngineDaemon $daemon */
-        $daemon = $this->get('app.game.engine.daemon');
+        /** @var GameDaemon $daemon */
+        $daemon = $this->get('app.game.daemon');
         $processId = $daemon->getProcessId();
 
         /** @var \AppBundle\Entity\Game[] $entities */
@@ -582,8 +582,8 @@ class GameController extends Controller
      */
     public function startDaemonAction()
     {
-        /** @var GameEngineDaemon $daemon */
-        $daemon = $this->get('app.game.engine.daemon');
+        /** @var GameDaemon $daemon */
+        $daemon = $this->get('app.game.daemon');
         $daemon->start();
 
         return $this->redirectToRoute('admin_view');
@@ -597,8 +597,8 @@ class GameController extends Controller
      */
     public function stopDaemonAction()
     {
-        /** @var GameEngineDaemon $daemon */
-        $daemon = $this->get('app.game.engine.daemon');
+        /** @var GameDaemon $daemon */
+        $daemon = $this->get('app.game.daemon');
         $daemon->stop();
 
         return $this->redirectToRoute('admin_view');
@@ -612,8 +612,8 @@ class GameController extends Controller
      */
     public function restartDaemonAction()
     {
-        /** @var GameEngineDaemon $daemon */
-        $daemon = $this->get('app.game.engine.daemon');
+        /** @var GameDaemon $daemon */
+        $daemon = $this->get('app.game.daemon');
 
         $count = 0;
         do {

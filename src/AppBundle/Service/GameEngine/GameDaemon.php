@@ -9,7 +9,7 @@ use AppBundle\Domain\Service\GameEngine\GameEngineDaemonInterface;
  *
  * @package AppBundle\Service\GameEngine
  */
-class GameEngineDaemon implements GameEngineDaemonInterface
+class GameDaemon implements GameEngineDaemonInterface
 {
     const CONSOLE = __DIR__ . '/../../../../bin/console';
     const COMMAND = 'app:code-challenge:engine';
@@ -24,8 +24,12 @@ class GameEngineDaemon implements GameEngineDaemonInterface
      */
     public function start($force = false)
     {
+        $command = 'nohup '
+            . 'php ' . realpath(static::CONSOLE)
+            . ' ' . static::COMMAND
+            . ' > /dev/null 2> /dev/null &';
+
         if ($force || !$this->isRunning()) {
-            $command = 'nohup php ' . realpath(static::CONSOLE) . ' ' . static::COMMAND . ' > /dev/null 2> /dev/null &';
             @shell_exec($command);
         }
     }

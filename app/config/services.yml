@@ -20,30 +20,35 @@ services:
     app.game.engine:
         class: AppBundle\Domain\Service\GameEngine\GameEngine
         arguments:
-            - "@app.player.move-sync.service"
+            - "@app.game.move_players_sync.service"
             - "@app.ghost.move.factory"
             - "@logger"
 
-    app.game.engine.daemon:
-        class: AppBundle\Service\GameEngine\GameEngineDaemon
+    app.game.daemon:
+        class: AppBundle\Service\GameEngine\GameDaemon
+
+    app.game.move_players_sync.service:
+        class: AppBundle\Domain\Service\MovePlayer\MoveAllPlayersSyncService
+        arguments:
+            - "@app.player.move_sync.service"
 
     app.player.validate.service:
         class: AppBundle\Domain\Service\MovePlayer\ValidatePlayerService
         arguments:
-            - "@app.player.ask-name.locator"
+            - "@app.player.ask_name.locator"
 
-    app.player.move-sync.service:
+    app.player.move_sync.service:
         class: AppBundle\Domain\Service\MovePlayer\MovePlayerSyncService
         arguments:
-            - "@app.player.ask-movement.locator"
+            - "@app.player.ask_movement.locator"
 
-    app.player.ask-movement.locator:
+    app.player.ask_movement.locator:
         class: AppBundle\Domain\Service\MovePlayer\AskNextMovementServiceLocator
         arguments:
             - 1: "@app.player.move.api"
               2: "@app.player.move.bot"
 
-    app.player.ask-name.locator:
+    app.player.ask_name.locator:
         class: AppBundle\Domain\Service\MovePlayer\AskPlayerNameServiceLocator
         arguments:
             - 1: "@app.player.move.api"
