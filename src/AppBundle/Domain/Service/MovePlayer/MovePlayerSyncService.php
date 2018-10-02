@@ -10,23 +10,23 @@ use AppBundle\Domain\Entity\Position\Direction;
 use AppBundle\Domain\Entity\Position\Position;
 
 /**
- * Class MovePlayer
+ * Class to a service to move a single player in the game
  *
  * @package AppBundle\Domain\Service\MovePlayer
  */
-class MovePlayer implements MovePlayerInterface
+class MovePlayerSyncService implements MovePlayerServiceInterface
 {
-    /** @var MovePlayerFactory */
-    protected $playerServiceFactory;
+    /** @var AskNextMovementServiceLocator */
+    protected $serviceLocator;
 
     /**
-     * MovePlayer constructor.
+     * MoveSinglePlayer constructor.
      *
-     * @param MovePlayerFactory $playerServiceFactory
+     * @param AskNextMovementServiceLocator $serviceLocator
      */
-    public function __construct(MovePlayerFactory $playerServiceFactory)
+    public function __construct(AskNextMovementServiceLocator $serviceLocator)
     {
-        $this->playerServiceFactory = $playerServiceFactory;
+        $this->serviceLocator = $serviceLocator;
     }
 
     /**
@@ -37,10 +37,10 @@ class MovePlayer implements MovePlayerInterface
      * @return bool true=success, false=error
      * @throws MovePlayerException
      */
-    public function movePlayer(Player& $player, Game $game)
+    public function move(Player& $player, Game $game)
     {
         /** @var AskNextMovementInterface $playerService */
-        $playerService = $this->playerServiceFactory->locate($player);
+        $playerService = $this->serviceLocator->locate($player);
 
         // Reads the next movement of the player: "up", "down", "left" or "right".
         $direction = $playerService->askNextMovement($player, $game);
@@ -85,6 +85,9 @@ class MovePlayer implements MovePlayerInterface
             case Direction::RIGHT:
                 $x++;
                 break;
+
+            default:
+                break;
         }
 
         return new Position($y, $x);
@@ -102,15 +105,9 @@ class MovePlayer implements MovePlayerInterface
         $y = $position->y();
         $x = $position->x();
 
-        if ($y < 0 || $y >= $maze->height()) {
-            return false;
-        }
-
-        if ($x < 0 || $x >= $maze->width()) {
-            return false;
-        }
-
-        if ($maze[$y][$x]->getContent() == MazeCell::CELL_WALL) {
+        if ($y < 0 || $y >= $maze->height()
+            || $x < 0 || $x >= $maze->width()
+            || $maze[$y][$x]->getContent() == MazeCell::CELL_WALL) {
             return false;
         }
 

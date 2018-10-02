@@ -6,6 +6,7 @@ use AppBundle\Domain\Entity\Game\Game;
 use AppBundle\Domain\Entity\Player\ApiPlayer;
 use AppBundle\Domain\Service\GameEngine\GameEngine;
 use AppBundle\Domain\Service\MovePlayer\MovePlayerException;
+use AppBundle\Domain\Service\MovePlayer\ValidatePlayerServiceInterface;
 use AppBundle\Form\CreateGame\GameEntity;
 use AppBundle\Form\CreateGame\GameForm;
 use AppBundle\Form\CreateGame\PlayerEntity;
@@ -113,6 +114,7 @@ class GameController extends Controller
                 $gameEntity->getWidth()
             );
 
+            /** @var ValidatePlayerServiceInterface $playerValidator */
             $playerValidator = $this->get('app.player.validate.service');
 
             // Create players
@@ -122,7 +124,7 @@ class GameController extends Controller
                 try {
                     $url = $gameEntity->getPlayerAt($pos)->getUrl();
                     $player = new ApiPlayer($url, $maze->start());
-                    if ($playerValidator->validatePlayer($player, null)) {
+                    if ($playerValidator->validate($player, null)) {
                         $players[] = $player;
                     } else {
                         $message = $this->get('translator')->trans(

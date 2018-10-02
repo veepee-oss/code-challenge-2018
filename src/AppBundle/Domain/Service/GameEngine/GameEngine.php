@@ -10,7 +10,7 @@ use AppBundle\Domain\Entity\Position\Position;
 use AppBundle\Domain\Service\MoveGhost\MoveGhostException;
 use AppBundle\Domain\Service\MoveGhost\MoveGhostFactory;
 use AppBundle\Domain\Service\MovePlayer\MovePlayerException;
-use AppBundle\Domain\Service\MovePlayer\MovePlayerInterface;
+use AppBundle\Domain\Service\MovePlayer\MovePlayerServiceInterface;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -20,7 +20,7 @@ use Psr\Log\LoggerInterface;
  */
 class GameEngine
 {
-    /** @var  MovePlayerInterface */
+    /** @var  MovePlayerServiceInterface */
     protected $movePlayer;
 
     /** @var  MoveGhostFactory */
@@ -32,11 +32,15 @@ class GameEngine
     /**
      * GameEngine constructor.
      *
-     * @param MovePlayerInterface $movePlayer
+     * @param MovePlayerServiceInterface $movePlayer
      * @param MoveGhostFactory $moveGhostFactory
+     * @param LoggerInterface $logger
      */
-    public function __construct(MovePlayerInterface $movePlayer, MoveGhostFactory $moveGhostFactory, LoggerInterface $logger)
-    {
+    public function __construct(
+        MovePlayerServiceInterface $movePlayer,
+        MoveGhostFactory $moveGhostFactory,
+        LoggerInterface $logger
+    ) {
         $this->movePlayer = $movePlayer;
         $this->moveGhostFactory = $moveGhostFactory;
         $this->logger = $logger;
@@ -93,7 +97,7 @@ class GameEngine
         foreach ($players as $player) {
             if ($player->status() == Player::STATUS_PLAYING) {
                 try {
-                    $this->movePlayer->movePlayer($player, $game);
+                    $this->movePlayer->move($player, $game);
                     if ($game->isGoalReached($player)) {
                         $player->wins();
                     }
@@ -197,6 +201,7 @@ class GameEngine
      * Create new ghost
      *
      * @param Game $game
+     * @param int $type
      * @return $this
      */
     protected function createNewGhost(Game &$game, $type = Ghost::TYPE_RANDOM)

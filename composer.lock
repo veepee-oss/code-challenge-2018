@@ -178,7 +178,7 @@
                 "docblock",
                 "parser"
             ],
-            "time": "2017-12-06T07:11:42+00:00"
+            "time": "2018-12-06T07:11:42+00:00"
         },
         {
             "name": "doctrine/cache",
@@ -320,7 +320,7 @@
                 "collections",
                 "iterator"
             ],
-            "time": "2017-07-22T10:37:32+00:00"
+            "time": "2018-07-22T10:37:32+00:00"
         },
         {
             "name": "doctrine/common",
@@ -850,7 +850,7 @@
                 "constructor",
                 "instantiate"
             ],
-            "time": "2017-07-22T11:58:36+00:00"
+            "time": "2018-07-22T11:58:36+00:00"
         },
         {
             "name": "doctrine/lexer",
@@ -1359,7 +1359,7 @@
                 "knplabs",
                 "time"
             ],
-            "time": "2017-12-26T03:59:33+00:00"
+            "time": "2018-12-26T03:59:33+00:00"
         },
         {
             "name": "monolog/monolog",
@@ -1437,7 +1437,7 @@
                 "logging",
                 "psr-3"
             ],
-            "time": "2017-06-19T01:22:40+00:00"
+            "time": "2018-06-19T01:22:40+00:00"
         },
         {
             "name": "paragonie/random_compat",
@@ -1577,7 +1577,7 @@
                 "container-interop",
                 "psr"
             ],
-            "time": "2017-02-14T16:28:37+00:00"
+            "time": "2018-02-14T16:28:37+00:00"
         },
         {
             "name": "psr/link",
@@ -1721,7 +1721,7 @@
                 "psr-16",
                 "simple-cache"
             ],
-            "time": "2017-10-23T01:57:42+00:00"
+            "time": "2018-10-23T01:57:42+00:00"
         },
         {
             "name": "ramsey/uuid",
@@ -1925,7 +1925,7 @@
                 "annotations",
                 "controllers"
             ],
-            "time": "2017-12-14T19:03:23+00:00"
+            "time": "2018-12-14T19:03:23+00:00"
         },
         {
             "name": "sensio/generator-bundle",
@@ -1979,7 +1979,7 @@
                 }
             ],
             "description": "This bundle generates code for you",
-            "time": "2017-12-07T15:36:41+00:00"
+            "time": "2018-12-07T15:36:41+00:00"
         },
         {
             "name": "sensiolabs/security-checker",
@@ -2598,7 +2598,7 @@
             ],
             "description": "Symfony SwiftmailerBundle",
             "homepage": "http://symfony.com",
-            "time": "2017-10-19T01:06:41+00:00"
+            "time": "2018-10-19T01:06:41+00:00"
         },
         {
             "name": "symfony/symfony",
@@ -2924,7 +2924,7 @@
                 "reflection",
                 "static analysis"
             ],
-            "time": "2017-09-11T18:02:19+00:00"
+            "time": "2018-09-11T18:02:19+00:00"
         },
         {
             "name": "phpdocumentor/reflection-docblock",
@@ -2975,7 +2975,7 @@
                 }
             ],
             "description": "With this component, a library can provide support for annotations via DocBlocks or otherwise retrieve information that is embedded in a DocBlock.",
-            "time": "2017-11-30T07:14:17+00:00"
+            "time": "2018-11-30T07:14:17+00:00"
         },
         {
             "name": "phpdocumentor/type-resolver",
@@ -3022,7 +3022,7 @@
                     "email": "me@mikevanriel.com"
                 }
             ],
-            "time": "2017-07-14T14:27:02+00:00"
+            "time": "2018-07-14T14:27:02+00:00"
         },
         {
             "name": "phpspec/prophecy",
@@ -3148,7 +3148,7 @@
                 "testing",
                 "xunit"
             ],
-            "time": "2017-04-02T07:44:40+00:00"
+            "time": "2018-04-02T07:44:40+00:00"
         },
         {
             "name": "phpunit/php-file-iterator",
@@ -3195,7 +3195,7 @@
                 "filesystem",
                 "iterator"
             ],
-            "time": "2017-11-27T13:52:08+00:00"
+            "time": "2018-11-27T13:52:08+00:00"
         },
         {
             "name": "phpunit/php-text-template",
@@ -3285,7 +3285,7 @@
             "keywords": [
                 "timer"
             ],
-            "time": "2017-02-26T11:10:40+00:00"
+            "time": "2018-02-26T11:10:40+00:00"
         },
         {
             "name": "phpunit/php-token-stream",
@@ -3334,7 +3334,7 @@
             "keywords": [
                 "tokenizer"
             ],
-            "time": "2017-11-27T05:48:46+00:00"
+            "time": "2018-11-27T05:48:46+00:00"
         },
         {
             "name": "phpunit/phpunit",
@@ -3475,7 +3475,7 @@
                 "mock",
                 "xunit"
             ],
-            "time": "2017-06-30T09:13:00+00:00"
+            "time": "2018-06-30T09:13:00+00:00"
         },
         {
             "name": "sebastian/code-unit-reverse-lookup",
@@ -3520,7 +3520,7 @@
             ],
             "description": "Looks up which function or method a line of code belongs to",
             "homepage": "https://github.com/sebastianbergmann/code-unit-reverse-lookup/",
-            "time": "2017-03-04T06:30:41+00:00"
+            "time": "2018-03-04T06:30:41+00:00"
         },
         {
             "name": "sebastian/comparator",
@@ -3584,7 +3584,7 @@
                 "compare",
                 "equality"
             ],
-            "time": "2017-01-29T09:50:25+00:00"
+            "time": "2018-01-29T09:50:25+00:00"
         },
         {
             "name": "sebastian/diff",
@@ -3636,7 +3636,7 @@
             "keywords": [
                 "diff"
             ],
-            "time": "2017-05-22T07:24:03+00:00"
+            "time": "2018-05-22T07:24:03+00:00"
         },
         {
             "name": "sebastian/environment",
@@ -3850,7 +3850,7 @@
             ],
             "description": "Traverses array structures and object graphs to enumerate all referenced objects",
             "homepage": "https://github.com/sebastianbergmann/object-enumerator/",
-            "time": "2017-02-18T15:18:39+00:00"
+            "time": "2018-02-18T15:18:39+00:00"
         },
         {
             "name": "sebastian/recursion-context",

@@ -6,11 +6,11 @@ use AppBundle\Domain\Entity\Game\Game;
 use AppBundle\Domain\Entity\Player\Player;
 
 /**
- * Interface ValidatePlayerInterface
+ * Interface to a service to validate the player asking for the game
  *
  * @package AppBundle\Domain\Service\MovePlayer
  */
-interface ValidatePlayerInterface
+interface ValidatePlayerServiceInterface
 {
     /**
      * Validates the player asking for the name
@@ -20,5 +20,5 @@ interface ValidatePlayerInterface
      * @return bool true=success, false=error
      * @throws MovePlayerException
      */
-    public function validatePlayer(Player& $player, Game $game = null);
+    public function validate(Player& $player, Game $game = null);
 }

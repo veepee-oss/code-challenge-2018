@@ -6,19 +6,19 @@ use AppBundle\Domain\Entity\Game\Game;
 use AppBundle\Domain\Entity\Player\Player;
 
 /**
- * Interface MovePlayerInterface
+ * Interface to a service to move a single player in the game
  *
  * @package AppBundle\Domain\Service\MovePlayer
  */
-interface MovePlayerInterface
+interface MovePlayerServiceInterface
 {
     /**
-     * Moves the player
+     * Moves a single player in the game
      *
      * @param Player $player
      * @param Game $game
      * @return bool true=success, false=error
      * @throws MovePlayerException
      */
-    public function movePlayer(Player& $player, Game $game);
+    public function move(Player& $player, Game $game);
 }

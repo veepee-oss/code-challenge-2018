@@ -6,23 +6,23 @@ use AppBundle\Domain\Entity\Game\Game;
 use AppBundle\Domain\Entity\Player\Player;
 
 /**
- * Class ValidatePlayer
+ * Class to validate the player asking for the game
  *
  * @package AppBundle\Domain\Service\MovePlayer
  */
-class ValidatePlayer implements ValidatePlayerInterface
+class ValidatePlayerService implements ValidatePlayerServiceInterface
 {
-    /** @var MovePlayerFactory */
-    protected $playerServiceFactory;
+    /** @var AskPlayerNameServiceLocator */
+    protected $serviceLocator;
 
     /**
-     * MovePlayer constructor.
+     * ValidatePlayerService constructor.
      *
-     * @param MovePlayerFactory $playerServiceFactory
+     * @param AskPlayerNameServiceLocator $serviceLocator
      */
-    public function __construct(MovePlayerFactory $playerServiceFactory)
+    public function __construct(AskPlayerNameServiceLocator $serviceLocator)
     {
-        $this->playerServiceFactory = $playerServiceFactory;
+        $this->serviceLocator = $serviceLocator;
     }
 
     /**
@@ -33,10 +33,10 @@ class ValidatePlayer implements ValidatePlayerInterface
      * @return bool true=success, false=error
      * @throws MovePlayerException
      */
-    public function validatePlayer(Player& $player, Game $game = null)
+    public function validate(Player& $player, Game $game = null)
     {
         /** @var AskPlayerNameInterface $playerService */
-        $playerService = $this->playerServiceFactory->locate($player);
+        $playerService = $this->serviceLocator->locate($player);
 
         try {
             // Asks for the name and email of the player
