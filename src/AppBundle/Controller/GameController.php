@@ -5,6 +5,8 @@ namespace AppBundle\Controller;
 use AppBundle\Domain\Entity\Game\Game;
 use AppBundle\Domain\Entity\Player\ApiPlayer;
 use AppBundle\Domain\Service\GameEngine\GameEngine;
+use AppBundle\Domain\Service\MazeBuilder\MazeBuilderException;
+use AppBundle\Domain\Service\MazeBuilder\MazeBuilderInterface;
 use AppBundle\Domain\Service\MovePlayer\MovePlayerException;
 use AppBundle\Domain\Service\MovePlayer\ValidatePlayerServiceInterface;
 use AppBundle\Form\CreateGame\GameEntity;
@@ -92,6 +94,7 @@ class GameController extends Controller
      * @Route("/create/next", name="game_create_next")
      * @param Request $request
      * @return Response
+     * @throws MazeBuilderException
      */
     public function createNextAction(Request $request)
     {
@@ -108,6 +111,7 @@ class GameController extends Controller
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             // Create the maze of height x width
+            /** @var MazeBuilderInterface $mazeBuilder */
             $mazeBuilder = $this->get('app.maze.builder');
             $maze = $mazeBuilder->buildRandomMaze(
                 $gameEntity->getHeight(),

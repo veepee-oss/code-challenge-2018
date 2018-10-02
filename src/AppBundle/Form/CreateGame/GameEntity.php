@@ -2,6 +2,7 @@
 
 namespace AppBundle\Form\CreateGame;
 
+use AppBundle\Exception\PlayerOutOfBoundsException;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
@@ -197,12 +198,12 @@ class GameEntity
     /**
      * @param int $pos
      * @return PlayerEntity
-     * @throws \Exception
+     * @throws PlayerOutOfBoundsException
      */
     public function getPlayerAt($pos)
     {
         if (!array_key_exists($pos, $this->players)) {
-            throw new \Exception('The key ' . $pos . ' in invalid for players array.');
+            throw new PlayerOutOfBoundsException('The key ' . $pos . ' in invalid for players array.');
         }
         return $this->players[$pos];
     }
