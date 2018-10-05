@@ -23,36 +23,32 @@ services:
             - "@app.game.move_players_sync.service"
             - "@app.ghost.move.factory"
             - "@logger"
+        public: true
 
     app.game.daemon:
         class: AppBundle\Service\GameEngine\GameDaemon
+        public: true
 
     app.game.move_players_sync.service:
         class: AppBundle\Domain\Service\MovePlayer\MoveAllPlayersSyncService
         arguments:
             - "@app.player.move_sync.service"
 
+    app.game.move_players_async.service:
+        class: AppBundle\Service\MovePlayer\MoveAllPlayersAsyncService
+        arguments:
+            - "@rabbitmq.connection"
+            - "@app.player.request_data"
+
     app.player.validate.service:
         class: AppBundle\Domain\Service\MovePlayer\ValidatePlayerService
         arguments:
-            - "@app.player.ask_name.locator"
+            - "@app.player.move.api"
 
     app.player.move_sync.service:
         class: AppBundle\Domain\Service\MovePlayer\MovePlayerSyncService
         arguments:
-            - "@app.player.ask_movement.locator"
-
-    app.player.ask_movement.locator:
-        class: AppBundle\Domain\Service\MovePlayer\AskNextMovementServiceLocator
-        arguments:
-            - 1: "@app.player.move.api"
-              2: "@app.player.move.bot"
-
-    app.player.ask_name.locator:
-        class: AppBundle\Domain\Service\MovePlayer\AskPlayerNameServiceLocator
-        arguments:
-            - 1: "@app.player.move.api"
-              2: "@app.player.move.bot"
+            - "@app.player.move.api"
 
     app.player.move.api:
         class: AppBundle\Service\MovePlayer\ApiPlayerService
@@ -62,11 +58,6 @@ services:
             - "@validator"
             - "@app.logger"
             - "%default_timeout%"
-
-    app.player.move.bot:
-        class: AppBundle\Service\MovePlayer\BotPlayerService
-        arguments:
-            - "@app.player.request_data"
 
     app.player.request_data:
         class: AppBundle\Domain\Service\MovePlayer\PlayerRequest
@@ -87,3 +78,12 @@ services:
         class: AppBundle\Service\LoggerService\LoggerService
         arguments:
             - "@doctrine.orm.entity_manager"
+
+    rabbitmq.connection:
+        class: PhpAmqpLib\Connection\AMQPStreamConnection
+        arguments:
+            - "%rabbitmq_host%"
+            - "%rabbitmq_port%"
+            - "%rabbitmq_user%"
+            - "%rabbitmq_pass%"
+            - "%rabbitmq_vhost%"

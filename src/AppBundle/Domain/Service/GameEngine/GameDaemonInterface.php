@@ -7,7 +7,7 @@ namespace AppBundle\Domain\Service\GameEngine;
  *
  * @package AppBundle\Domain\Service\GameEngine
  */
-interface GameEngineDaemonInterface
+interface GameDaemonInterface
 {
     /**
      * Starts the game engine daemon

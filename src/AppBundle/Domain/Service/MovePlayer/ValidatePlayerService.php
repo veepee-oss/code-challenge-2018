@@ -12,17 +12,17 @@ use AppBundle\Domain\Entity\Player\Player;
  */
 class ValidatePlayerService implements ValidatePlayerServiceInterface
 {
-    /** @var AskPlayerNameServiceLocator */
-    protected $serviceLocator;
+    /** @var AskPlayerNameInterface */
+    protected $askPlayerNameService;
 
     /**
      * ValidatePlayerService constructor.
      *
-     * @param AskPlayerNameServiceLocator $serviceLocator
+     * @param AskPlayerNameInterface $serviceLocator
      */
-    public function __construct(AskPlayerNameServiceLocator $serviceLocator)
+    public function __construct(AskPlayerNameInterface $askPlayerNameService)
     {
-        $this->serviceLocator = $serviceLocator;
+        $this->askPlayerNameService = $askPlayerNameService;
     }
 
     /**
@@ -35,12 +35,9 @@ class ValidatePlayerService implements ValidatePlayerServiceInterface
      */
     public function validate(Player& $player, Game $game = null)
     {
-        /** @var AskPlayerNameInterface $playerService */
-        $playerService = $this->serviceLocator->locate($player);
-
         try {
             // Asks for the name and email of the player
-            $data = $playerService->askPlayerName($player, $game);
+            $data = $this->askPlayerNameService->askPlayerName($player, $game);
             if (!$data) {
                 return false;
             }

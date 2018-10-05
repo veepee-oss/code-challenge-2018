@@ -3,7 +3,6 @@
 namespace AppBundle\Service\MovePlayer;
 
 use AppBundle\Domain\Entity\Game\Game;
-use AppBundle\Domain\Entity\Player\ApiPlayer;
 use AppBundle\Domain\Entity\Player\Player;
 use AppBundle\Domain\Service\LoggerService\LoggerServiceInterface;
 use AppBundle\Domain\Service\MovePlayer\AskNextMovementInterface;
@@ -69,12 +68,6 @@ class ApiPlayerService implements AskNextMovementInterface, AskPlayerNameInterfa
      */
     public function askPlayerName(Player $player, Game $game = null)
     {
-        if (!$player instanceof ApiPlayer) {
-            throw new MovePlayerException(
-                'The $player object must be an instance of \AppBundle\Domain\Entity\Player\ApiPlayer'
-            );
-        }
-
         // Call to the REST API
         $responseData = $this->callToApi($player, $game, 'name', null);
         if (!$responseData['name'] || !isset($responseData['name'])) {
@@ -127,12 +120,6 @@ class ApiPlayerService implements AskNextMovementInterface, AskPlayerNameInterfa
      */
     public function askNextMovement(Player $player, Game $game = null)
     {
-        if (!$player instanceof ApiPlayer) {
-            throw new MovePlayerException(
-                'The $player object must be an instance of \AppBundle\Domain\Entity\Player\ApiPlayer'
-            );
-        }
-
         $request = $this->playerRequest->create($player, $game);
 
         $responseData = $this->callToApi($player, $game, 'move', $request);
@@ -148,7 +135,7 @@ class ApiPlayerService implements AskNextMovementInterface, AskPlayerNameInterfa
     /**
      * Calls to the API
      *
-     * @param ApiPlayer $player
+     * @param Player $player
      * @param Game $game
      * @param string $function
      * @param string $requestBody
@@ -156,7 +143,7 @@ class ApiPlayerService implements AskNextMovementInterface, AskPlayerNameInterfa
      * @throws MovePlayerException
      * @throws HttpException
      */
-    private function callToApi(ApiPlayer $player, Game $game = null, $function = null, $requestBody = null)
+    private function callToApi(Player $player, Game $game = null, $function = null, $requestBody = null)
     {
         $requestUrl = $player->url();
         if ($function) {

@@ -3,7 +3,7 @@
 namespace AppBundle\Controller;
 
 use AppBundle\Domain\Entity\Game\Game;
-use AppBundle\Domain\Entity\Player\ApiPlayer;
+use AppBundle\Domain\Entity\Player\Player;
 use AppBundle\Domain\Service\GameEngine\GameEngine;
 use AppBundle\Domain\Service\MazeBuilder\MazeBuilderException;
 use AppBundle\Domain\Service\MazeBuilder\MazeBuilderInterface;
@@ -127,7 +127,7 @@ class GameController extends Controller
             for ($pos = 0; $pos < $gameEntity->getPlayerNum(); $pos++) {
                 try {
                     $url = $gameEntity->getPlayerAt($pos)->getUrl();
-                    $player = new ApiPlayer($url, $maze->start());
+                    $player = new Player($url, $maze->start());
                     if ($playerValidator->validate($player, null)) {
                         $players[] = $player;
                     } else {

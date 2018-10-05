@@ -14,7 +14,7 @@ use AppBundle\Domain\Entity\Player\Player;
 class PlayerRequest implements PlayerRequestInterface
 {
     /**
-     * Creates the request data to send to the player bot or api. The request data will be a json object.
+     * Creates the request data to send to the player. The request data will be a json object.
      *
      * {
      *     "game": {

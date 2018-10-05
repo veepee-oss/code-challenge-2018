@@ -2,14 +2,14 @@
 
 namespace AppBundle\Service\GameEngine;
 
-use AppBundle\Domain\Service\GameEngine\GameEngineDaemonInterface;
+use AppBundle\Domain\Service\GameEngine\GameDaemonInterface;
 
 /**
  * Class GameEngineDaemon
  *
  * @package AppBundle\Service\GameEngine
  */
-class GameDaemon implements GameEngineDaemonInterface
+class GameDaemon implements GameDaemonInterface
 {
     const CONSOLE = __DIR__ . '/../../../../bin/console';
     const COMMAND = 'app:code-challenge:engine';

@@ -3,7 +3,8 @@ FROM php:7.2-apache
 
 RUN apt-get update && apt-get install zip unzip
 
-RUN docker-php-ext-install pdo_mysql
+RUN docker-php-ext-install pdo_mysql bcmath && \
+    docker-php-ext-enable pdo_mysql bcmath
 
 RUN useradd -m -u 1000 -U david
 

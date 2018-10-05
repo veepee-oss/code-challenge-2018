@@ -11,6 +11,6 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
-docker-compose -f ${DOCKER_FILE} up -d --remove-orphans
+docker-compose -f ${DOCKER_FILE} up -d
 
 echo -e ""

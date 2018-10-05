@@ -53,6 +53,21 @@ services:
         networks:
             - "cc18_network"
 
+    cc18_rabbitmq:
+        image: "rabbitmq:3-management"
+
+        container_name: "docker_cc18_rabbitmq"
+
+        ports:
+            - "5672:5672"
+            - "15672:15672"
+
+        volumes:
+            - "../var/docker/rabbitmq:/var/lib/rabbitmq"
+
+        networks:
+            - "cc18_network"
+
 networks:
     cc18_network:
         driver: "bridge"

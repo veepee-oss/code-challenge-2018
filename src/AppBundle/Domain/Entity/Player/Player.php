@@ -13,18 +13,6 @@ use Ramsey\Uuid\Uuid;
  */
 class Player extends MazeObject
 {
-    /** Player types */
-    const TYPE_API = 1;
-    const TYPE_BOT = 2;
-
-    /** Player statuses */
-    const STATUS_PLAYING = 1;
-    const STATUS_DIED = 8;
-    const STATUS_WINNER = 12;
-
-    /** @var int */
-    protected $type;
-
     /** @var int */
     protected $status;
 
@@ -40,10 +28,18 @@ class Player extends MazeObject
     /** @var string */
     protected $email;
 
+    /** @var string */
+    protected $url;
+
+    /** Player statuses */
+    const STATUS_PLAYING = 1;
+    const STATUS_DIED = 8;
+    const STATUS_WINNER = 12;
+
     /**
      * Player constructor.
      *
-     * @param int $type
+     * @param string $url
      * @param Position $position
      * @param Position $previous
      * @param int $status
@@ -51,9 +47,10 @@ class Player extends MazeObject
      * @param string $uuid
      * @param string $name
      * @param string $email
+     * @throws \Exception
      */
     public function __construct(
-        $type,
+        $url,
         Position $position,
         Position $previous = null,
         $status = null,
@@ -63,22 +60,12 @@ class Player extends MazeObject
         $email = null
     ) {
         parent::__construct($position, $previous);
-        $this->type = $type;
+        $this->url = $url;
         $this->status = $status ?: static::STATUS_PLAYING;
         $this->timestamp = $timestamp ?: new \DateTime();
         $this->uuid = $uuid ?: Uuid::uuid4()->toString();
         $this->name = $name ?: $this->uuid;
         $this->email = $email;
-    }
-
-    /**
-     * Get type
-     *
-     * @return int
-     */
-    public function type()
-    {
-        return $this->type;
     }
 
     /**
@@ -125,6 +112,16 @@ class Player extends MazeObject
     public function email()
     {
         return $this->email;
+    }
+
+    /**
+     * Get url
+     *
+     * @return string
+     */
+    public function url()
+    {
+        return $this->url;
     }
 
     /**
@@ -218,14 +215,14 @@ class Player extends MazeObject
     public function serialize()
     {
         return array(
-            'type' => $this->type(),
             'position' => $this->position()->serialize(),
             'previous' => $this->previous()->serialize(),
             'status' => $this->status(),
             'timestamp' => $this->timestamp()->format('YmdHisu'),
             'uuid' => $this->uuid(),
             'name' => $this->name(),
-            'email' => $this->email()
+            'email' => $this->email(),
+            'url' => $this->url(),
         );
     }
 
@@ -234,11 +231,12 @@ class Player extends MazeObject
      *
      * @param array $data
      * @return Player
+     * @throws \Exception
      */
     public static function unserialize(array $data)
     {
         return new static(
-            $data['type'],
+            $data['url'],
             Position::unserialize($data['position']),
             isset($data['previous']) ? Position::unserialize($data['previous']) : null,
             isset($data['status']) ? $data['status'] : null,

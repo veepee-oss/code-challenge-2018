@@ -16,17 +16,17 @@ use AppBundle\Domain\Entity\Position\Position;
  */
 class MovePlayerSyncService implements MovePlayerServiceInterface
 {
-    /** @var AskNextMovementServiceLocator */
-    protected $serviceLocator;
+    /** @var AskNextMovementInterface */
+    protected $askNextMovementService;
 
     /**
      * MoveSinglePlayer constructor.
      *
-     * @param AskNextMovementServiceLocator $serviceLocator
+     * @param AskNextMovementInterface $askNextMovementService
      */
-    public function __construct(AskNextMovementServiceLocator $serviceLocator)
+    public function __construct(AskNextMovementInterface $askNextMovementService)
     {
-        $this->serviceLocator = $serviceLocator;
+        $this->askNextMovementService = $askNextMovementService;
     }
 
     /**
@@ -39,11 +39,8 @@ class MovePlayerSyncService implements MovePlayerServiceInterface
      */
     public function move(Player& $player, Game $game)
     {
-        /** @var AskNextMovementInterface $playerService */
-        $playerService = $this->serviceLocator->locate($player);
-
         // Reads the next movement of the player: "up", "down", "left" or "right".
-        $direction = $playerService->askNextMovement($player, $game);
+        $direction = $this->askNextMovementService->askNextMovement($player, $game);
         if (!$direction) {
             return false;
         }

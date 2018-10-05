@@ -197,15 +197,7 @@ class Game
 
         $players = array();
         foreach ($this->players as $player) {
-            switch ($player['type']) {
-                case DomainPlayer\Player::TYPE_API:
-                    $players[] = DomainPlayer\ApiPlayer::unserialize($player);
-                    break;
-
-                case DomainPlayer\Player::TYPE_BOT:
-                    $players[] = DomainPlayer\BotPlayer::unserialize($player);
-                    break;
-            }
+            $players[] = DomainPlayer\Player::unserialize($player);
         }
 
         $ghosts = array();
