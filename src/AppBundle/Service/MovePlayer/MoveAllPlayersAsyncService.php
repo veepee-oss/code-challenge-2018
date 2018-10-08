@@ -33,10 +33,12 @@ class MoveAllPlayersAsyncService implements MoveAllPlayersServiceInterface
     /** @var int */
     private $timeout;
 
-    /** @var string Constants */
+    /** @var string AMQP resource names */
     private const X_PLAYER_MOVEMENT_REQUEST = 'x-player-movement-request';
     private const Q_PLAYER_MOVEMENT_REQUEST = 'q-player-movement-request';
 
+    /** @var int Default timeout */
+    private const DEFAULT_TIMEOUT = 3;
     /**
      * MoveAllPlayersAsyncService constructor.
      *
@@ -49,7 +51,7 @@ class MoveAllPlayersAsyncService implements MoveAllPlayersServiceInterface
         AMQPStreamConnection $rabbitmq,
         PlayerRequestInterface $requestBuilder,
         MovePlayerServiceInterface $movePlayerService,
-        int $timeout = 3
+        int $timeout = self::DEFAULT_TIMEOUT
     ) {
         $this->rabbitmq = $rabbitmq;
         $this->requestBuilder = $requestBuilder;

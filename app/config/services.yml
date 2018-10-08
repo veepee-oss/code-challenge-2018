@@ -40,6 +40,7 @@ services:
             - "@rabbitmq.connection"
             - "@app.player.request_data"
             - "@app.player.move.service"
+            - "%default_timeout%"
 
     app.player.validate.service:
         class: AppBundle\Domain\Service\MovePlayer\ValidatePlayerService
