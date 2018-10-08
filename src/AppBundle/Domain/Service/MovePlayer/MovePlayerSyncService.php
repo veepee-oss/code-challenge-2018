@@ -16,6 +16,9 @@ use AppBundle\Domain\Entity\Position\Position;
  */
 class MovePlayerSyncService implements MovePlayerServiceInterface
 {
+    /** @var PlayerRequestInterface */
+    protected $playerRequestService;
+
     /** @var AskNextMovementInterface */
     protected $askNextMovementService;
 
@@ -23,9 +26,13 @@ class MovePlayerSyncService implements MovePlayerServiceInterface
      * MoveSinglePlayer constructor.
      *
      * @param AskNextMovementInterface $askNextMovementService
+     * @param PlayerRequestInterface $playerRequestService
      */
-    public function __construct(AskNextMovementInterface $askNextMovementService)
-    {
+    public function __construct(
+        PlayerRequestInterface $playerRequestService,
+        AskNextMovementInterface $askNextMovementService
+    ) {
+        $this->playerRequestService = $playerRequestService;
         $this->askNextMovementService = $askNextMovementService;
     }
 
@@ -39,8 +46,17 @@ class MovePlayerSyncService implements MovePlayerServiceInterface
      */
     public function move(Player& $player, Game $game)
     {
+        // Create request data
+        $requestData = $this->playerRequestService->create($player, $game);
+
         // Reads the next movement of the player: "up", "down", "left" or "right".
-        $direction = $this->askNextMovementService->askNextMovement($player, $game);
+        $direction = $this->askNextMovementService->askNextMovement(
+            $player->url(),
+            $player->uuid(),
+            $game->uuid(),
+            $requestData
+        );
+
         if (!$direction) {
             return false;
         }

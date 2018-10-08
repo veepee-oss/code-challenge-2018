@@ -18,7 +18,6 @@ interface ValidatePlayerServiceInterface
      * @param Player $player
      * @param Game $game
      * @return bool true=success, false=error
-     * @throws MovePlayerException
      */
     public function validate(Player& $player, Game $game = null);
 }

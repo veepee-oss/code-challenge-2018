@@ -12,6 +12,7 @@ use AppBundle\Domain\Entity\Player\Player;
  */
 interface PlayerRequestInterface
 {
+    /** @var int constant fot the default view range */
     const DEFAULT_VIEW_RANGE = 4;
 
     /**
@@ -66,7 +67,8 @@ interface PlayerRequestInterface
      * @param Player $player    The player data.
      * @param Game   $game      The game data.
      * @param int    $viewRange The view distance.
-     * @return string Request in json format
+     * @param bool   $asArray   Return as array or string
+     * @return string|array Request in json format or array format
      */
-    public function create(Player $player, Game $game, $viewRange = self::DEFAULT_VIEW_RANGE);
+    public function create(Player $player, Game $game, $viewRange = self::DEFAULT_VIEW_RANGE, $asArray = false);
 }

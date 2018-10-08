@@ -2,13 +2,10 @@
 
 namespace AppBundle\Service\MovePlayer;
 
-use AppBundle\Domain\Entity\Game\Game;
-use AppBundle\Domain\Entity\Player\Player;
 use AppBundle\Domain\Service\LoggerService\LoggerServiceInterface;
 use AppBundle\Domain\Service\MovePlayer\AskNextMovementInterface;
 use AppBundle\Domain\Service\MovePlayer\AskPlayerNameInterface;
 use AppBundle\Domain\Service\MovePlayer\MovePlayerException;
-use AppBundle\Domain\Service\MovePlayer\PlayerRequestInterface;
 use Davamigo\HttpClient\Domain\HttpClient;
 use Davamigo\HttpClient\Domain\HttpException;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -24,9 +21,6 @@ class ApiPlayerService implements AskNextMovementInterface, AskPlayerNameInterfa
     /** @var HttpClient */
     protected $httpClient;
 
-    /** @var PlayerRequestInterface */
-    protected $playerRequest;
-
     /** @var ValidatorInterface */
     protected $validator;
 
@@ -36,22 +30,25 @@ class ApiPlayerService implements AskNextMovementInterface, AskPlayerNameInterfa
     /** @var int */
     protected $timeout;
 
+    /** @var string endpoint contants */
+    private const ENDPOINT_ASK_NAME = '/name';
+    private const ENDPOINT_ASK_MOVE = '/move';
+
     /**
      * ApiPlayerService constructor.
      *
-     * @param HttpClient $httpClient
-     * @param PlayerRequestInterface $playerRequest
+     * @param HttpClient             $httpClient
+     * @param ValidatorInterface     $validator
      * @param LoggerServiceInterface $logger
+     * @param int                    $timeout
      */
     public function __construct(
         HttpClient $httpClient,
-        PlayerRequestInterface $playerRequest,
         ValidatorInterface $validator,
         LoggerServiceInterface $logger,
         $timeout = 3
     ) {
         $this->httpClient = $httpClient;
-        $this->playerRequest = $playerRequest;
         $this->validator = $validator;
         $this->logger = $logger;
         $this->timeout = $timeout;
@@ -60,26 +57,22 @@ class ApiPlayerService implements AskNextMovementInterface, AskPlayerNameInterfa
     /**
      * Asks for the name of the player
      *
-     * @param Player $player
-     * @param Game $game
+     * @param string $url    the base URL to call
+     * @param string $player the player UUID
+     * @param string $game   the game UUID (optional)
      * @return array['name', 'email'] The player name and email
      * @throws MovePlayerException
-     * @throws HttpException
      */
-    public function askPlayerName(Player $player, Game $game = null)
+    public function askPlayerName(string $url, string $player, string $game = null) : array
     {
+        $endpointURL = $url . self::ENDPOINT_ASK_NAME;
+
         // Call to the REST API
-        $responseData = $this->callToApi($player, $game, 'name', null);
-        if (!$responseData['name'] || !isset($responseData['name'])) {
-            $message = 'Invalid API response! ';
-            $message .= PHP_EOL . 'Message: Empty response.';
-            $message .= PHP_EOL . 'URL: ' . $player->url();
-            throw new MovePlayerException($message);
-        }
+        $responseData = $this->callToApi($endpointURL, $player, $game, null);
 
         // Extract the data from the response
-        $name = isset($responseData['name']) ? $responseData['name'] : null;
-        $email = isset($responseData['email']) ? $responseData['email'] : null;
+        $name = $responseData['name'] ?? null;
+        $email = $responseData['email'] ?? null;
 
         // Constraints definition
         $notBlankConstraint = new Assert\NotBlank();
@@ -88,131 +81,215 @@ class ApiPlayerService implements AskNextMovementInterface, AskPlayerNameInterfa
         // Use the validator to validate the name
         $errorList = $this->validator->validate($name, $notBlankConstraint);
         if (0 !== count($errorList)) {
-            $message = 'Invalid API response! ';
-            $message .= PHP_EOL . 'Message: Name is required.';
-            $message .= PHP_EOL . 'URL: ' . $player->url();
-            throw new MovePlayerException($message);
+            throw new MovePlayerException($this->buildErrorMessage(
+                $endpointURL,
+                'Name is required.',
+                $player,
+                $game
+            ));
         }
 
         // Use the validator to validate the email
         $errorList = $this->validator->validate($email, array($notBlankConstraint, $emailConstraint));
         if (0 !== count($errorList)) {
-            $message = 'Invalid API response! ';
-            $message .= PHP_EOL . 'Message: Valid email is required.';
-            $message .= PHP_EOL . 'URL: ' . $player->url();
-            throw new MovePlayerException($message);
+            throw new MovePlayerException($this->buildErrorMessage(
+                $endpointURL,
+                'Valid email is required.',
+                $player,
+                $game
+            ));
         }
 
         return array(
-            'name' => $responseData['name'],
-            'email' => $responseData['email']
+            'name' => $name,
+            'email' => $email
         );
     }
 
     /**
      * Reads the next movement of the player: "up", "down", "left" or "right".
      *
-     * @param Player $player
-     * @param Game $game
+     * @param string $url     the base URL to call
+     * @param string $player  the player UUID
+     * @param string $game    the game UUID
+     * @param string $request the player request
      * @return string The next movement
      * @throws MovePlayerException
-     * @throws HttpException
      */
-    public function askNextMovement(Player $player, Game $game = null)
+    public function askNextMovement(string $url, string $player, string $game, string $request) : string
     {
-        $request = $this->playerRequest->create($player, $game);
+        $endpointURL = $url . self::ENDPOINT_ASK_MOVE;
 
-        $responseData = $this->callToApi($player, $game, 'move', $request);
-        if (!isset($responseData['move'])) {
-            $message = 'Invalid API response! Player: ' . $player->name();
-            throw new MovePlayerException($message);
+        // Call to the REST API
+        $responseData = $this->callToApi($endpointURL, $player, $game, $request);
+
+        // Extract the data from the response
+        $move = $responseData['move'] ?? null;
+
+        // Constraints definition
+        $notBlankConstraint = new Assert\NotBlank();
+
+        // Use the validator to validate the name
+        $errorList = $this->validator->validate($move, $notBlankConstraint);
+        if (0 !== count($errorList)) {
+            throw new MovePlayerException($this->buildErrorMessage(
+                $endpointURL,
+                'Move is required.',
+                $player,
+                $game
+            ));
         }
 
-        $direction = $responseData['move'];
-        return $direction;
+        return $move;
     }
 
     /**
      * Calls to the API
      *
-     * @param Player $player
-     * @param Game $game
-     * @param string $function
-     * @param string $requestBody
+     * @param string $requestUrl the URL of the endpoint to call
+     * @param string $player the player UUID
+     * @param string $game the game UUID
+     * @param string $requestBody the player request
      * @return array The read data
      * @throws MovePlayerException
-     * @throws HttpException
      */
-    private function callToApi(Player $player, Game $game = null, $function = null, $requestBody = null)
-    {
-        $requestUrl = $player->url();
-        if ($function) {
-            $requestUrl .= '/' . $function;
-        }
+    private function callToApi(
+        string $requestUrl,
+        string $player,
+        string $game = null,
+        string $requestBody = null
+    ) : array {
+        $game = $game ?? 'new-game';
 
         $requestHeaders = array(
             'Content-Type' => 'application/json; charset=UTF-8'
         );
 
+        $options = array(
+            CURLOPT_CONNECTTIMEOUT  => $this->timeout,
+            CURLOPT_TIMEOUT         => $this->timeout
+        );
+
         try {
-            $options = array(
-                CURLOPT_CONNECTTIMEOUT  => $this->timeout,
-                CURLOPT_TIMEOUT         => $this->timeout
-            );
             $response = $this->httpClient->post($requestUrl, $requestHeaders, $requestBody, $options)->send();
+            $responseCode = $response->getStatusCode();
         } catch (HttpException $exc) {
-            $this->logger->log(
-                $game ? $game->uuid() : 'temp',
-                $player->uuid(),
-                array(
-                    'requestUrl' => $requestUrl,
-                    'requestHeaders' => $requestHeaders,
-                    'requestBody' => $requestBody,
-                    'errorMessage' => $exc->getMessage()
-                )
+            $this->logger->log($game, $player, $this->buildErrorContextArray(
+                $requestUrl,
+                $requestHeaders,
+                $requestBody,
+                $exc->getMessage()
+            ));
+
+            throw new MovePlayerException(
+                $this->buildErrorMessage($requestUrl, $exc->getMessage(), $player, $game),
+                0,
+                $exc
             );
-            throw new MovePlayerException('An error occurred calling the player API.', 0, $exc);
         }
 
         $responseBody = $response->getBody(true);
-
         $responseData = json_decode($responseBody, true);
         if (null === $responseData || !is_array($responseData)) {
-            $message = 'Invalid API response! Player: ' . $player->name();
+            $message = 'Invalid API response!';
             if (JSON_ERROR_NONE != json_last_error()) {
                 $message .= ' - ' . json_last_error_msg();
             }
 
-            $this->logger->log(
-                $game ? $game->uuid() : 'temp',
-                $player->uuid(),
-                array(
-                    'requestUrl' => $requestUrl,
-                    'requestHeaders' => $requestHeaders,
-                    'requestBody' => $requestBody,
-                    'responseCode' => $response->getStatusCode(),
-                    'responseHeaders' => $response->getHeaderLines(),
-                    'responseBody' => $responseBody,
-                    'errorMessage' => $message
-                )
-            );
+            $this->logger->log($game, $player, $this->buildErrorContextArray(
+                $requestUrl,
+                $requestHeaders,
+                $requestBody,
+                $message,
+                $responseCode,
+                $response->getHeaderLines(),
+                $responseBody
+            ));
 
             throw new MovePlayerException($message);
         }
 
-        $this->logger->log(
-            $game ? $game->uuid() : 'temp',
-            $player->uuid(),
-            array(
-                'requestUrl' => $requestUrl,
-                'requestHeaders' => $requestHeaders,
-                'requestBody' => $requestBody,
-                'responseCode' => $response->getStatusCode(),
-                'responseHeaders' => $response->getHeaderLines(),
-                'responseBody' => $responseBody
-            )
-        );
+        $this->logger->log($game, $player, $this->buildErrorContextArray(
+            $requestUrl,
+            $requestHeaders,
+            $requestBody,
+            null,
+            $responseCode,
+            $response->getHeaderLines(),
+            $responseBody
+        ));
 
         return $responseData;
+    }
+
+    /**
+     * Fotrmats an error message
+     *
+     * @param string $endpointURL
+     * @param string $message
+     * @param string $player
+     * @param string $game
+     * @return string
+     */
+    private function buildErrorMessage(
+        string $endpointURL,
+        string $message,
+        string $player,
+        string $game = null
+    ) : string {
+        $msg = 'An error occurrer calling a player API! ';
+        $msg .= PHP_EOL . 'URL: ' . $endpointURL;
+        $msg .= PHP_EOL . 'Message: ' . $message;
+        $msg .= PHP_EOL . 'Player ' . $player;
+
+        if (null !== $game) {
+            $msg .= PHP_EOL . 'Game ' . $game;
+        }
+
+        return $msg;
+    }
+
+    /**
+     * @param string $requestUrl
+     * @param array $requestHeaders
+     * @param string $requestBody
+     * @param string|null $errorMessage
+     * @param int|null $responseCode
+     * @param array|null $responseHeaders
+     * @param string|null $responseBody
+     * @return array
+     */
+    private function buildErrorContextArray(
+        string $requestUrl,
+        array  $requestHeaders,
+        string  $requestBody,
+        string $errorMessage = null,
+        int    $responseCode = null,
+        array  $responseHeaders = null,
+        string $responseBody = null
+    ) : array {
+        $result = [
+            'requestUrl' => $requestUrl,
+            'requestHeaders' => $requestHeaders,
+            'requestBody' => $requestBody
+        ];
+
+        if (null !== $responseCode) {
+            $result['responseCode'] = $responseCode;
+        }
+
+        if (null !== $responseHeaders) {
+            $result['responseHeaders'] = $responseHeaders;
+        }
+
+        if (null !== $responseBody) {
+            $result['responseBody'] = $responseBody;
+        }
+
+        if (null !== $errorMessage) {
+            $result['errorMessage'] = $errorMessage;
+        }
+
+        return $result;
     }
 }

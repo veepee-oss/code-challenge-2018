@@ -4,8 +4,8 @@ namespace AppBundle\Service\LoggerService;
 
 use AppBundle\Domain\Service\LoggerService\LoggerServiceInterface;
 use AppBundle\Entity\Logger;
-use AppBundle\Repository\LoggerRepository;
 use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\ORMException;
 
 /**
  * Class LoggerService
@@ -34,6 +34,7 @@ class LoggerService implements LoggerServiceInterface
      * @param string $playerUuid
      * @param array $data
      * @return void
+     * @throws ORMException
      */
     public function log($gameUuid, $playerUuid, array $data)
     {
@@ -48,6 +49,7 @@ class LoggerService implements LoggerServiceInterface
      * @param string $gameUuid
      * @param string $playerUuid
      * @return void
+     * @throws ORMException
      */
     public function clear($gameUuid, $playerUuid = null)
     {
@@ -71,6 +73,7 @@ class LoggerService implements LoggerServiceInterface
      * @param string $gameUuid
      * @param string $playerUuid
      * @return array The raw data of the log
+     * @throws ORMException
      */
     public function read($gameUuid, $playerUuid = null)
     {

@@ -116,8 +116,12 @@ class MoveAllPlayersAsyncService implements MoveAllPlayersServiceInterface
      */
     private function publishRequest(AMQPChannel $channel, string $callbackQueue, Game $game, Player $player) : string
     {
-        $requestDataJson = $this->requestBuilder->create($player, $game);
-        $requestData = json_decode($requestDataJson, true);
+        $requestData = $this->requestBuilder->create(
+            $player,
+            $game,
+            PlayerRequestInterface::DEFAULT_VIEW_RANGE,
+            true
+        );
 
         $eventData = MovementRequest::createEvent($game, $player, $requestData);
 

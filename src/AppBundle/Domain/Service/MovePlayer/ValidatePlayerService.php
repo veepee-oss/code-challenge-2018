@@ -18,7 +18,7 @@ class ValidatePlayerService implements ValidatePlayerServiceInterface
     /**
      * ValidatePlayerService constructor.
      *
-     * @param AskPlayerNameInterface $serviceLocator
+     * @param AskPlayerNameInterface $askPlayerNameService
      */
     public function __construct(AskPlayerNameInterface $askPlayerNameService)
     {
@@ -31,13 +31,17 @@ class ValidatePlayerService implements ValidatePlayerServiceInterface
      * @param Player $player
      * @param Game $game
      * @return bool true=success, false=error
-     * @throws MovePlayerException
      */
     public function validate(Player& $player, Game $game = null)
     {
         try {
             // Asks for the name and email of the player
-            $data = $this->askPlayerNameService->askPlayerName($player, $game);
+            $data = $this->askPlayerNameService->askPlayerName(
+                $player->url(),
+                $player->uuid(),
+                $game ? $game->uuid() :  null
+            );
+
             if (!$data) {
                 return false;
             }

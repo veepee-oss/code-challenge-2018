@@ -65,9 +65,10 @@ class PlayerRequest implements PlayerRequestInterface
      * @param Player $player    The player data.
      * @param Game   $game      The game data.
      * @param int    $viewRange The view distance.
-     * @return string Request in json format
+     * @param bool   $asArray   Return as array or string
+     * @return string|array Request in json format or array format
      */
-    public function create(Player $player, Game $game, $viewRange = self::DEFAULT_VIEW_RANGE)
+    public function create(Player $player, Game $game, $viewRange = self::DEFAULT_VIEW_RANGE, $asArray = false)
     {
         $maze = $game->maze();
         $height = $maze->height();
@@ -76,7 +77,7 @@ class PlayerRequest implements PlayerRequestInterface
         $prev = $player->previous();
 
         $size = 1 + ($viewRange * 2);
-        while ($size > $height || $size > $height) {
+        while ($size > $height || $size > $width) {
             --$viewRange;
             $size = 1 + ($viewRange * 2);
         }
@@ -163,6 +164,10 @@ class PlayerRequest implements PlayerRequestInterface
             ),
             'ghosts'    => $ghosts
         );
+
+        if ($asArray) {
+            return $data;
+        }
 
         return json_encode($data);
     }

@@ -48,13 +48,13 @@ services:
     app.player.move_sync.service:
         class: AppBundle\Domain\Service\MovePlayer\MovePlayerSyncService
         arguments:
+            - "@app.player.request_data"
             - "@app.player.move.api"
 
     app.player.move.api:
         class: AppBundle\Service\MovePlayer\ApiPlayerService
         arguments:
             - "@davamigo.http.client"
-            - "@app.player.request_data"
             - "@validator"
             - "@app.logger"
             - "%default_timeout%"
