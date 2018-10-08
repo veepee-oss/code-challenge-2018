@@ -41,9 +41,6 @@ class MoveAllPlayersSyncService implements MoveAllPlayersServiceInterface
         foreach ($players as $player) {
             if ($player->status() == Player::STATUS_PLAYING) {
                 $this->movePlayer->move($player, $game);
-                if ($game->isGoalReached($player)) {
-                    $player->wins();
-                }
             }
         }
     }

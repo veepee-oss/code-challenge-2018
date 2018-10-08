@@ -15,10 +15,11 @@ interface MovePlayerServiceInterface
     /**
      * Moves a single player in the game
      *
-     * @param Player $player
-     * @param Game $game
+     * @param Player $player the player to move
+     * @param Game   $game   the game where belongs
+     * @param string $move   the move to do
      * @return bool true=success, false=error
      * @throws MovePlayerException
      */
-    public function move(Player& $player, Game $game);
+    public function move(Player& $player, Game $game, string $move = null) : bool;
 }

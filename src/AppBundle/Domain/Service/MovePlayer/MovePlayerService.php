@@ -10,64 +10,39 @@ use AppBundle\Domain\Entity\Position\Direction;
 use AppBundle\Domain\Entity\Position\Position;
 
 /**
- * Class to a service to move a single player in the game
+ * Service to move a single player in the game
  *
  * @package AppBundle\Domain\Service\MovePlayer
  */
-class MovePlayerSyncService implements MovePlayerServiceInterface
+class MovePlayerService implements MovePlayerServiceInterface
 {
-    /** @var PlayerRequestInterface */
-    protected $playerRequestService;
-
-    /** @var AskNextMovementInterface */
-    protected $askNextMovementService;
-
-    /**
-     * MoveSinglePlayer constructor.
-     *
-     * @param AskNextMovementInterface $askNextMovementService
-     * @param PlayerRequestInterface $playerRequestService
-     */
-    public function __construct(
-        PlayerRequestInterface $playerRequestService,
-        AskNextMovementInterface $askNextMovementService
-    ) {
-        $this->playerRequestService = $playerRequestService;
-        $this->askNextMovementService = $askNextMovementService;
-    }
-
     /**
      * Moves the player
      *
-     * @param Player $player
-     * @param Game $game
+     * @param Player $player the player to move
+     * @param Game   $game   the game where belongs
+     * @param string $move   the move to do
      * @return bool true=success, false=error
-     * @throws MovePlayerException
      */
-    public function move(Player& $player, Game $game)
+    public function move(Player& $player, Game $game, string $move = null) : bool
     {
-        // Create request data
-        $requestData = $this->playerRequestService->create($player, $game);
-
-        // Reads the next movement of the player: "up", "down", "left" or "right".
-        $direction = $this->askNextMovementService->askNextMovement(
-            $player->url(),
-            $player->uuid(),
-            $game->uuid(),
-            $requestData
-        );
-
-        if (!$direction) {
+        // Validations
+        if (!$move) {
             return false;
         }
 
         // Computes the new position
-        $position = $this->computeNewPosition($player->position(), $direction);
+        $position = $this->computeNewPosition($player->position(), $move);
         if (!$this->validatePosition($position, $game->maze())) {
             return false;
         }
 
         $player->move($position);
+
+        if ($game->isGoalReached($player)) {
+            $player->wins();
+        }
+
         return true;
     }
 

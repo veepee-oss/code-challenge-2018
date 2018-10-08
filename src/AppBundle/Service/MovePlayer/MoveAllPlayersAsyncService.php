@@ -7,6 +7,7 @@ use AppBundle\Domain\Entity\Player\Player;
 use AppBundle\Domain\Event\MovementRequest;
 use AppBundle\Domain\Service\MovePlayer\MoveAllPlayersServiceInterface;
 use AppBundle\Domain\Service\MovePlayer\MovePlayerException;
+use AppBundle\Domain\Service\MovePlayer\MovePlayerServiceInterface;
 use AppBundle\Domain\Service\MovePlayer\PlayerRequestInterface;
 use PhpAmqpLib\Channel\AMQPChannel;
 use PhpAmqpLib\Connection\AMQPStreamConnection;
@@ -26,6 +27,9 @@ class MoveAllPlayersAsyncService implements MoveAllPlayersServiceInterface
     /** @var PlayerRequestInterface */
     private $requestBuilder;
 
+    /** @var MovePlayerServiceInterface */
+    protected $movePlayerService;
+
     /** @var int */
     private $timeout;
 
@@ -38,15 +42,18 @@ class MoveAllPlayersAsyncService implements MoveAllPlayersServiceInterface
      *
      * @param AMQPStreamConnection $rabbitmq
      * @param PlayerRequestInterface $requestBuilder
+     * @param MovePlayerServiceInterface $movePlayerService
      * @param int $timeout
      */
     public function __construct(
         AMQPStreamConnection $rabbitmq,
         PlayerRequestInterface $requestBuilder,
+        MovePlayerServiceInterface $movePlayerService,
         int $timeout = 3
     ) {
         $this->rabbitmq = $rabbitmq;
         $this->requestBuilder = $requestBuilder;
+        $this->movePlayerService = $movePlayerService;
         $this->timeout = $timeout;
         $this->createResources();
     }
@@ -64,25 +71,32 @@ class MoveAllPlayersAsyncService implements MoveAllPlayersServiceInterface
         /** @var Player[] $players */
         $players = $game->players();
 
+        // Open channel to RabbitMQ
         $channel = $this->rabbitmq->channel();
 
+        // Declare unnamed callback queue
         $queueData = $channel->queue_declare('', false, false, false, true);
         $callbackQueue = reset($queueData);
 
+        /** @var $published: player-uuid => request-uuid */
         $published = [];
         foreach ($players as $player) {
             if ($player->status() == Player::STATUS_PLAYING) {
-                $published[] = $this->publishRequest($channel, $callbackQueue, $game, $player);
+                $published[$player->uuid()] = $this->publishRequest($channel, $callbackQueue, $game, $player);
             }
         }
 
-        $this->readResponses($channel, $callbackQueue, $published);
+        /** @var string[] $responses: request-uuid => response */
+        $responses = $this->readResponses($channel, $callbackQueue, $published);
 
+        // Move players with responses
         foreach ($players as $player) {
-            // TODO ... move players with the responses
-            //$this->movePlayer->move($player, $game);
-            if ($game->isGoalReached($player)) {
-                $player->wins();
+            if (array_key_exists($player->uuid(), $published)) {
+                $requestUUid = $published[$player->uuid()];
+                if (array_key_exists($requestUUid, $responses)) {
+                    $response = $responses[$requestUUid];
+                    $this->movePlayerService->move($player, $game, $response);
+                }
             }
         }
 

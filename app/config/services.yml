@@ -20,7 +20,7 @@ services:
     app.game.engine:
         class: AppBundle\Domain\Service\GameEngine\GameEngine
         arguments:
-            - "@app.game.move_players_sync.service"
+            - "@app.game.move_players_async.service"
             - "@app.ghost.move.factory"
             - "@logger"
         public: true
@@ -39,15 +39,20 @@ services:
         arguments:
             - "@rabbitmq.connection"
             - "@app.player.request_data"
+            - "@app.player.move.service"
 
     app.player.validate.service:
         class: AppBundle\Domain\Service\MovePlayer\ValidatePlayerService
         arguments:
             - "@app.player.move.api"
 
+    app.player.move.service:
+        class: AppBundle\Domain\Service\MovePlayer\MovePlayerService
+
     app.player.move_sync.service:
-        class: AppBundle\Domain\Service\MovePlayer\MovePlayerSyncService
+        class: AppBundle\Domain\Service\MovePlayer\MovePlayerSyncDecoratorService
         arguments:
+            - "@app.player.move.service"
             - "@app.player.request_data"
             - "@app.player.move.api"
 
