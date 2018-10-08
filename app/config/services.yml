@@ -65,6 +65,12 @@ services:
             - "@app.logger"
             - "%default_timeout%"
 
+    app.player.move.consumer:
+        class : AppBundle\Service\MovePlayer\MovePlayerAsyncConsumer
+        arguments:
+            - "@rabbitmq.connection"
+            - "@app.player.move.api"
+
     app.player.request_data:
         class: AppBundle\Domain\Service\MovePlayer\PlayerRequest
 

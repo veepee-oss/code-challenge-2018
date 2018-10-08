@@ -15,7 +15,8 @@ use PhpAmqpLib\Exception\AMQPTimeoutException;
 use PhpAmqpLib\Message\AMQPMessage;
 
 /**
- * Class MoveAllPlayersAsyncService
+ * Service to move all the players of a game in asynchronous mode using RabbitMQ. Request are published to a named queue
+ * (q-player-movement-request) and responses are received in an unnamed created queue like an RPC system.
  *
  * @package AppBundle\Service\MovePlayer
  */
@@ -34,8 +35,8 @@ class MoveAllPlayersAsyncService implements MoveAllPlayersServiceInterface
     private $timeout;
 
     /** @var string AMQP resource names */
-    private const X_PLAYER_MOVEMENT_REQUEST = 'x-player-movement-request';
-    private const Q_PLAYER_MOVEMENT_REQUEST = 'q-player-movement-request';
+    public const X_PLAYER_MOVEMENT_REQUEST = 'x-player-movement-request';
+    public const Q_PLAYER_MOVEMENT_REQUEST = 'q-player-movement-request';
 
     /** @var int Default timeout */
     private const DEFAULT_TIMEOUT = 3;
@@ -102,6 +103,7 @@ class MoveAllPlayersAsyncService implements MoveAllPlayersServiceInterface
             }
         }
 
+        // Close connections
         $channel->queue_delete($callbackQueue);
         $channel->close();
     }
@@ -169,7 +171,7 @@ class MoveAllPlayersAsyncService implements MoveAllPlayersServiceInterface
             $callbackQueue,
             '',
             false,
-            false,
+            true,
             false,
             false,
             function (AMQPMessage $message) use (&$responses, &$remaining) {

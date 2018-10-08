@@ -15,7 +15,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
- * Class GameEngineCommand
+ * Command to run the game engine
  *
  * @package AppBundle\Command
  */
