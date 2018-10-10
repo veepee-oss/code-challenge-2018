@@ -20,3 +20,9 @@ monolog:
             max_files:    10
         console:
             type:         console
+        app:
+            type:         rotating_file
+            path:         "%kernel.logs_dir%/app.log"
+            level:        debug
+            channels:     [app]
+            max_files:    10
