@@ -31,7 +31,14 @@ class MovementResponse implements EventBase
     private $response;
 
     /**
-     * Creates a new event
+     * Empty constructor
+     */
+    private function __construct()
+    {
+    }
+
+    /**
+     * Creates a new MovementResponse event from a MovementRequest event
      *
      * @param MovementRequest $request
      * @param string $response
@@ -41,19 +48,31 @@ class MovementResponse implements EventBase
     public static function createEvent(MovementRequest $request, string $response) : MovementResponse
     {
         $event = new MovementResponse();
-        try {
-            $event->uuid = Uuid::uuid4()->toString();
-        } catch (\Exception $exception) {
-            throw new MovePlayerException(
-                'An error occured creating the UUID for the event!'
-            );
-        }
-
+        $event->uuid = $event->genetateUuid();
         $event->timestamp = new \DateTime();
         $event->game = $request->game();
         $event->player = $request->player();
         $event->request = $request->uuid();
         $event->response = $response;
+        return $event;
+    }
+
+    /**
+     * Creates a new event when an error occurred
+     *
+     * @param string $uuid
+     * @return MovementResponse
+     * @throws MovePlayerException
+     */
+    public static function createErrorEvent(string $uuid) : MovementResponse
+    {
+        $event = new MovementResponse();
+        $event->uuid = $event->genetateUuid();
+        $event->timestamp = new \DateTime();
+        $event->game = null;
+        $event->player = null;
+        $event->request = $uuid;
+        $event->response = 'error';
         return $event;
     }
 
@@ -99,7 +118,7 @@ class MovementResponse implements EventBase
     {
         $data = json_decode($event, true);
 
-        $type = $data['type'];
+        $type = $data['type'] ?? null;
         if ($this->type() != $type) {
             throw new MovePlayerException(
                 'Invalid event type: ' . $type . ' - Expected: ' . $this->type()
@@ -182,5 +201,22 @@ class MovementResponse implements EventBase
     public function response(): string
     {
         return $this->response;
+    }
+
+    /**
+     * Generates a new UUID
+     *
+     * @return string
+     * @throws MovePlayerException
+     */
+    private function genetateUuid()
+    {
+        try {
+            return Uuid::uuid4()->toString();
+        } catch (\Exception $exception) {
+            throw new MovePlayerException(
+                'An error occured creating the UUID for the event!'
+            );
+        }
     }
 }

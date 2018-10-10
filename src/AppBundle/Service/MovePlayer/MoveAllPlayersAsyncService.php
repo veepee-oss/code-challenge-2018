@@ -5,6 +5,7 @@ namespace AppBundle\Service\MovePlayer;
 use AppBundle\Domain\Entity\Game\Game;
 use AppBundle\Domain\Entity\Player\Player;
 use AppBundle\Domain\Event\MovementRequest;
+use AppBundle\Domain\Event\MovementResponse;
 use AppBundle\Domain\Service\MovePlayer\MoveAllPlayersServiceInterface;
 use AppBundle\Domain\Service\MovePlayer\MovePlayerException;
 use AppBundle\Domain\Service\MovePlayer\MovePlayerServiceInterface;
@@ -13,6 +14,7 @@ use PhpAmqpLib\Channel\AMQPChannel;
 use PhpAmqpLib\Connection\AMQPStreamConnection;
 use PhpAmqpLib\Exception\AMQPTimeoutException;
 use PhpAmqpLib\Message\AMQPMessage;
+use Psr\Log\LoggerInterface;
 
 /**
  * Service to move all the players of a game in asynchronous mode using RabbitMQ. Request are published to a named queue
@@ -31,6 +33,9 @@ class MoveAllPlayersAsyncService implements MoveAllPlayersServiceInterface
     /** @var MovePlayerServiceInterface */
     protected $movePlayerService;
 
+    /** @var LoggerInterface */
+    private $logger;
+
     /** @var int */
     private $timeout;
 
@@ -40,23 +45,27 @@ class MoveAllPlayersAsyncService implements MoveAllPlayersServiceInterface
 
     /** @var int Default timeout */
     private const DEFAULT_TIMEOUT = 3;
+
     /**
      * MoveAllPlayersAsyncService constructor.
      *
      * @param AMQPStreamConnection $rabbitmq
      * @param PlayerRequestInterface $requestBuilder
      * @param MovePlayerServiceInterface $movePlayerService
+     * @param LoggerInterface $logger
      * @param int $timeout
      */
     public function __construct(
         AMQPStreamConnection $rabbitmq,
         PlayerRequestInterface $requestBuilder,
         MovePlayerServiceInterface $movePlayerService,
+        LoggerInterface $logger,
         int $timeout = self::DEFAULT_TIMEOUT
     ) {
         $this->rabbitmq = $rabbitmq;
         $this->requestBuilder = $requestBuilder;
         $this->movePlayerService = $movePlayerService;
+        $this->logger = $logger;
         $this->timeout = $timeout;
         $this->createResources();
     }
@@ -71,6 +80,10 @@ class MoveAllPlayersAsyncService implements MoveAllPlayersServiceInterface
      */
     public function move(Game &$game)
     {
+        $this->logger->debug(
+            'MoveAllPlayersAsyncService - Moving async all players for game: ' . $game->uuid()
+        );
+
         /** @var Player[] $players */
         $players = $game->players();
 
@@ -81,6 +94,10 @@ class MoveAllPlayersAsyncService implements MoveAllPlayersServiceInterface
         $queueData = $channel->queue_declare('', false, false, false, true);
         $callbackQueue = reset($queueData);
 
+        $this->logger->debug(
+            'MoveAllPlayersAsyncService - Callback queue created: ' . $callbackQueue
+        );
+
         /** @var $published: player-uuid => request-uuid */
         $published = [];
         foreach ($players as $player) {
@@ -90,18 +107,35 @@ class MoveAllPlayersAsyncService implements MoveAllPlayersServiceInterface
         }
 
         /** @var string[] $responses: request-uuid => response */
+        $this->logger->debug(
+            'MoveAllPlayersAsyncService - Reading responses for queue: ' . $callbackQueue
+        );
+
         $responses = $this->readResponses($channel, $callbackQueue, $published);
+
+        $this->logger->debug(
+            'MoveAllPlayersAsyncService - Received ' . count($responses) . ' responses'
+        );
 
         // Move players with responses
         foreach ($players as $player) {
             if (array_key_exists($player->uuid(), $published)) {
                 $requestUUid = $published[$player->uuid()];
                 if (array_key_exists($requestUUid, $responses)) {
-                    $response = $responses[$requestUUid];
-                    $this->movePlayerService->move($player, $game, $response);
+                    $move = $responses[$requestUUid];
+
+                    $this->logger->debug(
+                        'MoveAllPlayersAsyncService - Moving player: ' . $player->uuid() . '. Move: ' . $move
+                    );
+
+                    $this->movePlayerService->move($player, $game, $move);
                 }
             }
         }
+
+        $this->logger->debug(
+            'MoveAllPlayersAsyncService - Deleting callback queue: ' . $callbackQueue
+        );
 
         // Close connections
         $channel->queue_delete($callbackQueue);
@@ -142,14 +176,30 @@ class MoveAllPlayersAsyncService implements MoveAllPlayersServiceInterface
         );
 
         $eventData = MovementRequest::createEvent($game, $player, $requestData);
+        $serializedEvent = $eventData->serialize();
 
-        $message = new AMQPMessage($eventData->serialize(), [
-            'reply_to'       => $callbackQueue,
-            'correlation_id' => $eventData->uuid(),
-            'expiration'     => sprintf("%d", 1000 * $this->timeout)
-        ]);
+        $this->logger->debug(
+            'MoveAllPlayersAsyncService - Publishing event with payload: ' . $serializedEvent
+        );
 
-        $channel->basic_publish($message, self::X_PLAYER_MOVEMENT_REQUEST);
+        try {
+            $message = new AMQPMessage($serializedEvent, [
+                'reply_to' => $callbackQueue,
+                'correlation_id' => $eventData->uuid(),
+                'expiration' => sprintf("%d", 1000 * $this->timeout)
+            ]);
+
+            $channel->basic_publish($message, self::X_PLAYER_MOVEMENT_REQUEST);
+        } catch (\Exception $exc) {
+            $this->logger->error(
+                'MoveAllPlayersAsyncService - AMQP error publishing: ' . $exc->getMessage()
+            );
+            return null;
+        }
+
+        $this->logger->debug(
+            'MoveAllPlayersAsyncService - Message published with UUID: ' . $eventData->uuid()
+        );
 
         return $eventData->uuid();
     }
@@ -167,22 +217,35 @@ class MoveAllPlayersAsyncService implements MoveAllPlayersServiceInterface
         $remaining = count($published);
         $responses = array_fill_keys($published, null);
 
-        $channel->basic_consume(
-            $callbackQueue,
-            '',
-            false,
-            true,
-            false,
-            false,
-            function (AMQPMessage $message) use (&$responses, &$remaining) {
-                $uuid = $message->get('correlation_id');
-                if (array_key_exists($uuid, $responses)
-                    && null === $responses[$uuid]) {
-                    $responses[$uuid] = $message->body;
-                    --$remaining;
+        try {
+            $channel->basic_consume(
+                $callbackQueue,
+                '',
+                false,
+                true,
+                false,
+                false,
+                function (AMQPMessage $responseMsg) use (&$responses, &$remaining) {
+                    $uuid = $responseMsg->get('correlation_id');
+                    if (array_key_exists($uuid, $responses)
+                        && null === $responses[$uuid]) {
+                        $responseRawData = $responseMsg->getBody();
+
+                        $this->logger->error(
+                            'MoveAllPlayersAsyncService - Received response event with payload: ' . $responseRawData
+                        );
+
+                        $responseEvent = MovementResponse::readEvent($responseRawData);
+                        $responses[$uuid] = $responseEvent->response();
+                        --$remaining;
+                    }
                 }
-            }
-        );
+            );
+        } catch (\Exception $exc) {
+            $this->logger->error(
+                'MoveAllPlayersAsyncService - AMQP error consuming messages: ' . $exc->getMessage()
+            );
+        }
 
         while ($remaining > 0) {
             try {
@@ -190,6 +253,10 @@ class MoveAllPlayersAsyncService implements MoveAllPlayersServiceInterface
             } catch (AMQPTimeoutException $exc) {
                 // End process when timeout
                 $remaining = 0;
+            } catch (\Exception $exc) {
+                $this->logger->error(
+                    'MoveAllPlayersAsyncService - AMQP error waiting for messages: ' . $exc->getMessage()
+                );
             }
         }
 

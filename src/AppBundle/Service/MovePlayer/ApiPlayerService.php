@@ -262,7 +262,7 @@ class ApiPlayerService implements AskNextMovementInterface, AskPlayerNameInterfa
     private function buildErrorContextArray(
         string $requestUrl,
         array  $requestHeaders,
-        string  $requestBody,
+        string  $requestBody = null,
         string $errorMessage = null,
         int    $responseCode = null,
         array  $responseHeaders = null,
