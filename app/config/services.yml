@@ -29,6 +29,10 @@ services:
         class: AppBundle\Service\GameEngine\GameDaemon
         public: true
 
+    app.consumer.daemon:
+        class: AppBundle\Service\GameEngine\ConsumerDaemon
+        public: true
+
     app.game.move_players_sync.service:
         class: AppBundle\Domain\Service\MovePlayer\MoveAllPlayersSyncService
         arguments:

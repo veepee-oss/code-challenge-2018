@@ -3,7 +3,7 @@
 namespace AppBundle\Domain\Service\GameEngine;
 
 /**
- * Interface GameEngineDaemonInterface
+ * Interface to a tool to manage the game daemons
  *
  * @package AppBundle\Domain\Service\GameEngine
  */
@@ -25,7 +25,7 @@ interface GameDaemonInterface
     public function stop();
 
     /**
-     * Checks if the game engine daemon isd running
+     * Checks if the game engine daemon is running
      *
      * @return bool true=running, 0=not running
      */
