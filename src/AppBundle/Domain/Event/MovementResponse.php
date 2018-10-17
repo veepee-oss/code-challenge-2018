@@ -168,7 +168,7 @@ class MovementResponse implements EventBase
      *
      * @return string
      */
-    public function game(): string
+    public function game(): ?string
     {
         return $this->game;
     }
@@ -178,7 +178,7 @@ class MovementResponse implements EventBase
      *
      * @return string
      */
-    public function player(): string
+    public function player(): ?string
     {
         return $this->player;
     }
@@ -188,7 +188,7 @@ class MovementResponse implements EventBase
      *
      * @return string
      */
-    public function request(): string
+    public function request(): ?string
     {
         return $this->request;
     }
@@ -198,7 +198,7 @@ class MovementResponse implements EventBase
      *
      * @return string
      */
-    public function response(): string
+    public function response(): ?string
     {
         return $this->response;
     }
