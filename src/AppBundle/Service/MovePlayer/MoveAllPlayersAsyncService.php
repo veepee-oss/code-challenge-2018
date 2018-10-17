@@ -6,6 +6,7 @@ use AppBundle\Domain\Entity\Game\Game;
 use AppBundle\Domain\Entity\Player\Player;
 use AppBundle\Domain\Event\MovementRequest;
 use AppBundle\Domain\Event\MovementResponse;
+use AppBundle\Domain\Service\GameEngine\ConsumerDaemonManagerInterface;
 use AppBundle\Domain\Service\MovePlayer\MoveAllPlayersServiceInterface;
 use AppBundle\Domain\Service\MovePlayer\MovePlayerException;
 use AppBundle\Domain\Service\MovePlayer\MovePlayerServiceInterface;
@@ -33,6 +34,9 @@ class MoveAllPlayersAsyncService implements MoveAllPlayersServiceInterface
     /** @var MovePlayerServiceInterface */
     protected $movePlayerService;
 
+    /** @var ConsumerDaemonManagerInterface */
+    protected $consumerDaemonsTool;
+
     /** @var LoggerInterface */
     private $logger;
 
@@ -59,12 +63,14 @@ class MoveAllPlayersAsyncService implements MoveAllPlayersServiceInterface
         AMQPStreamConnection $rabbitmq,
         PlayerRequestInterface $requestBuilder,
         MovePlayerServiceInterface $movePlayerService,
+        ConsumerDaemonManagerInterface $consumerDaemonsTool,
         LoggerInterface $logger,
         int $timeout = self::DEFAULT_TIMEOUT
     ) {
         $this->rabbitmq = $rabbitmq;
         $this->requestBuilder = $requestBuilder;
         $this->movePlayerService = $movePlayerService;
+        $this->consumerDaemonsTool = $consumerDaemonsTool;
         $this->logger = $logger;
         $this->timeout = $timeout;
         $this->createResources();
@@ -86,6 +92,9 @@ class MoveAllPlayersAsyncService implements MoveAllPlayersServiceInterface
 
         /** @var Player[] $players */
         $players = $game->players();
+
+        // Auto-start the game daemons
+        $this->consumerDaemonsTool->start(count($players));
 
         // Open channel to RabbitMQ
         $channel = $this->rabbitmq->channel();

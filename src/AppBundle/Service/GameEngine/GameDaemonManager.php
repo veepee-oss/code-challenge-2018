@@ -2,22 +2,22 @@
 
 namespace AppBundle\Service\GameEngine;
 
-use AppBundle\Domain\Service\GameEngine\GameDaemonInterface;
+use AppBundle\Domain\Service\GameEngine\GameDaemonManagerInterface;
 
 /**
  * Tool to manage the game daemons
  *
  * @package AppBundle\Service\GameEngine
  */
-class GameDaemon implements GameDaemonInterface
+class GameDaemonManager implements GameDaemonManagerInterface
 {
     public const CONSOLE = __DIR__ . '/../../../../bin/console';
-    public const COMMAND = 'app:code-challenge:engine';
+    public const COMMAND = 'app:engine:run';
 
     /**
      * Starts the game engine daemon
      *
-     * $ nohup php app/console app:code-challenge:engine > /dev/null 2> /dev/null &
+     * $ nohup php app/console app:engine:run > /dev/null 2> /dev/null &
      *
      * @param bool $force
      * @return void
@@ -77,7 +77,7 @@ class GameDaemon implements GameDaemonInterface
     /**
      * Finds the process status and return the process ID
      *
-     * $ ps ax -w | grep app:code-challenge:engine | grep -v 'grep' | awk '{print $1}'
+     * $ ps ax -w | grep app:engine:run | grep -v 'grep' | awk '{print $1}'
      *
      * @return string|false
      */

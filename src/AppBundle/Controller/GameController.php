@@ -12,7 +12,7 @@ use AppBundle\Domain\Service\MovePlayer\ValidatePlayerServiceInterface;
 use AppBundle\Form\CreateGame\GameEntity;
 use AppBundle\Form\CreateGame\GameForm;
 use AppBundle\Form\CreateGame\PlayerEntity;
-use AppBundle\Service\GameEngine\GameDaemon;
+use AppBundle\Service\GameEngine\GameDaemonManager;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -526,7 +526,7 @@ class GameController extends Controller
      */
     private function checkDaemon()
     {
-        /** @var GameDaemon $daemon */
+        /** @var GameDaemonManager $daemon */
         $daemon = $this->get('app.game.daemon');
         $daemon->start();
     }
@@ -539,7 +539,7 @@ class GameController extends Controller
      */
     public function adminAction()
     {
-        /** @var GameDaemon $daemon */
+        /** @var GameDaemonManager $daemon */
         $daemon = $this->get('app.game.daemon');
         $processId = $daemon->getProcessId();
 
@@ -582,7 +582,7 @@ class GameController extends Controller
      */
     public function startDaemonAction()
     {
-        /** @var GameDaemon $daemon */
+        /** @var GameDaemonManager $daemon */
         $daemon = $this->get('app.game.daemon');
         $daemon->start();
 
@@ -597,7 +597,7 @@ class GameController extends Controller
      */
     public function stopDaemonAction()
     {
-        /** @var GameDaemon $daemon */
+        /** @var GameDaemonManager $daemon */
         $daemon = $this->get('app.game.daemon');
         $daemon->stop();
 
@@ -612,7 +612,7 @@ class GameController extends Controller
      */
     public function restartDaemonAction()
     {
-        /** @var GameDaemon $daemon */
+        /** @var GameDaemonManager $daemon */
         $daemon = $this->get('app.game.daemon');
 
         $count = 0;

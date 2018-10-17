@@ -10,11 +10,11 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
- * Console command to move call to the playe's APIs asynchronously
+ * Console command run the consumer daemon to move the players
  *
  * @package AppBundle\Command
  */
-class MoveConsumerCommand extends ContainerAwareCommand
+class RunPlayerConsumerCommand extends ContainerAwareCommand
 {
     /**
      * Configures the current command.
@@ -22,8 +22,8 @@ class MoveConsumerCommand extends ContainerAwareCommand
     protected function configure()
     {
         $this
-            ->setName('app:code-challenge:move-player-consumer')
-            ->setDescription('Privalia Code Challenge 2018 move player consumer.');
+            ->setName('app:consumer:run')
+            ->setDescription('Run the consumer daemon to move players.');
     }
 
     /**

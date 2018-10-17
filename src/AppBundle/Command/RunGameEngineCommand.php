@@ -6,7 +6,10 @@ use AppBundle\Domain\Entity\Game as DomainGame;
 use AppBundle\Domain\Service\GameEngine\GameEngine;
 use AppBundle\Entity\Game;
 use AppBundle\Repository\GameRepository;
+use Doctrine\Common\Persistence\Mapping\MappingException;
 use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\OptimisticLockException;
+use Doctrine\ORM\ORMException;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Exception\LogicException;
@@ -15,11 +18,11 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
- * Command to run the game engine
+ * Command to run the game engine as a daemon
  *
  * @package AppBundle\Command
  */
-class GameEngineCommand extends ContainerAwareCommand
+class RunGameEngineCommand extends ContainerAwareCommand
 {
     // Sleep time: 250 ms = 1/4 sec
     const SLEEP_TIME = 250000;
@@ -36,8 +39,8 @@ class GameEngineCommand extends ContainerAwareCommand
     protected function configure()
     {
         $this
-            ->setName('app:code-challenge:engine')
-            ->setDescription('Privalia Code Challenge 2018 engine daemon.');
+            ->setName('app:engine:run')
+            ->setDescription('Run the game engine daemon.');
     }
 
     /**
@@ -47,8 +50,9 @@ class GameEngineCommand extends ContainerAwareCommand
      * @param OutputInterface $output An OutputInterface instance
      * @return null|int null or 0 if everything went fine, or an error code
      * @throws LogicException When this abstract method is not implemented
-     *
-     * @see setCode()
+     * @throws MappingException
+     * @throws ORMException
+     * @throws OptimisticLockException
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {

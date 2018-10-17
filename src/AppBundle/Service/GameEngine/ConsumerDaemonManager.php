@@ -2,17 +2,17 @@
 
 namespace AppBundle\Service\GameEngine;
 
-use AppBundle\Domain\Service\GameEngine\ConsumerDaemonInterface;
+use AppBundle\Domain\Service\GameEngine\ConsumerDaemonManagerInterface;
 
 /**
  * Tool to manage the consumer daemons
  *
  * @package AppBundle\Service\GameEngine
  */
-class ConsumerDaemon implements ConsumerDaemonInterface
+class ConsumerDaemonManager implements ConsumerDaemonManagerInterface
 {
-    public const CONSOLE = GameDaemon::CONSOLE;
-    public const COMMAND = 'app:code-challenge:move-player-consumer';
+    public const CONSOLE = GameDaemonManager::CONSOLE;
+    public const COMMAND = 'app:consumer:run';
 
     /**
      * Starts the consumer daemons
@@ -39,15 +39,21 @@ class ConsumerDaemon implements ConsumerDaemonInterface
     }
 
     /**
-     * Stops all the consumer daemons or only one
+     * Stops some of the player consumer daemons
      *
-     * @param int $procId
+     * @param int $num
      * @return void
      */
-    public function stop(?int $procId): void
+    public function stop(int $num = null): void
     {
         $processIds = $this->getProcessIds();
-        foreach ($processIds as $processId) {
+        $count = count($processIds);
+        if (null === $num || $num > $count) {
+            $num = $count;
+        }
+
+        for ($i = 0; $i < $num; ++ $i) {
+            $processId = $processIds[$i];
             $command= 'kill -9 ' . $processId;
             @shell_exec($command);
         }
@@ -60,7 +66,7 @@ class ConsumerDaemon implements ConsumerDaemonInterface
      */
     public function getProcessCount(): int
     {
-        return count ($this->getProcessIds());
+        return count($this->getProcessIds());
     }
 
     /**

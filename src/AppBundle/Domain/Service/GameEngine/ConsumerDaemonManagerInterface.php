@@ -7,10 +7,8 @@ namespace AppBundle\Domain\Service\GameEngine;
  *
  * @package AppBundle\Domain\Service\GameEngine
  */
-interface ConsumerDaemonInterface
+interface ConsumerDaemonManagerInterface
 {
-    private const CONSOLE = __DIR__ . '/../../../../bin/console';
-    private const COMMAND = 'app:code-challenge:engine';
     /**
      * Starts the consumer daemons
      *
@@ -23,10 +21,10 @@ interface ConsumerDaemonInterface
     /**
      * Stops all the consumer daemons or only one
      *
-     * @param int $procId
+     * @param int $num
      * @return void
      */
-    public function stop(?int $procId) : void;
+    public function stop(int $num = null) : void;
 
     /**
      * Checks ow many consumer daemons are running

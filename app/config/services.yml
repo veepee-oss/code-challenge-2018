@@ -4,9 +4,19 @@ parameters:
 #    parameter_name: value
 
 services:
-#    service_name:
-#        class: AppBundle\Directory\ClassName
-#        arguments: ["@another_service_name", "plain_value", "%parameter_name%"]
+    AppBundle\Command\ManageGameEngineCommand:
+        class: AppBundle\Command\ManageGameEngineCommand
+        arguments:
+            - "@app.game.daemon"
+        tags:
+            - { name: 'console.command' }
+
+    AppBundle\Command\ManagePlayerConsumerCommand:
+        class: AppBundle\Command\ManagePlayerConsumerCommand
+        arguments:
+            - "@app.consumer.daemon"
+        tags:
+            - { name: 'console.command' }
 
     davamigo.http.client:
         class: Davamigo\HttpClient\CurlHttpClient\CurlHttpClient
@@ -26,11 +36,11 @@ services:
         public: true
 
     app.game.daemon:
-        class: AppBundle\Service\GameEngine\GameDaemon
+        class: AppBundle\Service\GameEngine\GameDaemonManager
         public: true
 
     app.consumer.daemon:
-        class: AppBundle\Service\GameEngine\ConsumerDaemon
+        class: AppBundle\Service\GameEngine\ConsumerDaemonManager
         public: true
 
     app.game.move_players_sync.service:
@@ -44,6 +54,7 @@ services:
             - "@rabbitmq.connection"
             - "@app.player.request_data"
             - "@app.player.move.service"
+            - "@app.consumer.daemon"
             - "@logger"
             - "%default_timeout%"
 
