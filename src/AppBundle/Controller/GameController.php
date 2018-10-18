@@ -4,6 +4,8 @@ namespace AppBundle\Controller;
 
 use AppBundle\Domain\Entity\Game\Game;
 use AppBundle\Domain\Entity\Player\Player;
+use AppBundle\Domain\Service\GameEngine\ConsumerDaemonManagerInterface;
+use AppBundle\Domain\Service\GameEngine\GameDaemonManagerInterface;
 use AppBundle\Domain\Service\GameEngine\GameEngine;
 use AppBundle\Domain\Service\MazeBuilder\MazeBuilderException;
 use AppBundle\Domain\Service\MazeBuilder\MazeBuilderInterface;
@@ -12,7 +14,7 @@ use AppBundle\Domain\Service\MovePlayer\ValidatePlayerServiceInterface;
 use AppBundle\Form\CreateGame\GameEntity;
 use AppBundle\Form\CreateGame\GameForm;
 use AppBundle\Form\CreateGame\PlayerEntity;
-use AppBundle\Service\GameEngine\GameDaemonManager;
+use Doctrine\ORM\ORMException;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -423,6 +425,7 @@ class GameController extends Controller
      *
      * @param string $uuid
      * @return Response
+     * @throws ORMException
      */
     public function resetAction($uuid)
     {
@@ -461,6 +464,7 @@ class GameController extends Controller
      *
      * @param string $uuid
      * @return Response
+     * @throws ORMException
      */
     public function removeAction($uuid)
     {
@@ -499,6 +503,7 @@ class GameController extends Controller
      * @param string $guuid Game Uuid
      * @param string $puuid Player Uuid
      * @return JsonResponse
+     * @throws ORMException
      */
     public function downloadLogAction($guuid, $puuid = null)
     {
@@ -526,9 +531,9 @@ class GameController extends Controller
      */
     private function checkDaemon()
     {
-        /** @var GameDaemonManager $daemon */
-        $daemon = $this->get('app.game.daemon');
-        $daemon->start();
+        /** @var GameDaemonManagerInterface $gameDaemonManager */
+        $gameDaemonManager = $this->get('app.game.daemon');
+        $gameDaemonManager->start();
     }
 
     /**
@@ -539,9 +544,13 @@ class GameController extends Controller
      */
     public function adminAction()
     {
-        /** @var GameDaemonManager $daemon */
-        $daemon = $this->get('app.game.daemon');
-        $processId = $daemon->getProcessId();
+        /** @var GameDaemonManagerInterface $gameDaemonManager */
+        $gameDaemonManager = $this->get('app.game.daemon');
+        $processId = $gameDaemonManager->getProcessId();
+
+        /** @var ConsumerDaemonManagerInterface $gameDaemonManager */
+        $consumerDaemonManager = $this->get('app.consumer.daemon');
+        $consumerIds = $consumerDaemonManager->getProcessIds();
 
         /** @var \AppBundle\Entity\Game[] $entities */
         $entities = $this->getDoctrine()->getRepository('AppBundle:Game')->findBy(
@@ -568,6 +577,7 @@ class GameController extends Controller
 
         return $this->render('game/admin.html.twig', array(
             'processId'     => $processId,
+            'consumerIds'   => $consumerIds,
             'playingGames'  => $playingGames,
             'finishedGames' => $finishedGames,
             'stoppedGames'  => $stoppedGames
@@ -575,53 +585,76 @@ class GameController extends Controller
     }
 
     /**
-     * Start athe daemon
+     * Start the game daemon
      *
-     * @Route("/admin/start", name="admin_start")
+     * @Route("/admin/daemon/start", name="admin_daemon_start")
      * @return Response
      */
     public function startDaemonAction()
     {
-        /** @var GameDaemonManager $daemon */
-        $daemon = $this->get('app.game.daemon');
-        $daemon->start();
+        /** @var GameDaemonManagerInterface $gameDaemonManager */
+        $gameDaemonManager = $this->get('app.game.daemon');
+        $gameDaemonManager->start();
 
         return $this->redirectToRoute('admin_view');
     }
 
     /**
-     * Start athe daemon
+     * Stop the game daemon
      *
-     * @Route("/admin/stop", name="admin_stop")
+     * @Route("/admin/daemon/stop", name="admin_daemon_stop")
      * @return Response
      */
     public function stopDaemonAction()
     {
-        /** @var GameDaemonManager $daemon */
-        $daemon = $this->get('app.game.daemon');
-        $daemon->stop();
+        /** @var GameDaemonManagerInterface $gameDaemonManager */
+        $gameDaemonManager = $this->get('app.game.daemon');
+        $gameDaemonManager->stop();
 
         return $this->redirectToRoute('admin_view');
     }
 
     /**
-     * Start athe daemon
+     * Restart the game daemon
      *
-     * @Route("/admin/restart", name="admin_restart")
+     * @Route("/admin/daemon/restart", name="admin_daemon_restart")
      * @return Response
      */
     public function restartDaemonAction()
     {
-        /** @var GameDaemonManager $daemon */
-        $daemon = $this->get('app.game.daemon');
+        /** @var GameDaemonManagerInterface $gameDaemonManager */
+        $gameDaemonManager = $this->get('app.game.daemon');
+        $gameDaemonManager->start(true);
 
-        $count = 0;
-        do {
-            $daemon->stop();
-            usleep(100000);
-        } while ($daemon->isRunning() || ++$count > 100);
+        return $this->redirectToRoute('admin_view');
+    }
 
-        $daemon->start();
+    /**
+     * Start a consumer daemon
+     *
+     * @Route("/admin/consumer/start", name="admin_consumer_start")
+     * @return Response
+     */
+    public function startConsumerAction()
+    {
+        /** @var ConsumerDaemonManagerInterface $consumerDaemonManager */
+        $consumerDaemonManager = $this->get('app.consumer.daemon');
+        $consumerDaemonManager->start();
+
+        return $this->redirectToRoute('admin_view');
+    }
+
+    /**
+     * Stop all the consumer daemons
+     *
+     * @Route("/admin/consumer/stop", name="admin_consumer_stop")
+     * @return Response
+     */
+    public function stopConsumerAction()
+    {
+        /** @var ConsumerDaemonManagerInterface $consumerDaemonManager */
+        $consumerDaemonManager = $this->get('app.consumer.daemon');
+        $consumerDaemonManager->stop();
 
         return $this->redirectToRoute('admin_view');
     }

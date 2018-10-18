@@ -24,12 +24,16 @@ class GameDaemonManager implements GameDaemonManagerInterface
      */
     public function start($force = false)
     {
-        $command = 'nohup '
-            . 'php ' . realpath(static::CONSOLE)
-            . ' ' . static::COMMAND
-            . ' > /dev/null 2> /dev/null &';
+        if ($force) {
+            $this->stop();
+        }
 
-        if ($force || !$this->isRunning()) {
+        if (!$this->isRunning()) {
+            $command = 'nohup '
+                . 'php ' . realpath(static::CONSOLE)
+                . ' ' . static::COMMAND
+                . ' > /dev/null 2> /dev/null &';
+
             @shell_exec($command);
         }
     }
@@ -41,11 +45,13 @@ class GameDaemonManager implements GameDaemonManagerInterface
      */
     public function stop()
     {
-        $processId = $this->getProcessId();
-        if ($processId > 0) {
-            $command= 'kill -9 ' . $processId;
-            @shell_exec($command);
-        }
+        do {
+            $processId = $this->getProcessId();
+            if ($processId > 0) {
+                $command = 'kill -9 ' . $processId;
+                @shell_exec($command);
+            }
+        } while ($processId > 0);
     }
 
     /**
