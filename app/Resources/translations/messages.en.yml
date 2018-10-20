@@ -110,3 +110,7 @@ app:
 
     credits:
         title:          "Credits and Attributions"
+
+        texts:
+            libraries:      "Libraries attributions"
+            icons:          "Icons attributions"

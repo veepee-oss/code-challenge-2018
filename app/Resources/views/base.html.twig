@@ -54,7 +54,7 @@
             {% endblock %}
 
             {% block footer %}
-            <hr>
+                <hr>
                 <div class="container">
                     <footer>
                         <div class="row">
@@ -66,14 +66,16 @@
                             </div>
                             <div class="col-sm-6 text-footer-right">
                                 <br>
-                                <a href="{{ url('rules') }}">{{ 'app.homepage.rules' | trans }}</a> |
+                                <a href="{{ url('admin_view') }}">{{ 'app.adminpage.title' | trans }}</a>
+                                <span class="glyphicon glyphicon-wrench" aria-hidden="true"></span> |
+                                <a href="{{ url('rules') }}">{{ 'app.homepage.rules' | trans }}</a>
+                                <span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span> |
                                 <a href="{{ url('credits') }}">{{ 'app.credits.title' | trans }}</a>
-                                <img src="{{ asset('images/creative-commons.png') }}" alt="Creative Cmmons" title="Creative Cmmons">
+                                <span class="glyphicon glyphicon-copyright-mark" aria-hidden="true"></span>
                             </div>
                         </div>
                     </footer>
                 </div>
-
             {% endblock %}
         {% endblock %}
 
