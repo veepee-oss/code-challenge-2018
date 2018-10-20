@@ -16,6 +16,7 @@ class Game
 {
     const STATUS_NOT_STARTED = 0;
     const STATUS_RUNNING = 1;
+    const STATUS_PAUSED = 8;
     const STATUS_FINISHED = 9;
 
     /** @var Maze */
@@ -57,6 +58,7 @@ class Game
      * @param int $moves
      * @param string $uuid
      * @param string $name
+     * @throws \Exception
      */
     public function __construct(
         Maze $maze,
@@ -171,6 +173,17 @@ class Game
     }
 
     /**
+     * Returns if the game is started
+     *
+     * @return bool
+     */
+    public function started()
+    {
+        return static::STATUS_RUNNING == $this->status
+            || static::STATUS_PAUSED == $this->status;
+    }
+
+    /**
      * Returns if the game is playing
      *
      * @return bool
@@ -178,6 +191,16 @@ class Game
     public function playing()
     {
         return static::STATUS_RUNNING == $this->status;
+    }
+
+    /**
+     * Returns if the game is paused
+     *
+     * @return bool
+     */
+    public function paused()
+    {
+        return static::STATUS_PAUSED == $this->status;
     }
 
     /**
@@ -208,8 +231,8 @@ class Game
      */
     public function stopPlaying()
     {
-        if ($this->status != static::STATUS_FINISHED) {
-            $this->status = static::STATUS_NOT_STARTED;
+        if ($this->status == static::STATUS_RUNNING) {
+            $this->status = static::STATUS_PAUSED;
         }
         return $this;
     }

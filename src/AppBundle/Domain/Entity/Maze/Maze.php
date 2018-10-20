@@ -5,59 +5,51 @@ namespace AppBundle\Domain\Entity\Maze;
 use AppBundle\Domain\Entity\Position\Position;
 
 /**
- * Domain Entity Maze
+ * Domain entity Maze
  *
  * @package AppBundle\Domain\Entity\Maze
  */
 class Maze implements \ArrayAccess, \Countable, \Iterator
 {
-    /** @var int */
+    /** @var int the width of the maze */
     protected $width;
 
-    /** @var int */
+    /** @var int the height of the maze */
     protected $height;
 
-    /** @var Position */
-    protected $start;
-
-    /** @var  Position */
-    protected $goal;
-
-    /** @var MazeRow[] */
+    /** @var MazeRow[] the maze rows */
     protected $rows;
 
     /** @var int */
-    protected $index;
+    protected $pos;
 
     /**
      * Maze constructor.
      *
-     * @param int $height
-     * @param int $width
-     * @param Position $start
-     * @param Position $goal
-     * @param array $cells
+     * @param int $height the width of the maze
+     * @param int $width  the height of the maze
+     * @param array $cells the initial content of the maze
      */
     public function __construct(
-        $height,
-        $width,
-        Position $start = null,
-        Position $goal = null,
+        int $height,
+        int $width,
         array $cells = null
     ) {
         $this->validateHeight($height);
         $this->validateWidth($width);
         $this->height = $height;
         $this->width = $width;
-        $this->start = $start ? clone $start : null;
-        $this->goal = $goal ? clone $goal: null;
-        $this->rows = array();
-        $this->index = 0;
+        $this->rows = [];
+        $this->pos = 0;
+
+        if (null == $cells) {
+            $cells = [];
+        }
 
         for ($i = 0; $i < $this->height; ++$i) {
             $this->rows[$i] = new MazeRow($this->width);
             for ($j = 0; $j < $this->width; $j++) {
-                $this[$i][$j]->setContent($cells[$i][$j]);
+                $this[$i][$j]->setContent($cells[$i][$j] ?? 0);
             }
         }
     }
@@ -67,7 +59,7 @@ class Maze implements \ArrayAccess, \Countable, \Iterator
      *
      * @return int
      */
-    public function width()
+    public function width() : int
     {
         return $this->width;
     }
@@ -77,49 +69,9 @@ class Maze implements \ArrayAccess, \Countable, \Iterator
      *
      * @return int
      */
-    public function height()
+    public function height() : int
     {
         return $this->height;
-    }
-
-    /**
-     * Get start position
-     *
-     * @return Position
-     */
-    public function start()
-    {
-        return $this->start;
-    }
-
-    /**
-     * Set start position
-     *
-     * @param Position $start
-     */
-    public function setStart(Position $start)
-    {
-        $this->start = $start;
-    }
-
-    /**
-     * Get goal position
-     *
-     * @return Position
-     */
-    public function goal()
-    {
-        return $this->goal;
-    }
-
-    /**
-     * Set goal position
-     *
-     * @param Position $goal
-     */
-    public function setGoal(Position $goal)
-    {
-        $this->goal = $goal;
     }
 
     /**
@@ -132,7 +84,7 @@ class Maze implements \ArrayAccess, \Countable, \Iterator
     public function offsetExists($offset)
     {
         $this->validateHeight($offset);
-        return $this->valid();
+        return ($offset >= 0 && $offset < $this->height);
     }
 
     /**
@@ -145,7 +97,7 @@ class Maze implements \ArrayAccess, \Countable, \Iterator
     public function offsetGet($offset)
     {
         if (!$this->offsetExists($offset)) {
-            throw new \InvalidArgumentException('The height ' . $offset . ' doen\'t exists.');
+            throw new \InvalidArgumentException('The height ' . $offset . ' does not exists.');
         }
 
         return $this->rows[$offset];
@@ -162,7 +114,7 @@ class Maze implements \ArrayAccess, \Countable, \Iterator
     public function offsetSet($offset, $value)
     {
         if (!$this->offsetExists($offset)) {
-            throw new \InvalidArgumentException('The height ' . $offset . ' doen\'t exists.');
+            throw new \InvalidArgumentException('The height ' . $offset . ' does not exists.');
         }
 
         $this->rows[$offset] = $value;
@@ -202,7 +154,7 @@ class Maze implements \ArrayAccess, \Countable, \Iterator
      */
     public function current()
     {
-        return $this[$this->index];
+        return $this[$this->pos];
     }
 
     /**
@@ -213,7 +165,7 @@ class Maze implements \ArrayAccess, \Countable, \Iterator
      */
     public function next()
     {
-        ++$this->index;
+        ++$this->pos;
     }
 
     /**
@@ -224,7 +176,7 @@ class Maze implements \ArrayAccess, \Countable, \Iterator
      */
     public function key()
     {
-        return $this->index;
+        return $this->pos;
     }
 
     /**
@@ -235,7 +187,7 @@ class Maze implements \ArrayAccess, \Countable, \Iterator
      */
     public function valid()
     {
-        return ($this->index >= 0 && $this->index < $this->height);
+        return ($this->pos >= 0 && $this->pos < $this->height);
     }
 
     /**
@@ -246,7 +198,7 @@ class Maze implements \ArrayAccess, \Countable, \Iterator
      */
     public function rewind()
     {
-        $this->index = 0;
+        $this->pos = 0;
     }
 
     /**

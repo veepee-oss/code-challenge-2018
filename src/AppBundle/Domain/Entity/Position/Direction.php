@@ -3,7 +3,7 @@
 namespace AppBundle\Domain\Entity\Position;
 
 /**
- * Class Direction
+ * Domain entity Direction
  *
  * @package AppBundle\Domain\Entity\Position
  */
@@ -20,7 +20,7 @@ class Direction
      *
      * @return array
      */
-    public static function directions()
+    public static function directions() : array
     {
         return array(
             Direction::UP,
@@ -35,9 +35,9 @@ class Direction
      *
      * @param Position $pos
      * @param Position $prev
-     * @return string
+     * @return string|null
      */
-    public static function direction(Position $pos, Position $prev)
+    public static function direction(Position $pos, Position $prev) : ?string
     {
         $y = $pos->y() - $prev->y();
         $x = $pos->x() - $prev->x();
@@ -67,7 +67,7 @@ class Direction
      * @param string $dir
      * @return string|null
      */
-    public static function turnRight($dir)
+    public static function turnRight(string $dir) : ?string
     {
         $directions = static::directions();
         $key = array_search($dir, $directions);
@@ -83,7 +83,7 @@ class Direction
      * @param string $dir
      * @return string
      */
-    public static function turnLeft($dir)
+    public static function turnLeft(string $dir) : ?string
     {
         $directions = static::directions();
         $key = array_search($dir, $directions);
@@ -99,7 +99,7 @@ class Direction
      * @param string $dir
      * @return string
      */
-    public static function turnBack($dir)
+    public static function turnBack(string $dir) : ?string
     {
         $directions = static::directions();
         $key = array_search($dir, $directions);

@@ -6,7 +6,7 @@ use AppBundle\Domain\Entity\Position\Direction;
 use AppBundle\Domain\Entity\Position\Position;
 
 /**
- * Class MazeObject
+ * Domain entity MazeObject
  *
  * @package AppBundle\Domain\Entity\Maze
  */
@@ -39,7 +39,7 @@ class MazeObject
      *
      * @return Position
      */
-    public function position()
+    public function position() : Position
     {
         return $this->position;
     }
@@ -49,7 +49,7 @@ class MazeObject
      *
      * @return Position
      */
-    public function previous()
+    public function previous() : Position
     {
         return $this->previous;
     }
@@ -57,11 +57,12 @@ class MazeObject
     /**
      * Get current direction
      *
-     * @return string
+     * @return string|null
      */
-    public function direction()
+    public function direction() : ?string
     {
-        if (null == $this->position || null == $this->previous) {
+        if (null == $this->position
+            || null == $this->previous) {
             return Direction::STOPPED;
         }
 
@@ -72,12 +73,12 @@ class MazeObject
     }
 
     /**
-     * Moves the player
+     * Moves the maze object
      *
      * @param Position $position
      * @return $this
      */
-    public function move(Position $position)
+    public function move(Position $position) : MazeObject
     {
         $this->previous = clone $this->position;
         $this->position = clone $position;

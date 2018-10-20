@@ -3,20 +3,20 @@
 namespace AppBundle\Domain\Entity\Maze;
 
 /**
- * Domain Entity MazeRow
+ * Domain entity MazeRow
  *
  * @package AppBundle\Domain\Entity\Maze
  */
 class MazeRow implements \ArrayAccess, \Countable, \Iterator
 {
-    /** @var int */
+    /** @var int the number of cells in the row */
     protected $count;
 
-    /** @var MazeCell[] */
+    /** @var MazeCell[] the cells themselves */
     protected $cells;
 
-    /** @var int */
-    protected $position;
+    /** @var int the current position to iterations*/
+    protected $pos;
 
     /**
      * MazeRow constructor.
@@ -24,12 +24,12 @@ class MazeRow implements \ArrayAccess, \Countable, \Iterator
      * @param int $count
      * @throws \InvalidArgumentException
      */
-    public function __construct($count)
+    public function __construct(int $count)
     {
         $this->validateOffset($count);
         $this->count = $count;
-        $this->cells = array();
-        $this->position = 0;
+        $this->cells = [];
+        $this->pos = 0;
 
         for ($i = 0; $i < $this->count; ++$i) {
             $this->cells[$i] = new MazeCell(MazeCell::CELL_EMPTY);
@@ -41,7 +41,7 @@ class MazeRow implements \ArrayAccess, \Countable, \Iterator
      *
      * @link http://php.net/manual/en/arrayaccess.offsetexists.php
      * @param int $offset An offset to check for.
-     * @return boolean true on success or false on failure.
+     * @return bool true on success or false on failure.
      */
     public function offsetExists($offset)
     {
@@ -65,7 +65,7 @@ class MazeRow implements \ArrayAccess, \Countable, \Iterator
     public function offsetGet($offset)
     {
         if (!$this->offsetExists($offset)) {
-            throw new \InvalidArgumentException('The offset ' . $offset . ' doen\'t exists.');
+            throw new \InvalidArgumentException('The offset ' . $offset . ' does not exists.');
         }
 
         return $this->cells[$offset];
@@ -83,7 +83,7 @@ class MazeRow implements \ArrayAccess, \Countable, \Iterator
     public function offsetSet($offset, $value)
     {
         if (!$this->offsetExists($offset)) {
-            throw new \InvalidArgumentException('The offset ' . $offset . ' doen\'t exists.');
+            throw new \InvalidArgumentException('The offset ' . $offset . ' does not exists.');
         }
 
         $this->cells[$offset] = $value;
@@ -100,7 +100,7 @@ class MazeRow implements \ArrayAccess, \Countable, \Iterator
     public function offsetUnset($offset)
     {
         if (!$this->offsetExists($offset)) {
-            throw new \InvalidArgumentException('The offset ' . $offset . ' doen\'t exists.');
+            throw new \InvalidArgumentException('The offset ' . $offset . ' does not exists.');
         }
 
         $this->cells[$offset] = new MazeCell(MazeCell::CELL_EMPTY);
@@ -114,7 +114,7 @@ class MazeRow implements \ArrayAccess, \Countable, \Iterator
      */
     public function count()
     {
-        return $this->count();
+        return $this->count;
     }
 
     /**
@@ -125,7 +125,7 @@ class MazeRow implements \ArrayAccess, \Countable, \Iterator
      */
     public function current()
     {
-        return $this[$this->position];
+        return $this[$this->pos];
     }
 
     /**
@@ -136,7 +136,7 @@ class MazeRow implements \ArrayAccess, \Countable, \Iterator
      */
     public function next()
     {
-        ++$this->position;
+        ++$this->pos;
     }
 
     /**
@@ -147,7 +147,7 @@ class MazeRow implements \ArrayAccess, \Countable, \Iterator
      */
     public function key()
     {
-        return $this->position;
+        return $this->pos;
     }
 
     /**
@@ -159,7 +159,7 @@ class MazeRow implements \ArrayAccess, \Countable, \Iterator
      */
     public function valid()
     {
-        return $this->offsetExists($this->position);
+        return $this->offsetExists($this->pos);
     }
 
     /**
@@ -170,7 +170,7 @@ class MazeRow implements \ArrayAccess, \Countable, \Iterator
      */
     public function rewind()
     {
-        $this->position = 0;
+        $this->pos = 0;
     }
 
     /**
@@ -180,7 +180,7 @@ class MazeRow implements \ArrayAccess, \Countable, \Iterator
      * @return void
      * @throws \InvalidArgumentException
      */
-    protected function validateOffset($offset)
+    protected function validateOffset($offset) : void
     {
         if (!is_numeric($offset) || $offset != intval($offset)) {
             throw new \InvalidArgumentException('The offset ' . $offset . ' is not an integer.');

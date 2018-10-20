@@ -3,15 +3,13 @@
 namespace AppBundle\Domain\Entity\Maze;
 
 /**
- * Domain Entity MazeCell
+ * Domain entity MazeCell
  *
  * @package AppBundle\Domain\Entity\Maze
  */
 class MazeCell
 {
     const CELL_EMPTY = 0x00;
-    const CELL_START = 0x11;
-    const CELL_GOAL = 0x22;
     const CELL_WALL = 0x88;
 
     /** @var int */
@@ -22,7 +20,7 @@ class MazeCell
      *
      * @param int $content
      */
-    public function __construct($content)
+    public function __construct(int $content)
     {
         $this->content = $content;
     }
@@ -30,16 +28,18 @@ class MazeCell
     /**
      * @return int
      */
-    public function getContent()
+    public function getContent() : int
     {
         return $this->content;
     }
 
     /**
      * @param int $content
+     * @return MazeCell
      */
-    public function setContent($content)
+    public function setContent(int $content) : MazeCell
     {
         $this->content = $content;
+        return $this;
     }
 }
