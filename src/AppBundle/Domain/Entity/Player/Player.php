@@ -13,28 +13,38 @@ use Ramsey\Uuid\Uuid;
  */
 class Player extends MazeObject
 {
-    /** @var int */
+    /** @var int player status */
+    const STATUS_REGULAR = 1;
+    const STATUS_POWERED = 2;
+    const STATUS_RELOADING = 4;
+    const STATUS_KILLED = 8;
+
+    /** @var int default values */
+    const DEFAULT_STATUS_COUNT = 6;
+
+    /** @var int the current status of the player: regular, powered, reloading, killed */
     protected $status;
 
-    /** @var \DateTime */
+    /** @var int the number of moves to change back the status to regular */
+    protected $statusCount;
+
+    /** @var int the current score of the player */
+    protected $score;
+
+    /** @var \DateTime the timestamp of the last movement */
     protected $timestamp;
 
-    /** @var string */
+    /** @var string the uuid of the player */
     protected $uuid;
 
-    /** @var string */
+    /** @var string the name of the player */
     protected $name;
 
-    /** @var string */
+    /** @var string the email of the player */
     protected $email;
 
-    /** @var string */
+    /** @var string the URL of the API to move the player */
     protected $url;
-
-    /** Player statuses */
-    const STATUS_PLAYING = 1;
-    const STATUS_DIED = 8;
-    const STATUS_WINNER = 12;
 
     /**
      * Player constructor.
@@ -42,40 +52,52 @@ class Player extends MazeObject
      * @param string $url
      * @param Position $position
      * @param Position $previous
-     * @param int $status
-     * @param \DateTime $timestamp
-     * @param string $uuid
-     * @param string $name
-     * @param string $email
      * @throws \Exception
      */
     public function __construct(
-        $url,
+        string $url,
         Position $position,
-        Position $previous = null,
-        $status = null,
-        \DateTime $timestamp = null,
-        $uuid = null,
-        $name = null,
-        $email = null
+        Position $previous = null
     ) {
         parent::__construct($position, $previous);
         $this->url = $url;
-        $this->status = $status ?: static::STATUS_PLAYING;
-        $this->timestamp = $timestamp ?: new \DateTime();
-        $this->uuid = $uuid ?: Uuid::uuid4()->toString();
-        $this->name = $name ?: $this->uuid;
-        $this->email = $email;
+        $this->status = static::STATUS_REGULAR;
+        $this->statusCount = 0;
+        $this->score = 0;
+        $this->timestamp = new \DateTime();
+        $this->uuid = Uuid::uuid4()->toString();
+        $this->name = $this->uuid;
+        $this->email = null;
     }
 
     /**
-     * Get current status
+     * Get current status of the player: regular, powered, reloading, killed
      *
      * @return int
      */
-    public function status()
+    public function status() : int
     {
         return $this->status;
+    }
+
+    /**
+     * Get the number of moves to change back the status to regular
+     *
+     * @return int
+     */
+    public function statusCount() : int
+    {
+        return $this->statusCount;
+    }
+
+    /**
+     * Get the current score of the player
+     *
+     * @return int
+     */
+    public function score() : int
+    {
+        return $this->score;
     }
 
     /**
@@ -83,7 +105,7 @@ class Player extends MazeObject
      *
      * @return \DateTime
      */
-    public function timestamp()
+    public function timestamp() : \DateTime
     {
         return $this->timestamp;
     }
@@ -93,7 +115,7 @@ class Player extends MazeObject
      *
      * @return string
      */
-    public function uuid()
+    public function uuid() : string
     {
         return $this->uuid;
     }
@@ -101,7 +123,7 @@ class Player extends MazeObject
     /**
      * @return string
      */
-    public function name()
+    public function name() : string
     {
         return $this->name;
     }
@@ -109,7 +131,7 @@ class Player extends MazeObject
     /**
      * @return string
      */
-    public function email()
+    public function email() : string
     {
         return $this->email;
     }
@@ -119,19 +141,19 @@ class Player extends MazeObject
      *
      * @return string
      */
-    public function url()
+    public function url() : string
     {
         return $this->url;
     }
 
     /**
-     * Sets the name of the player
+     * Sets the name and the email of the player
      *
      * @param string $name
      * @param string $email
      * @return $this
      */
-    public function setPlayerIds($name, $email)
+    public function setPlayerIds(string $name, string $email) : Player
     {
         $this->name = $name;
         $this->email = $email;
@@ -139,72 +161,126 @@ class Player extends MazeObject
     }
 
     /**
-     * Get if player is alive (and not winner)
+     * Get if player is powered
      *
      * @return bool
      */
-    public function alive()
+    public function isPowered() : bool
     {
-        return static::STATUS_PLAYING == $this->status;
+        return static::STATUS_POWERED == $this->status;
     }
 
     /**
-     * The player wins the game
+     * Get if the player is reloading
      *
+     * @return bool
+     */
+    public function isReloading() : bool
+    {
+        return static::STATUS_RELOADING == $this->status;
+    }
+
+    /**
+     * Get if the player was killed
+     *
+     * @return bool
+     */
+    public function isKilled() : bool
+    {
+        return static::STATUS_KILLED == $this->status;
+    }
+
+    /**
+     * Change the player status to powered
+     *
+     * @param int $countMoves
      * @return $this
      */
-    public function wins()
+    public function powered(int $countMoves = null) : Player
     {
-        $this->status = static::STATUS_WINNER;
+        $this->status = static::STATUS_POWERED;
+        $this->statusCount = $countMoves ?? static::DEFAULT_STATUS_COUNT;
         $this->timestamp = new \DateTime();
         return $this;
     }
 
     /**
-     * Get if the player won the game
+     * The player fires, change the status to reloading
      *
-     * @return bool
-     */
-    public function winner()
-    {
-        return static::STATUS_WINNER == $this->status;
-    }
-
-    /**
-     * The player dies
-     *
+     * @param int $countMoves
      * @return $this
      */
-    public function dies()
+    public function fire(int $countMoves = null) : Player
     {
-        $this->status = static::STATUS_DIED;
+        $this->status = static::STATUS_RELOADING;
+        $this->statusCount = $countMoves ?? static::DEFAULT_STATUS_COUNT;
         $this->timestamp = new \DateTime();
         return $this;
     }
 
     /**
-     * Get if the player died
+     * The player has been killed
      *
-     * @return bool
+     * @param int $countMoves
+     * @return $this
      */
-    public function dead()
+    public function killed(int $countMoves = null) : Player
     {
-        return static::STATUS_DIED == $this->status;
+        $this->status = static::STATUS_KILLED;
+        $this->statusCount = $countMoves ?? static::DEFAULT_STATUS_COUNT;
+        $this->timestamp = new \DateTime();
+        return $this;
     }
 
     /**
-     * Reset the game for this player
+     * Increases the score of the player
+     *
+     * @param int $score
+     * @return $this
+     */
+    public function addScore(int $score) : Player
+    {
+        $this->score += $score;
+        return $this;
+    }
+
+    /**
+     * Reset the status of the player
+     *
+     * @return $this
+     */
+    public function resetStatus()
+    {
+        $this->status = static::STATUS_REGULAR;
+        $this->statusCount = 0;
+        $this->timestamp = new \DateTime();
+        return $this;
+    }
+
+    /**
+     * Reset the score of the player
+     *
+     * @return $this
+     */
+    public function resetScore()
+    {
+        $this->score = 0;
+        return $this;
+    }
+
+    /**
+     * Reset all the game data for this player
      *
      * @param Position $pos
      * @return $this
      */
-    public function reset(Position $pos)
+    public function resetAll(Position $pos)
     {
-        $this->status = static::STATUS_PLAYING;
-        $this->timestamp = new \DateTime();
         $this->position = clone $pos;
         $this->previous = clone $pos;
-        return $this;
+        return $this
+            ->resetStatus()
+            ->resetScore();
     }
 
     /**
@@ -218,6 +294,8 @@ class Player extends MazeObject
             'position' => $this->position()->serialize(),
             'previous' => $this->previous()->serialize(),
             'status' => $this->status(),
+            'status_count' => $this->statusCount(),
+            'score' => $this->score(),
             'timestamp' => $this->timestamp()->format('YmdHisu'),
             'uuid' => $this->uuid(),
             'name' => $this->name(),
@@ -235,15 +313,51 @@ class Player extends MazeObject
      */
     public static function unserialize(array $data)
     {
-        return new static(
-            $data['url'],
-            Position::unserialize($data['position']),
-            isset($data['previous']) ? Position::unserialize($data['previous']) : null,
-            isset($data['status']) ? $data['status'] : null,
-            isset($data['timestamp']) ? \DateTime::createFromFormat('YmdHisu', $data['timestamp']) : null,
-            isset($data['uuid']) ? $data['uuid'] : null,
-            isset($data['name']) ? $data['name'] : null,
-            isset($data['email']) ? $data['email'] : null
+        $url = $data['url'];
+        $position = $data['position'];
+        $previous = $data['previous'] ?? null;
+
+        $player = new static(
+            $url,
+            Position::unserialize($position),
+            $previous ? Position::unserialize($previous) : null
         );
+
+        $status = $data['status'] ?? null;
+        if (null !== $status) {
+            $player->status = $status;
+        }
+
+        $statusCount = $data['status_count'] ?? null;
+        if (null !== $statusCount) {
+            $player->statusCount = $statusCount;
+        }
+
+        $score = $data['score'] ?? null;
+        if (null !== $score) {
+            $player->score = $score;
+        }
+
+        $timestamp = $data['timestamp'] ?? null;
+        if (null !== $timestamp) {
+            $player->timestamp = \DateTime::createFromFormat('YmdHisu', $timestamp);
+        }
+
+        $uuid = $data['uuid'] ?? null;
+        if (null !== $uuid) {
+            $player->uuid = $uuid;
+        }
+
+        $name = $data['name'] ?? null;
+        if (null !== $name) {
+            $player->name = $name;
+        }
+
+        $email = $data['email'] ?? null;
+        if (null !== $email) {
+            $player->email = $email;
+        }
+
+        return $player;
     }
 }

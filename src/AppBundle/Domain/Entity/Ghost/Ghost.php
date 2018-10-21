@@ -12,17 +12,17 @@ use AppBundle\Domain\Entity\Position\Position;
  */
 class Ghost extends MazeObject
 {
-    /** Ghost types */
+    /** @var int Ghost types */
     const TYPE_RANDOM = 1;
     const TYPE_KILLING = 2;
 
-    /** @var int */
-    protected $type;
-
-    /** Default neutral time */
+    /** @var int Default values */
     const DEFAULT_NEUTRAL_TIME = 5;
 
-    /** @var int */
+    /** @var int the type of ghost */
+    protected $type;
+
+    /** @var int the number of moves whiles it's neutral */
     protected $neutralTime;
 
     /**
@@ -34,10 +34,10 @@ class Ghost extends MazeObject
      * @param int      $neutralTime
      */
     public function __construct(
-        $type,
+        int $type,
         Position $position,
         Position $previous = null,
-        $neutralTime = 0
+        int $neutralTime = 0
     ) {
         parent::__construct($position, $previous);
         $this->type = $type;
@@ -55,7 +55,7 @@ class Ghost extends MazeObject
     }
 
     /**
-     * Get grace time
+     * Get the number of moves whiles the ghost is neutral
      *
      * @return int
      */
@@ -80,13 +80,12 @@ class Ghost extends MazeObject
      * @param Position $position
      * @return $this
      */
-    public function move(Position $position)
+    public function move(Position $position) : MazeObject
     {
         parent::move($position);
         if ($this->isNeutralTime()) {
             $this->neutralTime++;
         }
-
         return $this;
     }
 
@@ -113,11 +112,13 @@ class Ghost extends MazeObject
      */
     public static function unserialize(array $data)
     {
+        $previous = $data['previous'] ?? null;
+
         return new static(
             $data['type'],
             Position::unserialize($data['position']),
-            Position::unserialize(isset($data['previous']) ? $data['previous'] : $data['position']),
-            isset($data['neutralTime']) ? $data['neutralTime'] : 0
+            $previous ? Position::unserialize($previous) : null,
+            $data['neutralTime'] ?? 0
         );
     }
 }
