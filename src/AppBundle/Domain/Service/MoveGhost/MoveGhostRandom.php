@@ -5,7 +5,6 @@ namespace AppBundle\Domain\Service\MoveGhost;
 use AppBundle\Domain\Entity\Game\Game;
 use AppBundle\Domain\Entity\Ghost\Ghost;
 use AppBundle\Domain\Entity\Maze\Maze;
-use AppBundle\Domain\Entity\Maze\MazeCell;
 use AppBundle\Domain\Entity\Position\Direction;
 use AppBundle\Domain\Entity\Position\Position;
 
@@ -20,9 +19,8 @@ class MoveGhostRandom extends MoveGhost
      * Computes the next movement of the ghost: "up", "down", "left" or "right".
      *
      * @param Ghost $ghost
-     * @param Game $game
+     * @param Game  $game
      * @return string The next movement
-     * @throws MoveGhostException
      */
     protected function computeNextMovement(Ghost $ghost, Game $game)
     {
@@ -77,41 +75,41 @@ class MoveGhostRandom extends MoveGhost
     {
         $y = $pos->y();
         $x = $pos->x();
+        $valid = true;
+
         switch ($dir) {
             case Direction::UP:
                 if (--$y < 0) {
-                    return false;
+                    $valid = false;
                 }
                 break;
 
             case Direction::DOWN:
                 if (++$y >= $height) {
-                    return false;
+                    $valid = false;
                 }
                 break;
 
             case Direction::LEFT:
                 if (--$x < 0) {
-                    return false;
+                    $valid = false;
                 }
                 break;
 
             case Direction::RIGHT:
                 if (++$x >= $width) {
-                    return false;
+                    $valid = false;
                 }
                 break;
 
             default:
-                return false;
+                $valid = false;
         }
 
-        $content = $maze[$y][$x]->getContent();
-        if ($content == MazeCell::CELL_WALL
-            || $content == MazeCell::CELL_GOAL) {
-            return false;
+        if ($maze[$y][$x]->isEmpty()) {
+            $valid = false;
         }
 
-        return true;
+        return $valid;
     }
 }

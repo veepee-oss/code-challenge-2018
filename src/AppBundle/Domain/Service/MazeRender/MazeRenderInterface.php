@@ -15,7 +15,7 @@ interface MazeRenderInterface
      * Renders the game's maze with all the playyers
      *
      * @param Game $game
-     * @return mixed
+     * @return string
      */
-    public function render(Game $game);
+    public function render(Game $game) : string;
 }

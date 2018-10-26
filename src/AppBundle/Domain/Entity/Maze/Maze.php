@@ -2,8 +2,6 @@
 
 namespace AppBundle\Domain\Entity\Maze;
 
-use AppBundle\Domain\Entity\Position\Position;
-
 /**
  * Domain entity Maze
  *
@@ -78,7 +76,7 @@ class Maze implements \ArrayAccess, \Countable, \Iterator
      * Whether a offset exists
      *
      * @link http://php.net/manual/en/arrayaccess.offsetexists.php
-     * @param int $offset An offset to check for.
+     * @param mixed $offset An offset to check for.
      * @return boolean true on success or false on failure.
      */
     public function offsetExists($offset)
@@ -91,13 +89,13 @@ class Maze implements \ArrayAccess, \Countable, \Iterator
      * Offset to retrieve
      *
      * @link http://php.net/manual/en/arrayaccess.offsetget.php
-     * @param int $offset The offset to retrieve.
+     * @param mixed $offset The offset to retrieve.
      * @return MazeRow
      */
     public function offsetGet($offset)
     {
         if (!$this->offsetExists($offset)) {
-            throw new \InvalidArgumentException('The height ' . $offset . ' does not exists.');
+            $this->thwrowOffsetNotExist($offset);
         }
 
         return $this->rows[$offset];
@@ -107,14 +105,14 @@ class Maze implements \ArrayAccess, \Countable, \Iterator
      * Offset to set
      *
      * @link http://php.net/manual/en/arrayaccess.offsetset.php
-     * @param int $offset The offset to assign the value to.
+     * @param mixed $offset The offset to assign the value to.
      * @param MazeRow $value The value to set.
      * @return void
      */
     public function offsetSet($offset, $value)
     {
         if (!$this->offsetExists($offset)) {
-            throw new \InvalidArgumentException('The height ' . $offset . ' does not exists.');
+            $this->thwrowOffsetNotExist($offset);
         }
 
         $this->rows[$offset] = $value;
@@ -124,13 +122,13 @@ class Maze implements \ArrayAccess, \Countable, \Iterator
      * Offset to unset
      *
      * @link http://php.net/manual/en/arrayaccess.offsetunset.php
-     * @param int $offset The offset to unset.
+     * @param mixed $offset The offset to unset.
      * @return void
      */
     public function offsetUnset($offset)
     {
         if (!$this->offsetExists($offset)) {
-            throw new \InvalidArgumentException('The height ' . $offset . ' doen\'t exists.');
+            $this->thwrowOffsetNotExist($offset);
         }
         $this->rows[$offset] = new MazeRow($this->width);
     }
@@ -222,10 +220,20 @@ class Maze implements \ArrayAccess, \Countable, \Iterator
      * @return void
      * @throws \InvalidArgumentException
      */
-    protected function validateHeight($height)
+    protected function validateHeight($height) : void
     {
         if (!is_numeric($height) || $height != intval($height)) {
-            throw new \InvalidArgumentException('The height ' . $height . ' is not an integer.');
+            throw new \InvalidArgumentException('The height offset ' . $height . ' is not an integer.');
         }
+    }
+
+    /**
+     * @param mixed $offset
+     * @return void
+     * @throws \InvalidArgumentException
+     */
+    private function thwrowOffsetNotExist($offset) : void
+    {
+        throw new \InvalidArgumentException('The height offset ' . $offset . ' does not exists.');
     }
 }

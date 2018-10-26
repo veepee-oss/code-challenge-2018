@@ -2,9 +2,9 @@
 
 namespace AppBundle\Domain\Service\MovePlayer;
 
+use AppBundle\Domain\Entity\Fire\Fire;
 use AppBundle\Domain\Entity\Game\Game;
 use AppBundle\Domain\Entity\Maze\Maze;
-use AppBundle\Domain\Entity\Maze\MazeCell;
 use AppBundle\Domain\Entity\Player\Player;
 use AppBundle\Domain\Entity\Position\Direction;
 use AppBundle\Domain\Entity\Position\Position;
@@ -31,18 +31,17 @@ class MovePlayerService implements MovePlayerServiceInterface
             return false;
         }
 
-        // Computes the new position
-        $position = $this->computeNewPosition($player->position(), $move);
-        if (!$this->validatePosition($position, $game->maze())) {
-            return false;
+        if (Fire::firing($move)) {
+            $player->fire($move);
+        } else {
+            // Computes the new position
+            $position = $this->computeNewPosition($player->position(), $move);
+            if (!$this->validatePosition($position, $game->maze())) {
+                return false;
+            }
+
+            $player->move($position);
         }
-
-        $player->move($position);
-
-        if ($game->isGoalReached($player)) {
-            $player->wins();
-        }
-
         return true;
     }
 
@@ -95,7 +94,7 @@ class MovePlayerService implements MovePlayerServiceInterface
 
         if ($y < 0 || $y >= $maze->height()
             || $x < 0 || $x >= $maze->width()
-            || $maze[$y][$x]->getContent() == MazeCell::CELL_WALL) {
+            || !$maze[$y][$x]->isEmpty()) {
             return false;
         }
 

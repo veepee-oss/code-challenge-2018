@@ -20,5 +20,5 @@ interface MoveGhostInterface
      * @return bool true=successs, false=error
      * @throws MoveGhostException
      */
-    public function moveGhost(Ghost& $ghost, Game $game);
+    public function move(Ghost& $ghost, Game $game);
 }

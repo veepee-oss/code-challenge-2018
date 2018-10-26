@@ -65,7 +65,7 @@ class MazeRow implements \ArrayAccess, \Countable, \Iterator
     public function offsetGet($offset)
     {
         if (!$this->offsetExists($offset)) {
-            throw new \InvalidArgumentException('The offset ' . $offset . ' does not exists.');
+            $this->thwrowOffsetNotExist($offset);
         }
 
         return $this->cells[$offset];
@@ -83,7 +83,7 @@ class MazeRow implements \ArrayAccess, \Countable, \Iterator
     public function offsetSet($offset, $value)
     {
         if (!$this->offsetExists($offset)) {
-            throw new \InvalidArgumentException('The offset ' . $offset . ' does not exists.');
+            $this->thwrowOffsetNotExist($offset);
         }
 
         $this->cells[$offset] = $value;
@@ -100,7 +100,7 @@ class MazeRow implements \ArrayAccess, \Countable, \Iterator
     public function offsetUnset($offset)
     {
         if (!$this->offsetExists($offset)) {
-            throw new \InvalidArgumentException('The offset ' . $offset . ' does not exists.');
+            $this->thwrowOffsetNotExist($offset);
         }
 
         $this->cells[$offset] = new MazeCell(MazeCell::CELL_EMPTY);
@@ -183,7 +183,17 @@ class MazeRow implements \ArrayAccess, \Countable, \Iterator
     protected function validateOffset($offset) : void
     {
         if (!is_numeric($offset) || $offset != intval($offset)) {
-            throw new \InvalidArgumentException('The offset ' . $offset . ' is not an integer.');
+            throw new \InvalidArgumentException('The width offset ' . $offset . ' is not an integer.');
         }
+    }
+
+    /**
+     * @param mixed $offset
+     * @return void
+     * @throws \InvalidArgumentException
+     */
+    private function thwrowOffsetNotExist($offset) : void
+    {
+        throw new \InvalidArgumentException('The width offset ' . $offset . ' does not exists.');
     }
 }

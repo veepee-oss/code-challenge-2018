@@ -66,7 +66,7 @@ class MazeObject
             return Direction::STOPPED;
         }
 
-        return Direction::direction(
+        return Direction::compute(
             $this->position,
             $this->previous
         );

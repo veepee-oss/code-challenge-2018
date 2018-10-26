@@ -2,6 +2,7 @@
 
 namespace AppBundle\Domain\Entity\Player;
 
+use AppBundle\Domain\Entity\Fire\Fire;
 use AppBundle\Domain\Entity\Maze\MazeObject;
 use AppBundle\Domain\Entity\Position\Position;
 use Ramsey\Uuid\Uuid;
@@ -28,10 +29,13 @@ class Player extends MazeObject
     /** @var int the number of moves to change back the status to regular */
     protected $statusCount;
 
+    /** @var string the firing direction or null */
+    protected $firingDir;
+
     /** @var int the current score of the player */
     protected $score;
 
-    /** @var \DateTime the timestamp of the last movement */
+    /** @var \DateTime the timestamp of the last score change */
     protected $timestamp;
 
     /** @var string the uuid of the player */
@@ -45,6 +49,9 @@ class Player extends MazeObject
 
     /** @var string the URL of the API to move the player */
     protected $url;
+
+    /** @var Position the stating position */
+    protected $start;
 
     /**
      * Player constructor.
@@ -60,14 +67,15 @@ class Player extends MazeObject
         Position $previous = null
     ) {
         parent::__construct($position, $previous);
-        $this->url = $url;
-        $this->status = static::STATUS_REGULAR;
-        $this->statusCount = 0;
-        $this->score = 0;
-        $this->timestamp = new \DateTime();
+
         $this->uuid = Uuid::uuid4()->toString();
         $this->name = $this->uuid;
         $this->email = null;
+        $this->url = $url;
+        $this->start = clone $position;
+
+        $this->resetStatus();
+        $this->resetScore();
     }
 
     /**
@@ -91,6 +99,16 @@ class Player extends MazeObject
     }
 
     /**
+     * Get the firing direction or nul
+     *
+     * @return null|string
+     */
+    public function firingDir() : ?string
+    {
+        return $this->firingDir;
+    }
+
+    /**
      * Get the current score of the player
      *
      * @return int
@@ -101,7 +119,7 @@ class Player extends MazeObject
     }
 
     /**
-     * Get current timestamp
+     * Get the timestamp of the last score change
      *
      * @return \DateTime
      */
@@ -147,6 +165,16 @@ class Player extends MazeObject
     }
 
     /**
+     * Get stating position
+     *
+     * @return Position
+     */
+    public function start() : Position
+    {
+        return $this->start;
+    }
+
+    /**
      * Sets the name and the email of the player
      *
      * @param string $name
@@ -168,6 +196,16 @@ class Player extends MazeObject
     public function isPowered() : bool
     {
         return static::STATUS_POWERED == $this->status;
+    }
+
+    /**
+     * Get if the player is firing
+     *
+     * @return bool
+     */
+    public function isFiring() : bool
+    {
+        return Fire::NONE != $this->firingDir;
     }
 
     /**
@@ -200,21 +238,22 @@ class Player extends MazeObject
     {
         $this->status = static::STATUS_POWERED;
         $this->statusCount = $countMoves ?? static::DEFAULT_STATUS_COUNT;
-        $this->timestamp = new \DateTime();
         return $this;
     }
 
     /**
      * The player fires, change the status to reloading
      *
-     * @param int $countMoves
+     * @param int $reloadMoves
      * @return $this
      */
-    public function fire(int $countMoves = null) : Player
+    public function fire(string $firingDir, int $reloadMoves = null) : Player
     {
-        $this->status = static::STATUS_RELOADING;
-        $this->statusCount = $countMoves ?? static::DEFAULT_STATUS_COUNT;
-        $this->timestamp = new \DateTime();
+        if (Fire::firing($firingDir)) {
+            $this->status = static::STATUS_RELOADING;
+            $this->firingDir = $firingDir;
+            $this->statusCount = $reloadMoves ?? static::DEFAULT_STATUS_COUNT;
+        }
         return $this;
     }
 
@@ -228,7 +267,25 @@ class Player extends MazeObject
     {
         $this->status = static::STATUS_KILLED;
         $this->statusCount = $countMoves ?? static::DEFAULT_STATUS_COUNT;
-        $this->timestamp = new \DateTime();
+        return $this;
+    }
+
+    /**
+     * @param Position $position
+     * @return MazeObject
+     */
+    public function move(Position $position) : MazeObject
+    {
+        parent::move($position);
+        if ($this->statusCount() > 0) {
+            --$this->statusCount;
+            $this->firingDir = Fire::NONE;
+            if ($this->isPowered()
+                || $this->isReloading()
+                || $this->isKilled()) {
+                $this->status = static::STATUS_REGULAR;
+            }
+        }
         return $this;
     }
 
@@ -241,6 +298,7 @@ class Player extends MazeObject
     public function addScore(int $score) : Player
     {
         $this->score += $score;
+        $this->timestamp = new \DateTime();
         return $this;
     }
 
@@ -252,8 +310,8 @@ class Player extends MazeObject
     public function resetStatus()
     {
         $this->status = static::STATUS_REGULAR;
+        $this->firingDir = Fire::NONE;
         $this->statusCount = 0;
-        $this->timestamp = new \DateTime();
         return $this;
     }
 
@@ -265,6 +323,7 @@ class Player extends MazeObject
     public function resetScore()
     {
         $this->score = 0;
+        $this->timestamp = new \DateTime();
         return $this;
     }
 
@@ -295,12 +354,14 @@ class Player extends MazeObject
             'previous' => $this->previous()->serialize(),
             'status' => $this->status(),
             'status_count' => $this->statusCount(),
+            'firing_dir' => $this->firingDir,
             'score' => $this->score(),
             'timestamp' => $this->timestamp()->format('YmdHisu'),
             'uuid' => $this->uuid(),
             'name' => $this->name(),
             'email' => $this->email(),
             'url' => $this->url(),
+            'start' => $this->start()->serialize()
         );
     }
 
@@ -333,6 +394,11 @@ class Player extends MazeObject
             $player->statusCount = $statusCount;
         }
 
+        $firingDir = $data['firing_dir'] ?? null;
+        if (null !== $firingDir) {
+            $player->firingDir = $firingDir;
+        }
+
         $score = $data['score'] ?? null;
         if (null !== $score) {
             $player->score = $score;
@@ -356,6 +422,11 @@ class Player extends MazeObject
         $email = $data['email'] ?? null;
         if (null !== $email) {
             $player->email = $email;
+        }
+
+        $start = $data['start'] ?? null;
+        if (null !== $start) {
+            $player->start = Position::unserialize($start);
         }
 
         return $player;

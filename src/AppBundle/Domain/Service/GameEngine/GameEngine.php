@@ -5,7 +5,6 @@ namespace AppBundle\Domain\Service\GameEngine;
 use AppBundle\Domain\Entity\Game\Game;
 use AppBundle\Domain\Entity\Ghost\Ghost;
 use AppBundle\Domain\Entity\Maze\MazeCell;
-use AppBundle\Domain\Entity\Player\Player;
 use AppBundle\Domain\Entity\Position\Position;
 use AppBundle\Domain\Service\MoveGhost\MoveGhostException;
 use AppBundle\Domain\Service\MoveGhost\MoveGhostFactory;
@@ -28,6 +27,11 @@ class GameEngine
 
     /** @var LoggerInterface */
     protected $logger;
+
+    /** @var int Score constants  */
+    const SCORE_KILL_PLAYER = 100;
+    const SCORE_KILL_GHOST = 50;
+    const SCORE_DEAD = -25;
 
     /**
      * GameEngine constructor.
@@ -63,19 +67,16 @@ class GameEngine
      * Move all the players and ghosts of a game
      *
      * @param Game $game
-     * @return bool TRUE if there are players alive
+     * @return bool TRUE if the game is not finished
      */
     public function move(Game &$game)
     {
-        $game->incMoves();
-
         $this->movePlayers($game);
         $this->moveGhosts($game);
         $this->createGhosts($game);
-        $this->checkKillingTime($game);
 
-        if (!$game->arePlayersAlive()) {
-            $game->endGame();
+        $game->incMoves();
+        if (!$game->finished()) {
             return false;
         }
 
@@ -115,7 +116,7 @@ class GameEngine
             if (!$this->checkGhostKill($ghost, $game)) {
                 try {
                     $moverService = $this->moveGhostFactory->locate($ghost);
-                    if ($moverService->moveGhost($ghost, $game)) {
+                    if ($moverService->move($ghost, $game)) {
                         $this->checkGhostKill($ghost, $game);
                     }
                 } catch (MoveGhostException $exc) {
@@ -129,7 +130,7 @@ class GameEngine
     }
 
     /**
-     * Chacks if a ghost killed a player. If a player is killed the ghost also dies.
+     * Checks if a ghost killed a player. If a player is killed the ghost also dies.
      *
      * @param Ghost $ghost
      * @param Game  $game
@@ -137,7 +138,7 @@ class GameEngine
      */
     protected function checkGhostKill(Ghost $ghost, Game& $game)
     {
-        if ($ghost->isNeutralTime()) {
+        if ($ghost->isNeutral()) {
             return false;
         }
 
@@ -145,9 +146,13 @@ class GameEngine
         shuffle($players);
 
         foreach ($players as $player) {
-            if ($player->alive() && $player->position()->equals($ghost->position())) {
+            if (!$player->isKilled() && $player->position()->equals($ghost->position())) {
                 $game->removeGhost($ghost);
-                $player->dies();
+                if ($player->isPowered()) {
+                    $player->addScore(self::SCORE_KILL_GHOST);
+                } else {
+                    $player->killed()->addScore(self::SCORE_DEAD);
+                }
                 return true;
             }
         }
@@ -163,14 +168,6 @@ class GameEngine
     protected function createGhosts(Game &$game)
     {
         $minGhosts = $game->minGhosts();
-        if ($game->isKillingTime()) {
-            if ($minGhosts < 5) {
-                $minGhosts = 10;
-            } else {
-                $minGhosts *= 2;
-            }
-        }
-
         $ghostRate = $game->ghostRate();
         if ($ghostRate > 0) {
             $minGhosts += (int)($game->moves() / $ghostRate);
@@ -199,25 +196,7 @@ class GameEngine
             $y = rand(1, $maze->height() - 2);
             $x = rand(1, $maze->width() - 2);
         } while ($maze[$y][$x]->getContent() != MazeCell::CELL_EMPTY);
-        $game->addGhost(new Ghost($type, new Position($y, $x)));
-        return $this;
-    }
-
-    /**
-     * Check if kelling time reached
-     *
-     * @param Game $game
-     * @return $this
-     */
-    protected function checkKillingTime(Game &$game)
-    {
-        if ($game->isKillingTime()) {
-            /** @var Ghost[] $ghosts */
-            $ghosts = $game->ghosts();
-            foreach ($ghosts as $ghost) {
-                $ghost->changeType(Ghost::TYPE_KILLING);
-            }
-        }
+        $game->addGhost(new Ghost(new Position($y, $x), null, $type));
         return $this;
     }
 }

@@ -22,7 +22,7 @@ abstract class MoveGhost implements MoveGhostInterface
      * @return bool true=successs, false=error
      * @throws MoveGhostException
      */
-    public function moveGhost(Ghost& $ghost, Game $game)
+    public function move(Ghost& $ghost, Game $game)
     {
         // Computes the next movement of the ghost: "up", "down", "left" or "right".
         $direction = $this->computeNextMovement($ghost, $game);
@@ -47,11 +47,13 @@ abstract class MoveGhost implements MoveGhostInterface
             case Direction::RIGHT:
                 $x++;
                 break;
+
+            default:
+                break;
         }
 
-        $position = new Position($y, $x);
+        $ghost->move(new Position($y, $x));
 
-        $ghost->move($position);
         return true;
     }
 

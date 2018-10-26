@@ -13,6 +13,7 @@ use AppBundle\Domain\Entity\Position\Position;
 class Ghost extends MazeObject
 {
     /** @var int Ghost types */
+    const TYPE_NEUTRAL = 0;
     const TYPE_RANDOM = 1;
     const TYPE_KILLING = 2;
 
@@ -34,10 +35,10 @@ class Ghost extends MazeObject
      * @param int      $neutralTime
      */
     public function __construct(
-        int $type,
         Position $position,
         Position $previous = null,
-        int $neutralTime = 0
+        int $type = self::TYPE_RANDOM,
+        int $neutralTime = self::DEFAULT_NEUTRAL_TIME
     ) {
         parent::__construct($position, $previous);
         $this->type = $type;
@@ -45,23 +46,27 @@ class Ghost extends MazeObject
     }
 
     /**
-     * Get type
+     * Get type of ghost: neutral, random or killing
      *
      * @return int
      */
     public function type()
     {
+        if ($this->neutralTime > 0) {
+            return self::TYPE_NEUTRAL;
+        }
+
         return $this->type;
     }
 
     /**
-     * Get the number of moves whiles the ghost is neutral
+     * Get if the ghost is neutral
      *
-     * @return int
+     * @return bool
      */
-    public function isNeutralTime()
+    public function isNeutral()
     {
-        return $this->neutralTime < static::DEFAULT_NEUTRAL_TIME;
+        return self::TYPE_NEUTRAL == $this->type();
     }
 
     /**
@@ -83,8 +88,8 @@ class Ghost extends MazeObject
     public function move(Position $position) : MazeObject
     {
         parent::move($position);
-        if ($this->isNeutralTime()) {
-            $this->neutralTime++;
+        if ($this->neutralTime > 0) {
+            $this->neutralTime--;
         }
         return $this;
     }

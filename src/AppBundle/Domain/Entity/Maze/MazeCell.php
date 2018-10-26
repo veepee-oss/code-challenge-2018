@@ -42,4 +42,12 @@ class MazeCell
         $this->content = $content;
         return $this;
     }
+
+    /**
+     * @return bool true if the cell is empty
+     */
+    public function isEmpty()
+    {
+        return self::CELL_EMPTY == $this->content;
+    }
 }

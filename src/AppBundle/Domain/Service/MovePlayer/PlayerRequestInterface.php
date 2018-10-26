@@ -45,10 +45,6 @@ interface PlayerRequestInterface
      *             "height": "int",
      *             "width": "int"
      *         },
-     *         "goal": {
-     *             "y": "int",
-     *             "x": "int"
-     *         },
      *         "walls": [
      *             {
      *                 "y": "int",
@@ -56,6 +52,12 @@ interface PlayerRequestInterface
      *             }
      *         ]
      *     },
+     *     "players": [
+     *         {
+     *             "y": "int",
+     *             "x": "int"
+     *         }
+     *     ],
      *     "ghosts": [
      *         {
      *             "y": "int",

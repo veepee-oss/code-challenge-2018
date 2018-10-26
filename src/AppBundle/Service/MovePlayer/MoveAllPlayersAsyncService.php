@@ -84,7 +84,7 @@ class MoveAllPlayersAsyncService implements MoveAllPlayersServiceInterface
      * @return void
      * @throws MovePlayerException
      */
-    public function move(Game &$game)
+    public function move(Game &$game) : void
     {
         $this->logger->debug(
             'MoveAllPlayersAsyncService - Moving async all players for game: ' . $game->uuid()

@@ -37,28 +37,27 @@ class Direction
      * @param Position $prev
      * @return string|null
      */
-    public static function direction(Position $pos, Position $prev) : ?string
+    public static function compute(Position $pos, Position $prev) : ?string
     {
         $y = $pos->y() - $prev->y();
         $x = $pos->x() - $prev->x();
 
         if ($y == 0 && $x == 0) {
-            return Direction::STOPPED;
-        }
-
-        if (abs($y) >= abs($x)) {
+            $result = Direction::STOPPED;
+        } elseif (abs($y) >= abs($x)) {
             if ($y < 0) {
-                return Direction::UP;
-            } else{
-                return Direction::DOWN;
+                $result = Direction::UP;
+            } else {
+                $result = Direction::DOWN;
             }
         } else {
             if ($x < 0) {
-                return Direction::LEFT;
-            } else{
-                return Direction::RIGHT;
+                $result = Direction::LEFT;
+            } else {
+                $result = Direction::RIGHT;
             }
         }
+        return $result;
     }
 
     /**
