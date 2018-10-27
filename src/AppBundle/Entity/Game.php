@@ -6,7 +6,6 @@ use AppBundle\Domain\Entity\Game as DomainGame;
 use AppBundle\Domain\Entity\Ghost as DomainGhost;
 use AppBundle\Domain\Entity\Maze as DomainMaze;
 use AppBundle\Domain\Entity\Player as DomainPlayer;
-use AppBundle\Domain\Entity\Position\Position;
 use Doctrine\ORM\Mapping as ORM;
 use Ramsey\Uuid\Uuid;
 
@@ -20,6 +19,8 @@ use Ramsey\Uuid\Uuid;
 class Game
 {
     /**
+     * Primary key
+     *
      * @var int
      *
      * @ORM\Id
@@ -29,6 +30,8 @@ class Game
     private $id;
 
     /**
+     * UUID of the game
+     *
      * @var string
      *
      * @ORM\Column(name="uuid", type="string", length=36, unique=true)
@@ -36,6 +39,8 @@ class Game
     private $uuid;
 
     /**
+     * Name of the game
+     *
      * @var string
      *
      * @ORM\Column(name="name", type="string", length=48)
@@ -43,6 +48,8 @@ class Game
     private $name;
 
     /**
+     * Status of the game: playing, paused, ...
+     *
      * @var int
      *
      * @ORM\Column(name="status", type="integer")
@@ -50,6 +57,8 @@ class Game
     private $status;
 
     /**
+     * Width of the maze
+     *
      * @var int
      *
      * @ORM\Column(name="width", type="integer")
@@ -57,6 +66,8 @@ class Game
     private $width;
 
     /**
+     * Height of the maze
+     *
      * @var int
      *
      * @ORM\Column(name="height", type="integer")
@@ -64,34 +75,8 @@ class Game
     private $height;
 
     /**
-     * @var int
+     * Frequency of new ghosts (0=none)
      *
-     * @ORM\Column(name="start_y", type="integer")
-     */
-    private $startY;
-
-    /**
-     * @var int
-     *
-     * @ORM\Column(name="start_x", type="integer")
-     */
-    private $startX;
-
-    /**
-     * @var int
-     *
-     * @ORM\Column(name="goal_y", type="integer")
-     */
-    private $goalY;
-
-    /**
-     * @var int
-     *
-     * @ORM\Column(name="goal_x", type="integer")
-     */
-    private $goalX;
-
-    /**
      * @var int
      *
      * @ORM\Column(name="ghost_rate", type="integer", options={"default"=0})
@@ -99,6 +84,8 @@ class Game
     protected $ghostRate;
 
     /**
+     * Minimum ghosts any time (0=none)
+     *
      * @var int
      *
      * @ORM\Column(name="min_ghosts", type="integer", options={"default"=0})
@@ -106,6 +93,8 @@ class Game
     protected $minGhosts;
 
     /**
+     * Number of moves done
+     *
      * @var int
      *
      * @ORM\Column(name="moves", type="integer", options={"default"=0})
@@ -113,6 +102,17 @@ class Game
     protected $moves;
 
     /**
+     * Limit of movements to do
+     *
+     * @var int
+     *
+     * @ORM\Column(name="limit", type="integer", options={"default"=500})
+     */
+    protected $limit;
+
+    /**
+     * All the data of the maze
+     *
      * @var array
      *
      * @ORM\Column(name="maze", type="json_array")
@@ -120,6 +120,8 @@ class Game
     private $maze;
 
     /**
+     * All the data of the players
+     *
      * @var array
      *
      * @ORM\Column(name="players", type="json_array")
@@ -127,6 +129,8 @@ class Game
     private $players;
 
     /**
+     * All the data of the ghosts
+     *
      * @var array
      *
      * @ORM\Column(name="ghosts", type="json_array", nullable=true)
@@ -137,6 +141,7 @@ class Game
      * Game constructor.
      *
      * @param $source
+     * @throws \Exception
      */
     public function __construct($source = null)
     {
@@ -147,11 +152,8 @@ class Game
             $this->status = null;
             $this->width = null;
             $this->height = null;
-            $this->startY = null;
-            $this->startX = null;
-            $this->goalY = null;
-            $this->goalX = null;
             $this->moves = 0;
+            $this->limit = DomainGame\Game::DEFAULT_MOVES_LIMIT;
             $this->ghostRate = 0;
             $this->minGhosts = 0;
             $this->maze = array();
@@ -164,13 +166,10 @@ class Game
             $this->status = $source->getStatus();
             $this->width = $source->getWidth();
             $this->height = $source->getHeight();
-            $this->startY = $source->getStartY();
-            $this->startX = $source->getStartX();
-            $this->goalY = $source->getGoalY();
-            $this->goalX = $source->getGoalX();
             $this->ghostRate = $source->getGhostRate();
             $this->minGhosts = $source->getMinGhosts();
             $this->moves = $source->getMoves();
+            $this->limit = $source->getLimit();
             $this->maze = $source->getMaze();
             $this->players = $source->getPlayers();
             $this->ghosts = $source->getGhosts();
@@ -184,35 +183,35 @@ class Game
      * Convert entity to a domain game
      *
      * @return DomainGame\Game
+     * @throws \Exception
      */
     public function toDomainEntity()
     {
-        $maze = new DomainMaze\Maze(
+        $mazeObj = new DomainMaze\Maze(
             $this->height,
             $this->width,
-            new Position($this->startY, $this->startX),
-            new Position($this->goalY, $this->goalX),
             $this->maze
         );
 
-        $players = array();
+        $playersArray = array();
         foreach ($this->players as $player) {
-            $players[] = DomainPlayer\Player::unserialize($player);
+            $playersArray[] = DomainPlayer\Player::unserialize($player);
         }
 
-        $ghosts = array();
+        $ghostsArray = array();
         foreach ($this->ghosts as $ghost) {
-            $ghosts[] = DomainGhost\Ghost::unserialize($ghost);
+            $ghostsArray[] = DomainGhost\Ghost::unserialize($ghost);
         }
 
         return new DomainGame\Game(
-            $maze,
-            $players,
-            $ghosts,
+            $mazeObj,
+            $playersArray,
+            $ghostsArray,
             $this->ghostRate,
             $this->minGhosts,
             $this->status,
             $this->moves,
+            $this->limit,
             $this->uuid,
             $this->name
         );
@@ -234,6 +233,7 @@ class Game
         $this->setGhosts($game->ghosts());
         $this->setGhostRate($game->ghostRate());
         $this->setMinGhosts($game->minGhosts());
+        $this->SetLimit($game->limit());
         $this->setMoves($game->moves());
         return $this;
     }
@@ -359,94 +359,6 @@ class Game
     }
 
     /**
-     * Set maze start Y coordinate
-     *
-     * @param int $startY
-     * @return $this
-     */
-    public function setStartY($startY)
-    {
-        $this->startY = $startY;
-        return $this;
-    }
-
-    /**
-     * Get maze start Y coordinate
-     *
-     * @return int
-     */
-    public function getStartY()
-    {
-        return $this->startY;
-    }
-
-    /**
-     * Set maze start X coordinate
-     *
-     * @param int $startX
-     * @return $this
-     */
-    public function setStartX($startX)
-    {
-        $this->startX = $startX;
-        return $this;
-    }
-
-    /**
-     * Get maze start X coordinate
-     *
-     * @return int
-     */
-    public function getStartX()
-    {
-        return $this->startX;
-    }
-
-    /**
-     * Set maze goal Y coordinate
-     *
-     * @param int $goalY
-     * @return $this
-     */
-    public function setGoalY($goalY)
-    {
-        $this->goalY = $goalY;
-        return $this;
-    }
-
-    /**
-     * Get maze goal Y coordinate
-     *
-     * @return int
-     */
-    public function getGoalY()
-    {
-        return $this->goalY;
-    }
-
-    /**
-     * Set maze goal X coordinate
-     *
-     * @param int $goalX
-     * @return $this
-     */
-    public function setGoalX($goalX)
-    {
-        $this->goalX = $goalX;
-        return $this;
-    }
-
-    /**
-     * Get maze goal X coordinate
-     *
-     * @return int
-     */
-    public function getGoalX()
-    {
-        return $this->goalX;
-    }
-
-    /**
      * Set min ghosts
      *
      * @param int $minGhosts
@@ -513,6 +425,28 @@ class Game
     }
 
     /**
+     * Set limit
+     *
+     * @param int $limit
+     * @return Game
+     */
+    public function setLimit(int $limit): Game
+    {
+        $this->limit = $limit;
+        return $this;
+    }
+
+    /**
+     * Get limit
+     *
+     * @return int
+     */
+    public function getLimit(): int
+    {
+        return $this->limit;
+    }
+
+    /**
      * Set maze cell contents
      *
      * @param DomainMaze\Maze|array $maze
@@ -525,10 +459,6 @@ class Game
         } else {
             $this->width = $maze->width();
             $this->height = $maze->height();
-            $this->startY = $maze->start()->y();
-            $this->startX = $maze->start()->x();
-            $this->goalY = $maze->goal()->y();
-            $this->goalX = $maze->goal()->x();
             $this->maze = array();
             for ($i = 0; $i < $this->height; $i++) {
                 $this->maze[$i] = array();

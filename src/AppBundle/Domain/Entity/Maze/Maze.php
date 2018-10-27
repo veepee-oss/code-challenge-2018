@@ -1,6 +1,7 @@
 <?php
 
 namespace AppBundle\Domain\Entity\Maze;
+use AppBundle\Domain\Entity\Position\Position;
 
 /**
  * Domain entity Maze
@@ -73,6 +74,21 @@ class Maze implements \ArrayAccess, \Countable, \Iterator
     }
 
     /**
+     * Creates a random start position for a player
+     *
+     * @return Position
+     */
+    public function createStartPosition() : Position
+    {
+        do {
+            $y = rand(1, $this->height() - 2);
+            $x = rand(1, $this->width() - 2);
+        } while ($this[$y][$x]->isEmpty());
+
+        return new Position($y, $x);
+    }
+
+    /**
      * Whether a offset exists
      *
      * @link http://php.net/manual/en/arrayaccess.offsetexists.php
@@ -95,7 +111,7 @@ class Maze implements \ArrayAccess, \Countable, \Iterator
     public function offsetGet($offset)
     {
         if (!$this->offsetExists($offset)) {
-            $this->thwrowOffsetNotExist($offset);
+            $this->throwOffsetNotExist($offset);
         }
 
         return $this->rows[$offset];
@@ -112,7 +128,7 @@ class Maze implements \ArrayAccess, \Countable, \Iterator
     public function offsetSet($offset, $value)
     {
         if (!$this->offsetExists($offset)) {
-            $this->thwrowOffsetNotExist($offset);
+            $this->throwOffsetNotExist($offset);
         }
 
         $this->rows[$offset] = $value;
@@ -128,7 +144,7 @@ class Maze implements \ArrayAccess, \Countable, \Iterator
     public function offsetUnset($offset)
     {
         if (!$this->offsetExists($offset)) {
-            $this->thwrowOffsetNotExist($offset);
+            $this->throwOffsetNotExist($offset);
         }
         $this->rows[$offset] = new MazeRow($this->width);
     }
@@ -232,7 +248,7 @@ class Maze implements \ArrayAccess, \Countable, \Iterator
      * @return void
      * @throws \InvalidArgumentException
      */
-    private function thwrowOffsetNotExist($offset) : void
+    private function throwOffsetNotExist($offset) : void
     {
         throw new \InvalidArgumentException('The height offset ' . $offset . ' does not exists.');
     }

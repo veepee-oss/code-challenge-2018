@@ -2,6 +2,7 @@
 
 namespace AppBundle\Form\CreateGame;
 
+use AppBundle\Domain\Entity\Game\Game;
 use AppBundle\Exception\PlayerOutOfBoundsException;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -29,14 +30,14 @@ class GameEntity
     /**
      * @var int
      * @Assert\NotBlank()
-     * @Assert\Range(min=1, max=20)
+     * @Assert\Range(min=1, max=8)
      */
     private $playerNum = 2;
 
     /**
      * @var int
      * @Assert\NotBlank()
-     * @Assert\Range(min=0, max=100)
+     * @Assert\Range(min=0, max=50)
      */
     private $minGhosts = 1;
 
@@ -46,6 +47,13 @@ class GameEntity
      * @Assert\Range(min=0, max=200)
      */
     private $ghostRate = 50;
+
+    /**
+     * @var int
+     * @Assert\NotBlank()
+     * @Assert\Range(min=100, max=5000)
+     */
+    private $limit = Game::DEFAULT_MOVES_LIMIT;
 
     /**
      * @var string
@@ -150,12 +158,20 @@ class GameEntity
     }
 
     /**
-     * @param string $name
-     * @return $this
+     * @return int
      */
-    public function setName($name)
+    public function getLimit(): int
     {
-        $this->name = $name;
+        return $this->limit;
+    }
+
+    /**
+     * @param int $limit
+     * @return GameEntity
+     */
+    public function setLimit(int $limit): GameEntity
+    {
+        $this->limit = $limit;
         return $this;
     }
 
@@ -168,12 +184,12 @@ class GameEntity
     }
 
     /**
-     * @param PlayerEntity[] $players
+     * @param string $name
      * @return $this
      */
-    public function setPlayers($players)
+    public function setName($name)
     {
-        $this->players = $players;
+        $this->name = $name;
         return $this;
     }
 
@@ -183,6 +199,16 @@ class GameEntity
     public function getPlayers()
     {
         return $this->players;
+    }
+
+    /**
+     * @param PlayerEntity[] $players
+     * @return $this
+     */
+    public function setPlayers($players)
+    {
+        $this->players = $players;
+        return $this;
     }
 
     /**

@@ -3,6 +3,11 @@
 namespace AppBundle\Form\CreateGame;
 
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\CollectionType;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
+use Symfony\Component\Form\Extension\Core\Type\IntegerType;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -37,7 +42,7 @@ class GameForm extends AbstractType
         ));
 
         $resolver->setDefaults(array(
-            'data_class' => '\AppBundle\Form\CreateGame\GameEntity',
+            'data_class' => GameEntity::class,
             'action'     => null
         ));
     }
@@ -66,6 +71,9 @@ class GameForm extends AbstractType
             case static::TYPE_PLAYERS:
                 $this->buildPlayersForm($builder, $options);
                 break;
+
+            default:
+                break;
         }
     }
 
@@ -78,32 +86,36 @@ class GameForm extends AbstractType
      */
     protected function buildGameDataForm(FormBuilderInterface $builder, array $options)
     {
-        $builder->add('height', '\Symfony\Component\Form\Extension\Core\Type\IntegerType', array(
+        $builder->add('height', IntegerType::class, array(
             'label' => 'app.createpage.form.height'
         ));
 
-        $builder->add('width', '\Symfony\Component\Form\Extension\Core\Type\IntegerType', array(
+        $builder->add('width', IntegerType::class, array(
             'label' => 'app.createpage.form.width'
         ));
 
-        $builder->add('playerNum', '\Symfony\Component\Form\Extension\Core\Type\IntegerType', array(
+        $builder->add('playerNum', IntegerType::class, array(
             'label' => 'app.createpage.form.player-num'
         ));
 
-        $builder->add('minGhosts', '\Symfony\Component\Form\Extension\Core\Type\IntegerType', array(
+        $builder->add('minGhosts', IntegerType::class, array(
             'label' => 'app.createpage.form.min-ghosts'
         ));
 
-        $builder->add('ghostRate', '\Symfony\Component\Form\Extension\Core\Type\IntegerType', array(
+        $builder->add('ghostRate', IntegerType::class, array(
             'label' => 'app.createpage.form.ghost-rate'
         ));
 
-        $builder->add('name', '\Symfony\Component\Form\Extension\Core\Type\TextType', array(
+        $builder->add('limit', IntegerType::class, array(
+            'label' => 'app.createpage.form.limit'
+        ));
+
+        $builder->add('name', TextType::class, array(
             'label' => 'app.createpage.form.name-optional',
             'required' => false
         ));
 
-        $builder->add('save', '\Symfony\Component\Form\Extension\Core\Type\SubmitType', array(
+        $builder->add('save', SubmitType::class, array(
             'label' => 'app.createpage.form.next'
         ));
     }
@@ -117,19 +129,20 @@ class GameForm extends AbstractType
      */
     protected function buildPlayersForm(FormBuilderInterface $builder, array $options)
     {
-        $builder->add('height', '\Symfony\Component\Form\Extension\Core\Type\HiddenType');
-        $builder->add('width', '\Symfony\Component\Form\Extension\Core\Type\HiddenType');
-        $builder->add('playerNum', '\Symfony\Component\Form\Extension\Core\Type\HiddenType');
-        $builder->add('minGhosts', '\Symfony\Component\Form\Extension\Core\Type\HiddenType');
-        $builder->add('ghostRate', '\Symfony\Component\Form\Extension\Core\Type\HiddenType');
-        $builder->add('name', '\Symfony\Component\Form\Extension\Core\Type\HiddenType');
+        $builder->add('height', HiddenType::class);
+        $builder->add('width', hiddenType::class);
+        $builder->add('playerNum', hiddenType::class);
+        $builder->add('minGhosts', hiddenType::class);
+        $builder->add('ghostRate', hiddenType::class);
+        $builder->add('limit', hiddenType::class);
+        $builder->add('name', hiddenType::class);
 
-        $builder->add('players', '\Symfony\Component\Form\Extension\Core\Type\CollectionType', array(
+        $builder->add('players', CollectionType::class, array(
             'entry_type' => '\AppBundle\Form\CreateGame\PlayerForm',
             'allow_add' => true
         ));
 
-        $builder->add('save', '\Symfony\Component\Form\Extension\Core\Type\SubmitType', array(
+        $builder->add('save', SubmitType::class, array(
             'label' => 'app.createpage.form.create'
         ));
     }

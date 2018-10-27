@@ -2,12 +2,13 @@
 
 namespace AppBundle\Controller;
 
+use Psr\Log\LoggerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
- * Default Controller
+ * Default controller
  *
  * @package AppBundle\Controller
  */
@@ -17,9 +18,9 @@ class DefaultController extends Controller
      * @Route("/", name="homepage")
      * @return Response
      */
-    public function indexAction()
+    public function indexAction() : Response
     {
-        $this->get('logger')->info('DefaultController::indexAction()');
+        $this->getLogger()->info('DefaultController::indexAction()');
         return $this->render('default/index.html.twig');
     }
 
@@ -27,9 +28,9 @@ class DefaultController extends Controller
      * @Route("/rules", name="rules")
      * @return Response
      */
-    public function rulesAction()
+    public function rulesAction() : Response
     {
-        $this->get('logger')->info('DefaultController::rulesAction()');
+        $this->getLogger()->info('DefaultController::rulesAction()');
         return $this->render('default/rules.html.twig');
     }
 
@@ -37,9 +38,19 @@ class DefaultController extends Controller
      * @Route("/credits", name="credits")
      * @return Response
      */
-    public function creditsAction()
+    public function creditsAction() : Response
     {
-        $this->get('logger')->info('DefaultController::creditsAction()');
+        $this->getLogger()->info('DefaultController::creditsAction()');
         return $this->render('default/credits.html.twig');
+    }
+
+    /**
+     * Get the logger
+     *
+     * @return LoggerInterface
+     */
+    private function getLogger() : LoggerInterface
+    {
+        return $this->get('logger');
     }
 }

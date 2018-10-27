@@ -7,14 +7,11 @@ use AppBundle\Domain\Entity\Player\Player;
 use AppBundle\Domain\Service\GameEngine\ConsumerDaemonManagerInterface;
 use AppBundle\Domain\Service\GameEngine\GameDaemonManagerInterface;
 use AppBundle\Domain\Service\GameEngine\GameEngine;
-use AppBundle\Domain\Service\MazeBuilder\MazeBuilderException;
 use AppBundle\Domain\Service\MazeBuilder\MazeBuilderInterface;
-use AppBundle\Domain\Service\MovePlayer\MovePlayerException;
 use AppBundle\Domain\Service\MovePlayer\ValidatePlayerServiceInterface;
 use AppBundle\Form\CreateGame\GameEntity;
 use AppBundle\Form\CreateGame\GameForm;
 use AppBundle\Form\CreateGame\PlayerEntity;
-use Doctrine\ORM\ORMException;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -25,7 +22,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
- * Class GameController
+ * Game and game admin controller
  *
  * @package AppBundle\Controller
  * @Route("/game")
@@ -33,13 +30,13 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 class GameController extends Controller
 {
     /**
-     * Create new game
+     * Create new game (step 1)
      *
      * @Route("/create", name="game_create")
      * @param Request $request
      * @return Response
      */
-    public function createAction(Request $request)
+    public function createAction(Request $request) : Response
     {
         $now = new \DateTime('now');
         $limit = \DateTime::createFromFormat(
@@ -65,7 +62,7 @@ class GameController extends Controller
         }
 
         // Create the game data form (step 1)
-        $form = $this->createForm('\AppBundle\Form\CreateGame\GameForm', $gameEntity, array(
+        $form = $this->createForm(GameForm::class, $gameEntity, array(
             'action'    => $this->generateUrl('game_create', $params),
             'form_type' => GameForm::TYPE_GAME_DATA
         ));
@@ -79,7 +76,7 @@ class GameController extends Controller
             }
 
             // Create the players form (step 2)
-            $form = $this->createForm('\AppBundle\Form\CreateGame\GameForm', $gameEntity, array(
+            $form = $this->createForm(gameForm::class, $gameEntity, array(
                 'action'    => $this->generateUrl('game_create_next'),
                 'form_type' => GameForm::TYPE_PLAYERS
             ));
@@ -91,12 +88,12 @@ class GameController extends Controller
     }
 
     /**
-     * Create new game
+     * Create new game (step 2)
      *
      * @Route("/create/next", name="game_create_next")
      * @param Request $request
      * @return Response
-     * @throws MazeBuilderException
+     * @throws \Exception
      */
     public function createNextAction(Request $request)
     {
@@ -104,7 +101,7 @@ class GameController extends Controller
         $gameEntity = new GameEntity();
 
         // Create the players form (step 2)
-        $form = $this->createForm('\AppBundle\Form\CreateGame\GameForm', $gameEntity, array(
+        $form = $this->createForm(gameForm::class, $gameEntity, array(
             'action'    => $this->generateUrl('game_create_next'),
             'form_type' => GameForm::TYPE_PLAYERS
         ));
@@ -129,7 +126,7 @@ class GameController extends Controller
             for ($pos = 0; $pos < $gameEntity->getPlayerNum(); $pos++) {
                 try {
                     $url = $gameEntity->getPlayerAt($pos)->getUrl();
-                    $player = new Player($url, $maze->start());
+                    $player = new Player($url, $maze->createStartPosition());
                     if ($playerValidator->validate($player, null)) {
                         $players[] = $player;
                     } else {
@@ -141,7 +138,7 @@ class GameController extends Controller
                         $form->get('players')->addError(new FormError($message));
                         $errors = true;
                     }
-                } catch (MovePlayerException $exc) {
+                } catch (\Exception $exc) {
                     $form->get('players')->addError(new FormError($exc->getMessage()));
                     $errors = true;
                 }
@@ -157,6 +154,7 @@ class GameController extends Controller
                     $gameEntity->getMinGhosts(),
                     Game::STATUS_NOT_STARTED,
                     0,
+                    Game::DEFAULT_MOVES_LIMIT,
                     null,
                     $gameEntity->getName()
                 );
@@ -190,6 +188,7 @@ class GameController extends Controller
      *
      * @param string $uuid
      * @return Response
+     * @throws \Exception
      */
     public function viewAction($uuid)
     {
@@ -222,6 +221,7 @@ class GameController extends Controller
      *
      * @param string $uuid
      * @return Response
+     * @throws \Exception
      */
     public function viewMazeAction($uuid)
     {
@@ -254,6 +254,7 @@ class GameController extends Controller
      *
      * @param string $uuid
      * @return Response
+     * @throws \Exception
      */
     public function viewPanelsAction($uuid)
     {
@@ -286,6 +287,7 @@ class GameController extends Controller
      *
      * @param string $uuid
      * @return Response
+     * @throws \Exception
      */
     public function viewDetailsAction($uuid)
     {
@@ -313,6 +315,7 @@ class GameController extends Controller
      *
      * @param string $uuid
      * @return JsonResponse
+     * @throws \Exception
      */
     public function refreshAction($uuid)
     {
@@ -359,6 +362,7 @@ class GameController extends Controller
      *
      * @param string $uuid
      * @return Response
+     * @throws \Exception
      */
     public function startAction($uuid)
     {
@@ -392,6 +396,7 @@ class GameController extends Controller
      *
      * @param string $uuid
      * @return Response
+     * @throws \Exception
      */
     public function stopAction($uuid)
     {
@@ -425,7 +430,7 @@ class GameController extends Controller
      *
      * @param string $uuid
      * @return Response
-     * @throws ORMException
+     * @throws \Exception
      */
     public function resetAction($uuid)
     {
@@ -464,7 +469,7 @@ class GameController extends Controller
      *
      * @param string $uuid
      * @return Response
-     * @throws ORMException
+     * @throws \Exception
      */
     public function removeAction($uuid)
     {
@@ -503,7 +508,7 @@ class GameController extends Controller
      * @param string $guuid Game Uuid
      * @param string $puuid Player Uuid
      * @return JsonResponse
-     * @throws ORMException
+     * @throws \Exception
      */
     public function downloadLogAction($guuid, $puuid = null)
     {
@@ -541,6 +546,7 @@ class GameController extends Controller
      *
      * @Route("/admin", name="admin_view")
      * @return Response
+     * @throws \Exception
      */
     public function adminAction()
     {
