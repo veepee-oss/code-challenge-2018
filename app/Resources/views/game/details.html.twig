@@ -118,12 +118,14 @@
 
                         <dt class="small">Status:</dt>
                         <dd>
-                            {% if player.winner %}
-                                <span class="text-success">Winner</span>
-                            {% elseif player.dead %}
-                                <span class="text-danger">Dead</span>
+                            {% if player.isPowered %}
+                                <span class="text-success">Powered</span>
+                            {% elseif player.isKilled %}
+                                <span class="text-danger">Killed</span>
+                            {% elseif player.isReloading %}
+                                <span class="text-mute">Reloading</span>
                             {% else %}
-                                <span class="text-info">Playing</span>
+                                <span class="text-info">Regular</span>
                             {% endif %}
                         </dd>
                     </dl>

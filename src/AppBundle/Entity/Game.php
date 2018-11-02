@@ -97,7 +97,7 @@ class Game
      *
      * @var int
      *
-     * @ORM\Column(name="moves", type="integer", options={"default"=0})
+     * @ORM\Column(name="moves_made", type="integer", options={"default"=0})
      */
     protected $moves;
 
@@ -106,7 +106,7 @@ class Game
      *
      * @var int
      *
-     * @ORM\Column(name="limit", type="integer", options={"default"=500})
+     * @ORM\Column(name="moves_limit", type="integer", options={"default"=500})
      */
     protected $limit;
 

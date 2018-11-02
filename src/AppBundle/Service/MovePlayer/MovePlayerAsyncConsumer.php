@@ -120,7 +120,7 @@ class MovePlayerAsyncConsumer
         /** @var AMQPChannel $responseChannel */
         $responseChannel = $requestMsg->delivery_info['channel'];
 
-        $this->logger->error(
+        $this->logger->debug(
             'MovePlayerAsyncConsumer - Received request event - ' . $requestRawData
         );
 
@@ -180,7 +180,7 @@ class MovePlayerAsyncConsumer
         try {
             $responseRawData = $responseEvent->serialize();
 
-            $this->logger->error(
+            $this->logger->debug(
                 'MovePlayerAsyncConsumer - Publishing response event with payload: ' . $responseRawData
             );
 

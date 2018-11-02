@@ -243,7 +243,7 @@ class MoveAllPlayersAsyncService implements MoveAllPlayersServiceInterface
                         && null === $responses[$uuid]) {
                         $responseRawData = $responseMsg->getBody();
 
-                        $this->logger->error(
+                        $this->logger->debug(
                             'MoveAllPlayersAsyncService - Received response event with payload: ' . $responseRawData
                         );
 

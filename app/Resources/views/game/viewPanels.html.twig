@@ -44,7 +44,7 @@
                     </h3>
                 </div>
                 <div class="panel-body">
-                    {% for player in game.classification if player.winner %}
+                    {% for player in game.classification %}
                         <p>
                             {{ game.playerNum(player) }}.-
                             <span class="text-success">
@@ -71,7 +71,7 @@
                     </h3>
                 </div>
                 <div class="panel-body">
-                    {% for player in game.classification | reverse if player.dead %}
+                    {% for player in game.classification | reverse %}
                         <p>
                             {{ game.playerNum(player) }}.-
                             <span class="text-danger">
@@ -98,7 +98,7 @@
                     </h3>
                 </div>
                 <div class="panel-body">
-                    {% for player in game.classification if not player.winner and not player.dead %}
+                    {% for player in game.classification %}
                         <p>
                             {{ game.playerNum(player) }}.-
                             <span class="text-info">
