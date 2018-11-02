@@ -106,7 +106,7 @@ class MoveGhostRandom extends MoveGhost
                 $valid = false;
         }
 
-        if ($maze[$y][$x]->isEmpty()) {
+        if (!$maze[$y][$x]->isEmpty()) {
             $valid = false;
         }
 
