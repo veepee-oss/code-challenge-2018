@@ -8,6 +8,7 @@ use AppBundle\Domain\Service\MovePlayer\AskPlayerNameInterface;
 use AppBundle\Domain\Service\MovePlayer\MovePlayerException;
 use Davamigo\HttpClient\Domain\HttpClient;
 use Davamigo\HttpClient\Domain\HttpException;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
@@ -25,7 +26,10 @@ class AskPlayerApiService implements AskNextMovementInterface, AskPlayerNameInte
     protected $validator;
 
     /** @var LoggerServiceInterface */
-    protected $logger;
+    protected $dbLogger;
+
+    /** @var LoggerInterface */
+    private $logger;
 
     /** @var int */
     protected $timeout;
@@ -39,17 +43,20 @@ class AskPlayerApiService implements AskNextMovementInterface, AskPlayerNameInte
      *
      * @param HttpClient             $httpClient
      * @param ValidatorInterface     $validator
-     * @param LoggerServiceInterface $logger
+     * @param LoggerServiceInterface $dbLogger
+     * @param LoggerInterface        $logger
      * @param int                    $timeout
      */
     public function __construct(
         HttpClient $httpClient,
         ValidatorInterface $validator,
-        LoggerServiceInterface $logger,
+        LoggerServiceInterface $dbLogger,
+        LoggerInterface $logger,
         $timeout = 3
     ) {
         $this->httpClient = $httpClient;
         $this->validator = $validator;
+        $this->dbLogger = $dbLogger;
         $this->logger = $logger;
         $this->timeout = $timeout;
     }
@@ -170,11 +177,26 @@ class AskPlayerApiService implements AskNextMovementInterface, AskPlayerNameInte
             CURLOPT_TIMEOUT         => $this->timeout
         );
 
+        $this->logger->debug(
+            'AskPlayerApiService - Calling player API for ' .
+            'game "' . $game . '" and player "' . $player . '".'
+        );
+
+        $this->logger->debug(
+            'AskPlayerApiService - Request created - ' .
+            'URL: ' . $requestUrl . ' - ' .
+            'Body: ' . $requestBody
+        );
+
         try {
             $response = $this->httpClient->post($requestUrl, $requestHeaders, $requestBody, $options)->send();
             $responseCode = $response->getStatusCode();
         } catch (HttpException $exc) {
-            $this->logger->log($game, $player, $this->buildErrorContextArray(
+            $this->logger->error(
+                'AskPlayerApiService - HttpException occurred - Message: "' . $exc->getMessage() . '".'
+            );
+
+            $this->dbLogger->log($game, $player, $this->buildErrorContextArray(
                 $requestUrl,
                 $requestHeaders,
                 $requestBody,
@@ -189,6 +211,13 @@ class AskPlayerApiService implements AskNextMovementInterface, AskPlayerNameInte
         }
 
         $responseBody = $response->getBody(true);
+
+        $this->logger->debug(
+            'AskPlayerApiService - Response received - ' .
+            'Code: ' . $responseCode . ' - ' .
+            'Body: ' . $responseBody
+        );
+
         $responseData = json_decode($responseBody, true);
         if (null === $responseData || !is_array($responseData)) {
             $message = 'Invalid API response!';
@@ -196,7 +225,11 @@ class AskPlayerApiService implements AskNextMovementInterface, AskPlayerNameInte
                 $message .= ' - ' . json_last_error_msg();
             }
 
-            $this->logger->log($game, $player, $this->buildErrorContextArray(
+            $this->logger->error(
+                'AskPlayerApiService - Error decoding JSON message - Message: "' . $message . '".'
+            );
+
+            $this->dbLogger->log($game, $player, $this->buildErrorContextArray(
                 $requestUrl,
                 $requestHeaders,
                 $requestBody,
@@ -209,7 +242,7 @@ class AskPlayerApiService implements AskNextMovementInterface, AskPlayerNameInte
             throw new MovePlayerException($message);
         }
 
-        $this->logger->log($game, $player, $this->buildErrorContextArray(
+        $this->dbLogger->log($game, $player, $this->buildErrorContextArray(
             $requestUrl,
             $requestHeaders,
             $requestBody,

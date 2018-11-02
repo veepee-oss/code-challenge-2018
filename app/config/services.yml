@@ -79,6 +79,7 @@ services:
             - "@davamigo.http.client"
             - "@validator"
             - "@app.logger"
+            - "@logger"
             - "%default_timeout%"
 
     app.player.move.consumer:
