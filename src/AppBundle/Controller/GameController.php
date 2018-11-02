@@ -145,6 +145,7 @@ class GameController extends Controller
                     $players,
                     $gameEntity->getGhostRate(),
                     $gameEntity->getMinGhosts(),
+                    $gameEntity->getLimit(),
                     $gameEntity->getName()
                 );
 

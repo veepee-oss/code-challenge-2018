@@ -59,6 +59,7 @@ class GameEngine
      * @param Player[] $players
      * @param int $ghostRate
      * @param int $minGhosts
+     * @param int $limitMoves
      * @param string $name
      * @return Game
      * @throws \Exception
@@ -68,6 +69,7 @@ class GameEngine
         array $players,
         int $ghostRate,
         int $minGhosts,
+        int $limitMoves,
         ?string $name
     ) : Game {
         $game = new Game(
@@ -78,7 +80,7 @@ class GameEngine
             $minGhosts,
             Game::STATUS_NOT_STARTED,
             0,
-            Game::DEFAULT_MOVES_LIMIT,
+            $limitMoves,
             null,
             $name
         );
