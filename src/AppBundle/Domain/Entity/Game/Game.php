@@ -5,6 +5,7 @@ namespace AppBundle\Domain\Entity\Game;
 use AppBundle\Domain\Entity\Ghost\Ghost;
 use AppBundle\Domain\Entity\Maze\Maze;
 use AppBundle\Domain\Entity\Player\Player;
+use AppBundle\Domain\Entity\Position\Position;
 use Ramsey\Uuid\Uuid;
 
 /**
@@ -22,6 +23,9 @@ class Game
 
     /** @var int the default limit of moves */
     const DEFAULT_MOVES_LIMIT = 500;
+
+    /** @var int The default view range and fire range */
+    const DEFAULT_VIEW_RANGE = 5;
 
     /** @var Maze the maze */
     protected $maze;
@@ -361,6 +365,40 @@ class Game
             }
         }
         return $this;
+    }
+
+    /**
+     * Finds the ghosts at a position in the maze
+     *
+     * @param Position $pos
+     * @return Ghost[]
+     */
+    public function ghostsAtPosition(Position $pos)
+    {
+        $result = [];
+        foreach ($this->ghosts as $ghost) {
+            if ($ghost->position()->equals($pos)) {
+                $result[] = $ghost;
+            }
+        }
+        return $result;
+    }
+
+    /**
+     * Finds the players at a position in the maze
+     *
+     * @param Position $pos
+     * @return Player[]
+     */
+    public function playersAtPosition(Position $pos)
+    {
+        $result = [];
+        foreach ($this->players as $player) {
+            if ($player->position()->equals($pos)) {
+                $result[] = $player;
+            }
+        }
+        return $result;
     }
 
     /**

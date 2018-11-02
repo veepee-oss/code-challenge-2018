@@ -12,8 +12,8 @@ use AppBundle\Domain\Entity\Player\Player;
  */
 interface PlayerRequestInterface
 {
-    /** @var int constant fot the default view range */
-    const DEFAULT_VIEW_RANGE = 4;
+    /** @var int constant for the default view range */
+    const DEFAULT_VIEW_RANGE = Game::DEFAULT_VIEW_RANGE;
 
     /**
      * Creates the request data to send to the player. The request data will be a json object.

@@ -33,7 +33,13 @@ class MovePlayerService implements MovePlayerServiceInterface
         }
 
         if (Fire::firing($move)) {
-            $player->fire($move);
+            if (!$player->isReloading()) {
+                $player->fire($move);
+            } else {
+                // Invalid movement: The player stops
+                $player->move($player->position());
+                $moved = false;
+            }
         } else {
             // Computes the new position
             $position = $this->computeNewPosition($player->position(), $move);

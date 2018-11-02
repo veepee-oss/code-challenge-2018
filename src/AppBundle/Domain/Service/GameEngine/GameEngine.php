@@ -2,6 +2,7 @@
 
 namespace AppBundle\Domain\Service\GameEngine;
 
+use AppBundle\Domain\Entity\Fire\Fire;
 use AppBundle\Domain\Entity\Game\Game;
 use AppBundle\Domain\Entity\Ghost\Ghost;
 use AppBundle\Domain\Entity\Maze\Maze;
@@ -112,14 +113,15 @@ class GameEngine
     public function move(Game &$game) : bool
     {
         $this->movePlayers($game);
+        $this->checkPlayersFire($game);
         $this->moveGhosts($game);
-        $this->createGhosts($game);
 
         $game->incMoves();
         if ($game->finished()) {
             return false;
         }
 
+        $this->createGhosts($game);
         return true;
     }
 
@@ -136,6 +138,41 @@ class GameEngine
         } catch (MovePlayerException $exc) {
             $this->logger->error('Error moving players in class: ' . get_class($this->moveAllPlayersService));
             $this->logger->error($exc);
+        }
+        return $this;
+    }
+
+    /**
+     * Check if a player fired
+     *
+     * @param Game $game
+     * @return GameEngine
+     */
+    protected function checkPlayersFire(Game& $game) : GameEngine
+    {
+        foreach ($game->players() as $player) {
+            if ($player->isFiring()) {
+                $dir = Fire::direction($player->firingDir());
+                $pos = clone $player->position();
+                for ($i = 0; $i < Fire::DEFAULT_FIRE_RANGE; $i++) {
+                    $pos->moveTo($dir);
+
+                    $ghosts = $game->ghostsAtPosition($pos);
+                    foreach ($ghosts as $ghost) {
+                        $player->addScore(self::SCORE_KILL_GHOST);
+                        $game->removeGhost($ghost);
+                    }
+
+                    $others = $game->playersAtPosition($pos);
+                    foreach ($others as $other) {
+                        if ($player->uuid() != $other->uuid()) {
+                            $player->addScore(self::SCORE_KILL_PLAYER);
+                            $other->killed()->addScore(self::SCORE_DEAD);
+                        }
+                    }
+                }
+            }
+            $player->resetFiringDir();
         }
         return $this;
     }

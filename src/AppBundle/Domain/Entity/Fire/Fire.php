@@ -2,6 +2,7 @@
 
 namespace AppBundle\Domain\Entity\Fire;
 
+use AppBundle\Domain\Entity\Game\Game;
 use AppBundle\Domain\Entity\Position\Direction;
 
 /**
@@ -11,11 +12,15 @@ use AppBundle\Domain\Entity\Position\Direction;
  */
 class Fire
 {
+    /** @var string Fire directions */
     const UP = 'fire-up';
     const DOWN = 'fire-down';
     const LEFT = 'fire-left';
     const RIGHT = 'fire-right';
     const NONE = null;
+
+    /** @var int Default fire range */
+    const DEFAULT_FIRE_RANGE = Game::DEFAULT_VIEW_RANGE;
 
     /**
      * Get if is firing

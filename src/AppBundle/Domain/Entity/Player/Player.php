@@ -279,7 +279,6 @@ class Player extends MazeObject
         parent::move($position);
         if ($this->statusCount() > 0) {
             --$this->statusCount;
-            $this->firingDir = Fire::NONE;
             if (0 == $this->statusCount()
                 && ($this->isPowered()
                 || $this->isReloading()
@@ -304,14 +303,25 @@ class Player extends MazeObject
     }
 
     /**
+     * Reset firing dir
+     *
+     * @return $this
+     */
+    public function resetFiringDir()
+    {
+        $this->firingDir = Fire::NONE;
+        return $this;
+    }
+
+    /**
      * Reset the status of the player
      *
      * @return $this
      */
     public function resetStatus()
     {
+        $this->resetFiringDir();
         $this->status = static::STATUS_REGULAR;
-        $this->firingDir = Fire::NONE;
         $this->statusCount = 0;
         return $this;
     }
