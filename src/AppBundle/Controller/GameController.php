@@ -137,16 +137,14 @@ class GameController extends Controller
 
             // Create game if no errors
             if (!$errors) {
-                $game = new Game(
+
+                /** @var GameEngine $engine */
+                $engine = $this->get('app.game.engine');
+                $game = $engine->create(
                     $maze,
                     $players,
-                    array(),
                     $gameEntity->getGhostRate(),
                     $gameEntity->getMinGhosts(),
-                    Game::STATUS_NOT_STARTED,
-                    0,
-                    Game::DEFAULT_MOVES_LIMIT,
-                    null,
                     $gameEntity->getName()
                 );
 

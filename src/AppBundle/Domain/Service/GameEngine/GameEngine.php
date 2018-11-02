@@ -4,7 +4,9 @@ namespace AppBundle\Domain\Service\GameEngine;
 
 use AppBundle\Domain\Entity\Game\Game;
 use AppBundle\Domain\Entity\Ghost\Ghost;
+use AppBundle\Domain\Entity\Maze\Maze;
 use AppBundle\Domain\Entity\Maze\MazeCell;
+use AppBundle\Domain\Entity\Player\Player;
 use AppBundle\Domain\Entity\Position\Position;
 use AppBundle\Domain\Service\MoveGhost\MoveGhostException;
 use AppBundle\Domain\Service\MoveGhost\MoveGhostFactory;
@@ -51,12 +53,48 @@ class GameEngine
     }
 
     /**
+     * Creates a new game
+     *
+     * @param Maze $maze
+     * @param Player[] $players
+     * @param int $ghostRate
+     * @param int $minGhosts
+     * @param string $name
+     * @return Game
+     * @throws \Exception
+     */
+    public function create(
+        Maze $maze,
+        array $players,
+        int $ghostRate,
+        int $minGhosts,
+        ?string $name
+    ) : Game {
+        $game = new Game(
+            $maze,
+            $players,
+            array(),
+            $ghostRate,
+            $minGhosts,
+            Game::STATUS_NOT_STARTED,
+            0,
+            Game::DEFAULT_MOVES_LIMIT,
+            null,
+            $name
+        );
+
+        $this->createGhosts($game);
+
+        return $game;
+    }
+
+    /**
      * Resets the game
      *
      * @param Game $game
      * @return $this
      */
-    public function reset(Game &$game)
+    public function reset(Game &$game) : GameEngine
     {
         $game->resetPlaying();
         $this->createGhosts($game);
@@ -69,14 +107,14 @@ class GameEngine
      * @param Game $game
      * @return bool TRUE if the game is not finished
      */
-    public function move(Game &$game)
+    public function move(Game &$game) : bool
     {
         $this->movePlayers($game);
         $this->moveGhosts($game);
         $this->createGhosts($game);
 
         $game->incMoves();
-        if (!$game->finished()) {
+        if ($game->finished()) {
             return false;
         }
 
@@ -89,7 +127,7 @@ class GameEngine
      * @param Game $game
      * @return $this
      */
-    protected function movePlayers(Game &$game)
+    protected function movePlayers(Game &$game) : GameEngine
     {
         try {
             $this->moveAllPlayersService->move($game);
@@ -106,7 +144,7 @@ class GameEngine
      * @param Game $game
      * @return $this
      */
-    protected function moveGhosts(Game &$game)
+    protected function moveGhosts(Game &$game) : GameEngine
     {
         /** @var Ghost[] $ghosts */
         $ghosts = $game->ghosts();
@@ -136,7 +174,7 @@ class GameEngine
      * @param Game  $game
      * @return bool true if the ghost still alive, false in other case
      */
-    protected function checkGhostKill(Ghost $ghost, Game& $game)
+    protected function checkGhostKill(Ghost $ghost, Game& $game) : bool
     {
         if ($ghost->isNeutral()) {
             return false;
@@ -165,7 +203,7 @@ class GameEngine
      * @param Game $game
      * @return $this
      */
-    protected function createGhosts(Game &$game)
+    protected function createGhosts(Game &$game) : GameEngine
     {
         $minGhosts = $game->minGhosts();
         $ghostRate = $game->ghostRate();
@@ -189,7 +227,7 @@ class GameEngine
      * @param int $type
      * @return $this
      */
-    protected function createNewGhost(Game &$game, $type = Ghost::TYPE_RANDOM)
+    protected function createNewGhost(Game &$game, $type = Ghost::TYPE_RANDOM) : GameEngine
     {
         $maze = $game->maze();
         do {
