@@ -12,11 +12,11 @@ use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 /**
- * Class ApiPlayerService
+ * Class AskPlayerApiService
  *
  * @package AppBundle\Service\MovePlayer
  */
-class ApiPlayerService implements AskNextMovementInterface, AskPlayerNameInterface
+class AskPlayerApiService implements AskNextMovementInterface, AskPlayerNameInterface
 {
     /** @var HttpClient */
     protected $httpClient;

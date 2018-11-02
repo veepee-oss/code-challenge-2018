@@ -74,7 +74,7 @@ services:
             - "@app.player.move.api"
 
     app.player.move.api:
-        class: AppBundle\Service\MovePlayer\ApiPlayerService
+        class: AppBundle\Service\MovePlayer\AskPlayerApiService
         arguments:
             - "@davamigo.http.client"
             - "@validator"

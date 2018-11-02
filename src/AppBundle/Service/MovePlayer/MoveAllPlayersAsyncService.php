@@ -4,6 +4,7 @@ namespace AppBundle\Service\MovePlayer;
 
 use AppBundle\Domain\Entity\Game\Game;
 use AppBundle\Domain\Entity\Player\Player;
+use AppBundle\Domain\Entity\Position\Direction;
 use AppBundle\Domain\Event\MovementRequest;
 use AppBundle\Domain\Event\MovementResponse;
 use AppBundle\Domain\Service\GameEngine\ConsumerDaemonManagerInterface;
@@ -56,6 +57,7 @@ class MoveAllPlayersAsyncService implements MoveAllPlayersServiceInterface
      * @param AMQPStreamConnection $rabbitmq
      * @param PlayerRequestInterface $requestBuilder
      * @param MovePlayerServiceInterface $movePlayerService
+     * @param ConsumerDaemonManagerInterface $consumerDaemonsTool
      * @param LoggerInterface $logger
      * @param int $timeout
      */
@@ -110,7 +112,7 @@ class MoveAllPlayersAsyncService implements MoveAllPlayersServiceInterface
         /** @var $published: player-uuid => request-uuid */
         $published = [];
         foreach ($players as $player) {
-            if ($player->status() == Player::STATUS_PLAYING) {
+            if (!$player->isKilled()) {
                 $published[$player->uuid()] = $this->publishRequest($channel, $callbackQueue, $game, $player);
             }
         }
@@ -128,18 +130,19 @@ class MoveAllPlayersAsyncService implements MoveAllPlayersServiceInterface
 
         // Move players with responses
         foreach ($players as $player) {
+            $nextMove = Direction::STOPPED;
             if (array_key_exists($player->uuid(), $published)) {
                 $requestUUid = $published[$player->uuid()];
                 if (array_key_exists($requestUUid, $responses)) {
-                    $move = $responses[$requestUUid];
-
-                    $this->logger->debug(
-                        'MoveAllPlayersAsyncService - Moving player: ' . $player->uuid() . '. Move: ' . $move
-                    );
-
-                    $this->movePlayerService->move($player, $game, $move);
+                    $nextMove = $responses[$requestUUid];
                 }
             }
+
+            $this->logger->debug(
+                'MoveAllPlayersAsyncService - Moving player: ' . $player->uuid() . '. Move: ' . $nextMove
+            );
+
+            $this->movePlayerService->move($player, $game, $nextMove);
         }
 
         $this->logger->debug(

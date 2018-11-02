@@ -79,11 +79,9 @@ class ApiController extends Controller
      * Move the player
      *
      * @Route("/move", name="api_move")
-     * @param Request $request
      * @return JsonResponse
-     * @throws \HttpException
      */
-    public function moveAction(Request $request)
+    public function moveAction()
     {
         $moves = [
             Direction::UP,
@@ -96,7 +94,12 @@ class ApiController extends Controller
             Fire::RIGHT
         ];
 
-        $index = rand(0, count($moves) - 1);
+        $firing = rand(0, 8) > 7;
+        if ($firing) {
+            $index = rand(4, 7);
+        } else {
+            $index = rand(0, 3);
+        }
 
         return new JsonResponse(array(
             'move' => $moves[$index]

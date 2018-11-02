@@ -27,8 +27,9 @@ class MovePlayerService implements MovePlayerServiceInterface
     public function move(Player& $player, Game $game, string $move = null) : bool
     {
         // Validations
+        $moved = true;
         if (!$move) {
-            return false;
+            $moved = false;
         }
 
         if (Fire::firing($move)) {
@@ -37,12 +38,15 @@ class MovePlayerService implements MovePlayerServiceInterface
             // Computes the new position
             $position = $this->computeNewPosition($player->position(), $move);
             if (!$this->validatePosition($position, $game->maze())) {
-                return false;
+                $position = $player->position();
+                $moved = false;
             }
 
+            // Move the player to the new computed position
             $player->move($position);
         }
-        return true;
+
+        return $moved;
     }
 
     /**

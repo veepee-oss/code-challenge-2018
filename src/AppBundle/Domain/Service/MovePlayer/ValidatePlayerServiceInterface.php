@@ -17,7 +17,7 @@ interface ValidatePlayerServiceInterface
      *
      * @param Player $player
      * @param Game $game
-     * @return bool true=success, false=error
+     * @return void
      */
     public function validate(Player& $player, Game $game = null);
 }

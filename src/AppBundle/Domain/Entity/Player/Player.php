@@ -181,7 +181,7 @@ class Player extends MazeObject
      * @param string $email
      * @return $this
      */
-    public function setPlayerIds(string $name, string $email) : Player
+    public function setPlayerIds(string $name, ?string $email) : Player
     {
         $this->name = $name;
         $this->email = $email;
