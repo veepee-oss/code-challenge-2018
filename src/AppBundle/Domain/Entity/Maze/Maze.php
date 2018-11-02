@@ -83,7 +83,7 @@ class Maze implements \ArrayAccess, \Countable, \Iterator
         do {
             $y = rand(1, $this->height() - 2);
             $x = rand(1, $this->width() - 2);
-        } while ($this[$y][$x]->isEmpty());
+        } while (!$this[$y][$x]->isEmpty());
 
         return new Position($y, $x);
     }

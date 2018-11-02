@@ -2,7 +2,7 @@
     <div class="maze-buttons">
         <button
             type="button"
-            {% if not game.started %}
+            {% if game.started %}
                 disabled="disabled"
             {% endif %}
             class="btn btn-success js-btn-start"
@@ -15,7 +15,7 @@
 
         <button
             type="button"
-            {% if game.started %}
+            {% if not game.started %}
                 disabled="disabled"
             {% endif %}
             class="btn btn-danger js-btn-stop"

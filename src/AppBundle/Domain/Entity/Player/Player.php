@@ -280,9 +280,10 @@ class Player extends MazeObject
         if ($this->statusCount() > 0) {
             --$this->statusCount;
             $this->firingDir = Fire::NONE;
-            if ($this->isPowered()
+            if (0 == $this->statusCount()
+                && ($this->isPowered()
                 || $this->isReloading()
-                || $this->isKilled()) {
+                || $this->isKilled())) {
                 $this->status = static::STATUS_REGULAR;
             }
         }
