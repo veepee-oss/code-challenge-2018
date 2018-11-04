@@ -51,6 +51,7 @@ app:
             game:           "Game"
             status:         "Status"
             moves:          "Moves"
+            of:             "of"
             players:        "Players"
             ghosts:         "Ghosts"
             min-ghosts:     "Min. ghosts"
@@ -62,6 +63,8 @@ app:
             no-winners:     "No winners yet!"
             no-dead:        "No dead players yet!"
             no-players:     "No remaining players!"
+            score:          "Score"
+            points:         "points"
 
     gameover:
         title:          "Game over"
