@@ -51,10 +51,6 @@ class Fire
      */
     public static function direction(?string $fire) : ?string
     {
-        if (substr($fire, 0, 5) == 'fire-') {
-            return self::NONE;
-        }
-
         $dir = substr($fire, 5);
         switch ($dir) {
             case Direction::UP:

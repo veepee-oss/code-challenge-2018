@@ -53,7 +53,7 @@ class Position
      * @param string $dir
      * @return $this
      */
-    public function moveTo(string $dir) : Position
+    public function moveTo(?string $dir) : Position
     {
         switch ($dir) {
             case Direction::UP:
