@@ -10,8 +10,8 @@
 /**********************************************************************************************************************/
 
 .x-maze td {
-    width: 24px;
-    height: 24px;
+    width: 48px;
+    height: 48px;
     /*border: #FFFFFF dashed 1px;*/
 }
 
@@ -157,7 +157,6 @@
     background: #000000 url("../images/maze-ghost.png") no-repeat;
     background-size: 100%;
 }
-
 
 .x-maze .x-ghost-neutral {
     background: #000000 url("../images/maze-ghost-neutral.png") no-repeat;

@@ -4,8 +4,8 @@ namespace AppBundle\Domain\Service\MazeRender;
 
 use AppBundle\Domain\Entity\Game\Game;
 use AppBundle\Domain\Entity\Ghost\Ghost;
-use AppBundle\Domain\Entity\Maze\MazeCell;
 use AppBundle\Domain\Entity\Position\Direction;
+use AppBundle\Domain\Entity\Position\Position;
 
 /**
  * Class MazeIconRender
@@ -35,29 +35,9 @@ class MazeIconRender implements MazeRenderInterface
 
             // For each column...
             for ($col = 0; $col < $cols; ++$col) {
-                $class = $this->getEmptyCellCss();
+                $class = null;
 
-                $cell = $maze[$row][$col]->getContent();
-                if ($cell == MazeCell::CELL_WALL) {
-                    $class = $this->getMazeWallCss();
-                }
-
-                foreach ($game->players() as $index => $player) {
-                    if ($player->position()->x() == $col
-                        && $player->position()->y() == $row) {
-                        $direction = $player->direction();
-                        if (!$direction) {
-                            $direction = Direction::RIGHT;
-                        }
-
-                        if ($player->isKilled()) {
-                            $class = $this->getPlayedKilledCss(1 + $index, $direction);
-                        } else {
-                            $class = $this->getPlayerCss(1 + $index, $direction);
-                        }
-                    }
-                }
-
+                // Check if there is a ghost in this position
                 foreach ($game->ghosts() as $index => $ghost) {
                     if ($ghost->position()->x() == $col
                         && $ghost->position()->y() == $row) {
@@ -73,7 +53,49 @@ class MazeIconRender implements MazeRenderInterface
                         } else {
                             $class = $this->getGhostCss($index, $direction);
                         }
+                        break;
                     }
+                }
+
+                // Check if there is a player in this position
+                if (null === $class) {
+                    foreach ($game->players() as $index => $player) {
+                        if ($player->position()->x() == $col
+                            && $player->position()->y() == $row) {
+                            $direction = $player->direction();
+                            if (!$direction) {
+                                $direction = Direction::RIGHT;
+                            }
+
+                            if ($player->isKilled()) {
+                                $class = $this->getPlayedKilledCss(1 + $index, $direction);
+                            } else {
+                                $class = $this->getPlayerCss(1 + $index, $direction);
+                            }
+                            break;
+                        }
+                    }
+                }
+
+                // Check if there is a wall in this position
+                if (null === $class
+                    && !$maze[$row][$col]->isEmpty()) {
+                    $class = $this->getMazeWallCss();
+                }
+
+                // Check if there is a shot in this position
+                if (null === $class) {
+                    foreach ($game->players() as $player) {
+                        $shotDir = $player->fireDirAtPosition(new Position($row, $col));
+                        if ($shotDir) {
+                            $class = $this->getShotDirCss($shotDir);
+                        }
+                    }
+                }
+
+                // Check if is an empty cell
+                if (null === $class) {
+                    $class = $this->getEmptyCellCss();
                 }
 
                 $html .= '<td class="' . $class . '"></td>';
@@ -122,5 +144,10 @@ class MazeIconRender implements MazeRenderInterface
     protected function getGhostAngryCss($index, $direction)
     {
         return 'x-ghost-bad';
+    }
+
+    protected function getShotDirCss($direction)
+    {
+        return 'none';
     }
 }

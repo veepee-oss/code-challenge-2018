@@ -112,6 +112,7 @@ class GameEngine
      */
     public function move(Game &$game) : bool
     {
+        $this->resetFire($game);
         $this->movePlayers($game);
         $this->checkPlayersFire($game);
         $this->moveGhosts($game);
@@ -126,6 +127,25 @@ class GameEngine
     }
 
     /**
+     * Resets players fire
+     *
+     * @param Game $game
+     * @return $this
+     */
+    protected function resetFire(Game& $game) : GameEngine
+    {
+        $this->logger->debug(
+            'Game engine - Reset firing direction for all players of game ' . $game->uuid()
+        );
+
+        foreach ($game->players() as $player) {
+            $player->resetFiringDir();
+        }
+
+        return $this;
+    }
+
+    /**
      * Move all the players
      *
      * @param Game $game
@@ -133,6 +153,10 @@ class GameEngine
      */
     protected function movePlayers(Game &$game) : GameEngine
     {
+        $this->logger->debug(
+            'Game engine - Moving all players of game ' . $game->uuid()
+        );
+
         try {
             $this->moveAllPlayersService->move($game);
         } catch (MovePlayerException $exc) {
@@ -150,8 +174,16 @@ class GameEngine
      */
     protected function checkPlayersFire(Game& $game) : GameEngine
     {
+        $this->logger->debug(
+            'Game engine - Checking if any player fired for game ' . $game->uuid()
+        );
+
         foreach ($game->players() as $player) {
             if ($player->isFiring()) {
+                $this->logger->debug(
+                    'Game engine - Detected player ' . $player->uuid() . ' firing direction: ' . $player->firingDir()
+                );
+
                 $dir = Fire::direction($player->firingDir());
                 $pos = clone $player->position();
                 for ($i = 0; $i < Fire::DEFAULT_FIRE_RANGE; $i++) {
@@ -172,7 +204,6 @@ class GameEngine
                     }
                 }
             }
-            $player->resetFiringDir();
         }
         return $this;
     }

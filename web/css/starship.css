@@ -1,151 +1,288 @@
 /**********************************************************************************************************************/
 
+.x-maze .x-empty {
+    background: #000000 url("../images/starship-empty.png") no-repeat;
+    background-size: 100%;
+}
+
+/**********************************************************************************************************************/
+
+.x-maze .x-wall {
+    background: #000000 url("../images/starship-wall.png") no-repeat;
+    background-size: 100%;
+}
+
+/**********************************************************************************************************************/
+
 .x-maze .x-player1-right {
     background: #000000 url("../images/starship-player01-right.png") no-repeat;
+    background-size: 100%;
 }
 
 .x-maze .x-player1-left {
     background: #000000 url("../images/starship-player01-left.png") no-repeat;
+    background-size: 100%;
 }
 
 .x-maze .x-player1-up {
     background: #000000 url("../images/starship-player01-up.png") no-repeat;
+    background-size: 100%;
 }
 
 .x-maze .x-player1-down {
     background: #000000 url("../images/starship-player01-down.png") no-repeat;
+    background-size: 100%;
 }
 
 /**********************************************************************************************************************/
 
 .x-maze .x-player2-right {
     background: #000000 url("../images/starship-player02-right.png") no-repeat;
+    background-size: 100%;
 }
 
 .x-maze .x-player2-left {
     background: #000000 url("../images/starship-player02-left.png") no-repeat;
+    background-size: 100%;
 }
 
 .x-maze .x-player2-up {
     background: #000000 url("../images/starship-player02-up.png") no-repeat;
+    background-size: 100%;
 }
 
 .x-maze .x-player2-down {
     background: #000000 url("../images/starship-player02-down.png") no-repeat;
+    background-size: 100%;
 }
 
 /**********************************************************************************************************************/
 
 .x-maze .x-player3-right {
     background: #000000 url("../images/starship-player03-right.png") no-repeat;
+    background-size: 100%;
 }
 
 .x-maze .x-player3-left {
     background: #000000 url("../images/starship-player03-left.png") no-repeat;
+    background-size: 100%;
 }
 
 .x-maze .x-player3-up {
     background: #000000 url("../images/starship-player03-up.png") no-repeat;
+    background-size: 100%;
 }
-
 
 .x-maze .x-player3-down {
     background: #000000 url("../images/starship-player03-down.png") no-repeat;
+    background-size: 100%;
 }
 
 /**********************************************************************************************************************/
 
 .x-maze .x-player4-right {
     background: #000000 url("../images/starship-player04-right.png") no-repeat;
+    background-size: 100%;
 }
 
 .x-maze .x-player4-left {
     background: #000000 url("../images/starship-player04-left.png") no-repeat;
+    background-size: 100%;
 }
 
 .x-maze .x-player4-up {
     background: #000000 url("../images/starship-player04-up.png") no-repeat;
+    background-size: 100%;
 }
-
 
 .x-maze .x-player4-down {
     background: #000000 url("../images/starship-player04-down.png") no-repeat;
+    background-size: 100%;
 }
 
 /**********************************************************************************************************************/
 
 .x-maze .x-player5-right {
     background: #000000 url("../images/starship-player05-right.png") no-repeat;
+    background-size: 100%;
 }
 
 .x-maze .x-player5-left {
     background: #000000 url("../images/starship-player05-left.png") no-repeat;
+    background-size: 100%;
 }
 
 .x-maze .x-player5-up {
     background: #000000 url("../images/starship-player05-up.png") no-repeat;
+    background-size: 100%;
 }
-
 
 .x-maze .x-player5-down {
     background: #000000 url("../images/starship-player05-down.png") no-repeat;
+    background-size: 100%;
 }
 
 /**********************************************************************************************************************/
 
 .x-maze .x-player6-right {
     background: #000000 url("../images/starship-player06-right.png") no-repeat;
+    background-size: 100%;
 }
 
 .x-maze .x-player6-left {
     background: #000000 url("../images/starship-player06-left.png") no-repeat;
+    background-size: 100%;
 }
 
 .x-maze .x-player6-up {
     background: #000000 url("../images/starship-player06-up.png") no-repeat;
+    background-size: 100%;
 }
-
 
 .x-maze .x-player6-down {
     background: #000000 url("../images/starship-player06-down.png") no-repeat;
+    background-size: 100%;
 }
 
 /**********************************************************************************************************************/
 
 .x-maze .x-player7-right {
     background: #000000 url("../images/starship-player07-right.png") no-repeat;
+    background-size: 100%;
 }
 
 .x-maze .x-player7-left {
     background: #000000 url("../images/starship-player07-left.png") no-repeat;
+    background-size: 100%;
 }
 
 .x-maze .x-player7-up {
     background: #000000 url("../images/starship-player07-up.png") no-repeat;
+    background-size: 100%;
 }
-
 
 .x-maze .x-player7-down {
     background: #000000 url("../images/starship-player07-down.png") no-repeat;
+    background-size: 100%;
 }
 
 /**********************************************************************************************************************/
 
 .x-maze .x-player8-right {
     background: #000000 url("../images/starship-player08-right.png") no-repeat;
+    background-size: 100%;
 }
 
 .x-maze .x-player8-left {
     background: #000000 url("../images/starship-player08-left.png") no-repeat;
+    background-size: 100%;
 }
 
 .x-maze .x-player8-up {
     background: #000000 url("../images/starship-player08-up.png") no-repeat;
+    background-size: 100%;
 }
-
 
 .x-maze .x-player8-down {
     background: #000000 url("../images/starship-player08-down.png") no-repeat;
+    background-size: 100%;
+}
+
+/**********************************************************************************************************************/
+
+.x-maze .x-starship-explosion {
+    background: #000000 url("../images/starship-explosion.png") no-repeat;
+    background-size: 100%;
+}
+
+/**********************************************************************************************************************/
+
+.x-maze .x-ghost1-neutral {
+    background: #000000 url("../images/starship-invader01-neutral.png") no-repeat;
+    background-size: 100%;
+}
+
+.x-maze .x-ghost1-regular {
+    background: #000000 url("../images/starship-invader01-regular.png") no-repeat;
+    background-size: 100%;
+}
+
+.x-maze .x-ghost1-angry {
+    background: #000000 url("../images/starship-invader01-angry.png") no-repeat;
+    background-size: 100%;
+}
+
+/**********************************************************************************************************************/
+
+.x-maze .x-ghost2-neutral {
+    background: #000000 url("../images/starship-invader02-neutral.png") no-repeat;
+    background-size: 100%;
+}
+
+.x-maze .x-ghost2-regular {
+    background: #000000 url("../images/starship-invader02-regular.png") no-repeat;
+    background-size: 100%;
+}
+
+.x-maze .x-ghost2-angry {
+    background: #000000 url("../images/starship-invader02-angry.png") no-repeat;
+    background-size: 100%;
+}
+
+/**********************************************************************************************************************/
+
+.x-maze .x-ghost3-neutral {
+    background: #000000 url("../images/starship-invader03-neutral.png") no-repeat;
+    background-size: 100%;
+}
+
+.x-maze .x-ghost3-regular {
+    background: #000000 url("../images/starship-invader03-regular.png") no-repeat;
+    background-size: 100%;
+}
+
+.x-maze .x-ghost3-angry {
+    background: #000000 url("../images/starship-invader03-angry.png") no-repeat;
+    background-size: 100%;
+}
+
+/**********************************************************************************************************************/
+
+.x-maze .x-ghost4-neutral {
+    background: #000000 url("../images/starship-invader04-neutral.png") no-repeat;
+    background-size: 100%;
+}
+
+.x-maze .x-ghost4-regular {
+    background: #000000 url("../images/starship-invader04-regular.png") no-repeat;
+    background-size: 100%;
+}
+
+.x-maze .x-ghost4-angry {
+    background: #000000 url("../images/starship-invader04-angry.png") no-repeat;
+    background-size: 100%;
+}
+
+/**********************************************************************************************************************/
+
+.x-maze .x-starship-shot-right {
+    background: #000000 url("../images/starship-shot-right.png") no-repeat;
+    background-size: 100%;
+}
+
+.x-maze .x-starship-shot-left {
+    background: #000000 url("../images/starship-shot-left.png") no-repeat;
+    background-size: 100%;
+}
+
+.x-maze .x-starship-shot-up {
+    background: #000000 url("../images/starship-shot-up.png") no-repeat;
+    background-size: 100%;
+}
+
+.x-maze .x-starship-shot-down {
+    background: #000000 url("../images/starship-shot-down.png") no-repeat;
+    background-size: 100%;
 }
 
 /**********************************************************************************************************************/

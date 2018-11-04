@@ -205,7 +205,7 @@ class Player extends MazeObject
      */
     public function isFiring() : bool
     {
-        return Fire::NONE != $this->firingDir;
+        return Fire::firing($this->firingDir);
     }
 
     /**
@@ -244,6 +244,7 @@ class Player extends MazeObject
     /**
      * The player fires, change the status to reloading
      *
+     * @param string $firingDir
      * @param int $reloadMoves
      * @return $this
      */
@@ -300,6 +301,36 @@ class Player extends MazeObject
         $this->score += $score;
         $this->timestamp = new \DateTime();
         return $this;
+    }
+
+    /**
+     * Return the fire direction if firing the position is compromised
+     *
+     * @param Position $pos
+     * @return null|string
+     */
+    public function fireDirAtPosition(Position $pos) : ?string
+    {
+        if (!$this->isFiring()) {
+            return null;
+        }
+
+        $start = clone $this->position();
+        $end = clone $this->position();
+
+        $dir = Fire::direction($this->firingDir());
+        for ($i = 0; $i < Fire::DEFAULT_FIRE_RANGE; $i++) {
+            $end->moveTo($dir);
+        }
+
+        if ($start->y() <= $pos->y() &&
+            $start->x() <= $pos->x() &&
+            $pos->y() <= $end->y() &&
+            $pos->x() <= $end->x()) {
+            return $dir;
+        }
+
+        return null;
     }
 
     /**

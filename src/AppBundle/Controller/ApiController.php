@@ -102,7 +102,7 @@ class ApiController extends Controller
         }
 
         return new JsonResponse(array(
-            'move' => $moves[$index]
+            'move' => Fire::RIGHT //$moves[$index]
         ));
     }
 }
