@@ -23,6 +23,9 @@ class Player extends MazeObject
     /** @var int default values */
     const DEFAULT_STATUS_COUNT = 6;
 
+    /** @var int Default fire range */
+    const DEFAULT_FIRE_RANGE = Fire::DEFAULT_FIRE_RANGE;
+
     /** @var int the current status of the player: regular, powered, reloading, killed */
     protected $status;
 
@@ -31,6 +34,9 @@ class Player extends MazeObject
 
     /** @var string the firing direction or null */
     protected $firingDir;
+
+    /** @var int the current fire range (positions) */
+    protected $fireRange;
 
     /** @var int the current score of the player */
     protected $score;
@@ -106,6 +112,16 @@ class Player extends MazeObject
     public function firingDir() : ?string
     {
         return $this->firingDir;
+    }
+
+    /**
+     * Get the current fire range (positions)
+     *
+     * @return int
+     */
+    public function fireRange() : int
+    {
+        return $this->fireRange;
     }
 
     /**
@@ -253,6 +269,7 @@ class Player extends MazeObject
         if (Fire::firing($firingDir)) {
             $this->status = static::STATUS_RELOADING;
             $this->firingDir = $firingDir;
+            $this->fireRange = self::DEFAULT_FIRE_RANGE;
             $this->statusCount = $reloadMoves ?? static::DEFAULT_STATUS_COUNT;
         }
         return $this;
@@ -315,22 +332,34 @@ class Player extends MazeObject
             return null;
         }
 
-        $start = clone $this->position();
-        $end = clone $this->position();
+        $startPos = clone $this->position();
+        $endPos = clone $this->position();
 
         $dir = Fire::direction($this->firingDir());
-        for ($i = 0; $i < Fire::DEFAULT_FIRE_RANGE; $i++) {
-            $end->moveTo($dir);
+        for ($i = 0; $i < $this->fireRange(); $i++) {
+            $endPos->moveTo($dir);
         }
 
-        if ($start->y() <= $pos->y() &&
-            $start->x() <= $pos->x() &&
-            $pos->y() <= $end->y() &&
-            $pos->x() <= $end->x()) {
+        if ($startPos->y() <= $pos->y() &&
+            $startPos->x() <= $pos->x() &&
+            $pos->y() <= $endPos->y() &&
+            $pos->x() <= $endPos->x()) {
             return $dir;
         }
 
         return null;
+    }
+
+    /**
+     * Set the new fire range
+     *
+     * @param int $range
+     * @return Player
+     */
+    public function setFireRange(int $range) : Player
+    {
+        $this->fireRange = $range;
+        return $this;
     }
 
     /**
@@ -341,6 +370,7 @@ class Player extends MazeObject
     public function resetFiringDir()
     {
         $this->firingDir = Fire::NONE;
+        $this->fireRange = 0;
         return $this;
     }
 
@@ -396,7 +426,8 @@ class Player extends MazeObject
             'previous' => $this->previous()->serialize(),
             'status' => $this->status(),
             'status_count' => $this->statusCount(),
-            'firing_dir' => $this->firingDir,
+            'firing_dir' => $this->firingDir(),
+            'fire_range' => $this->fireRange(),
             'score' => $this->score(),
             'timestamp' => $this->timestamp()->format('YmdHisu'),
             'uuid' => $this->uuid(),
@@ -439,6 +470,11 @@ class Player extends MazeObject
         $firingDir = $data['firing_dir'] ?? null;
         if (null !== $firingDir) {
             $player->firingDir = $firingDir;
+        }
+
+        $fireRange = $data['fire_range'] ?? null;
+        if (null !== $fireRange) {
+            $player->fireRange = $fireRange;
         }
 
         $score = $data['score'] ?? null;

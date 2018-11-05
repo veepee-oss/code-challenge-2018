@@ -94,7 +94,7 @@ class ApiController extends Controller
             Fire::RIGHT
         ];
 
-        $firing = rand(0, 8) > 7;
+        $firing = rand(0, 8) > 6;
         if ($firing) {
             $index = rand(4, 7);
         } else {
