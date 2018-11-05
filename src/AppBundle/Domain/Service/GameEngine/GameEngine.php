@@ -199,19 +199,22 @@ class GameEngine
                     // Check if ghost killed
                     $ghosts = $game->ghostsAtPosition($pos);
                     foreach ($ghosts as $ghost) {
+                        $player->addScore(self::SCORE_KILL_GHOST);
+                        $game->removeGhost($ghost);
+
                         $this->logger->debug(
                             'Game engine - Shot of ' . $player->uuid() .
                             ' killed a ghost. Score ' . $player->score()
                         );
-
-                        $player->addScore(self::SCORE_KILL_GHOST);
-                        $game->removeGhost($ghost);
                     }
 
                     // Check if another player killed
                     $others = $game->playersAtPosition($pos);
                     foreach ($others as $other) {
                         if ($player->uuid() != $other->uuid()) {
+                            $player->addScore(self::SCORE_KILL_PLAYER);
+                            $other->killed()->addScore(self::SCORE_DEAD);
+
                             $this->logger->debug(
                                 'Game engine - Shot of ' . $player->uuid() .
                                 ' killed a player. Score ' . $player->score()
@@ -220,9 +223,6 @@ class GameEngine
                                 'Game engine - Player ' . $other->uuid() .
                                 ' killed by shot. Score ' . $other->score()
                             );
-
-                            $player->addScore(self::SCORE_KILL_PLAYER);
-                            $other->killed()->addScore(self::SCORE_DEAD);
                         }
                     }
                 }
@@ -280,19 +280,19 @@ class GameEngine
             if (!$player->isKilled() && $player->position()->equals($ghost->position())) {
                 if ($player->isPowered()
                     || $ghost->isNeutral()) {
+                    $player->addScore(self::SCORE_KILL_GHOST);
+
                     $this->logger->debug(
                         'Game engine - Ghost killed by player ' . $player->uuid() .
                         '. Score ' . $player->score()
                     );
-
-                    $player->addScore(self::SCORE_KILL_GHOST);
                 } else {
+                    $player->killed()->addScore(self::SCORE_DEAD);
+
                     $this->logger->debug(
                         'Game engine - Player ' . $player->uuid() .
                         ' killed by ghost. Score ' . $player->score()
                     );
-
-                    $player->killed()->addScore(self::SCORE_DEAD);
                 }
                 $game->removeGhost($ghost);
                 return true;
