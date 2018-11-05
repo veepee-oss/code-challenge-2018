@@ -55,13 +55,15 @@ class PlayerRequest implements PlayerRequestInterface
      *     "players": [
      *         {
      *             "y": "int",
-     *             "x": "int"
+     *             "x": "int",
+     *             "fire: "bool"
      *         }
      *     ],
      *     "ghosts": [
      *         {
      *             "y": "int",
-     *             "x": "int"
+     *             "x": "int",
+     *             "neutral": "bool"
      *         }
      *     ]
      * }
@@ -193,7 +195,8 @@ class PlayerRequest implements PlayerRequestInterface
                 && $playerPos->x() <= $x2) {
                 $players[] = array(
                     'y' => $playerPos->y(),
-                    'x' => $playerPos->x()
+                    'x' => $playerPos->x(),
+                    'fire' => !$player->isReloading()
                 );
             }
         }
@@ -221,7 +224,8 @@ class PlayerRequest implements PlayerRequestInterface
                 && $ghostPos->x() <= $x2) {
                 $ghosts[] = array(
                     'y' => $ghostPos->y(),
-                    'x' => $ghostPos->x()
+                    'x' => $ghostPos->x(),
+                    'neutral' => $ghost->isNeutral()
                 );
             }
         }

@@ -55,13 +55,15 @@ interface PlayerRequestInterface
      *     "players": [
      *         {
      *             "y": "int",
-     *             "x": "int"
+     *             "x": "int",
+     *             "fire: "bool"
      *         }
      *     ],
      *     "ghosts": [
      *         {
      *             "y": "int",
-     *             "x": "int"
+     *             "x": "int",
+     *             "neutral": "bool"
      *         }
      *     ]
      * }
