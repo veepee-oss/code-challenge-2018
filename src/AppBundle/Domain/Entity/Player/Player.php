@@ -191,6 +191,20 @@ class Player extends MazeObject
     }
 
     /**
+     * Get current direction
+     *
+     * @return string|null
+     */
+    public function direction(): ?string
+    {
+        if (!$this->isFiring()) {
+            return parent::direction();
+        }
+
+        return Fire::direction($this->firingDir);
+    }
+
+    /**
      * Sets the name and the email of the player
      *
      * @param string $name
