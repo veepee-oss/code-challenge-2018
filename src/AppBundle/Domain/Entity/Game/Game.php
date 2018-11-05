@@ -411,10 +411,10 @@ class Game
         $playersCopy = $this->players;
         usort($playersCopy, function (Player $p1, Player $p2) {
             // Order by score in the first time
-            $condition = $p1->score() <=> $p2->score();
+            $condition = $p2->score() <=> $p1->score();
             if (0 == $condition) {
                 // Order by timestamp when the same score
-                $condition = $p1->timestamp()->getTimestamp() <=> $p2->timestamp()->getTimestamp();
+                $condition = $p2->timestamp()->getTimestamp() <=> $p1->timestamp()->getTimestamp();
             }
             return $condition;
         });
