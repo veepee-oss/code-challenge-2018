@@ -1,22 +1,27 @@
 # messages.en.yml
 app:
     global:
-        name:           "Maze Escape"
-        title:          "Privalia Code Challenge 2018"
-        description:    "Maze Escape is the title of the Privalia Code Challenge 2018"
+        name:           "Space Invaders tribute"
+        title:          "Code Challenge 2018"
+        description:    "Space Invaders tribute is the title of the Privalia Code Challenge 2018"
         author:         "david.amigo@privalia.com"
 
     homepage:
         title:          "Homepage"
 
         upper-text:
-            1:              "The 2018 event of the <strong>Privalia Code Challenge</strong> is called <strong>Maze Escape Code Challenge</strong>!"
-            2:              "The goal is easy: You have to create a bot to <strong>escape from a labyrinth</strong>."
+            1:              "The 2018 event of the <strong>Privalia Code Challenge</strong> is called <strong>Space Invaders Tribute</strong>!"
+            2:              "The goal is easy: You have to create a REST API to <strong>kill the invaders</strong> (and the other players too)."
 
         lower-text:
-            1:              "Your bot will be trapped in a maze and is expected to find its way out competing with the other player bots in a real time challenge."
-            2:              "All the bots will start at the same random position and they won't be visible to each other."
-            3:              "The first bot to find its way out of the maze wins the game."
+            1:              "Your API will move a starship competing with the other player APIs in a real time challenge."
+            2:              "All the starships will start in a different random position."
+            3:              "The winner will be the starship with the highest score."
+
+        score:
+            1:              "<strong>100 points</strong> to kill another player's starship."
+            2:              "<strong>50 points</strong> to kill a space invader."
+            3:              "<strong>-25 points</strong> when killed by another player or ghost."
 
         rules:          "See the rules"
         create:         "Create test game"
@@ -28,8 +33,8 @@ app:
         title:          "Create new game"
 
         form:
-            height:         "Height of the maze (10 to 100)"
-            width:          "Width of the maze (10 to 100)"
+            height:         "Height of the board (10 to 100)"
+            width:          "Width of the board (10 to 100)"
             player-num:     "Number of players (1 to 8)"
             min-ghosts:     "Minimum number of enemies (0 to 50)"
             ghost-rate:     "Movements to create a new enemy (0 for no enemies al all)"
