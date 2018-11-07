@@ -1,7 +1,7 @@
 /**********************************************************************************************************************/
 
 .x-maze .x-empty {
-    background: #000000 url("../images/starship-empty.png") no-repeat;
+    background: #000000;
     background-size: 100%;
 }
 
