@@ -21,7 +21,7 @@ app:
         score:
             1:              "<strong>100 points</strong> to kill another player's starship."
             2:              "<strong>50 points</strong> to kill a space invader."
-            3:              "<strong>-25 points</strong> when killed by another player or ghost."
+            3:              "<strong>-25 points</strong> when killed by another player or invader."
 
         rules:          "See the rules"
         create:         "Create test game"
@@ -58,9 +58,9 @@ app:
             moves:          "Moves"
             of:             "of"
             players:        "Players"
-            ghosts:         "Ghosts"
-            min-ghosts:     "Min. ghosts"
-            ghosts-rate:    "Ghost rate"
+            ghosts:         "Invaders"
+            min-ghosts:     "Min. invaders"
+            ghosts-rate:    "Invaders rate"
             status-text:    "{0} Not started|{1} Playing|{8} Paused|{16}Finished"
             winners:        "Winners"
             dead:           "Dead players"
@@ -110,7 +110,7 @@ app:
             create:         "Create game"
             view:           "View game"
             view-details:   "View game details"
-            view-maze:      "View game maze"
+            view-maze:      "View game board"
             view-panels:    "View game panels"
             remove:         "Remove game"
 
