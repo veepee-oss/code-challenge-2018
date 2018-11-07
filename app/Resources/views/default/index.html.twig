@@ -11,36 +11,54 @@
                     {{ 'app.global.title' | trans }}
                 </small>
             </h1>
-            <p>
-                {{ 'app.homepage.upper-text.1' | trans | raw}}
-                {{ 'app.homepage.upper-text.2' | trans | raw }}
-            </p>
-            <p>
-                {{ 'app.homepage.lower-text.1' | trans | raw }}
-                {{ 'app.homepage.lower-text.2' | trans | raw }}
-                {{ 'app.homepage.lower-text.3' | trans | raw }}
-            </p>
-            <ul class="lead">
-                <li class="text-success">
-                    {{ 'app.homepage.score.1' | trans | raw }}
-                </li>
-                <li class="text-success">
-                    {{ 'app.homepage.score.2' | trans | raw }}
-                </li>
-                <li class="text-danger">
-                    {{ 'app.homepage.score.3' | trans | raw }}
-                </li>
-            </ul>
-            <p>
-                <a class="btn btn-primary btn-lg" href="{{ url('rules') }}" role="button">
-                    {{ 'app.homepage.rules' | trans }}
-                    <span class="glyphicon glyphicon-info-sign"></span>
-                </a>
-                <a class="btn btn-success btn-lg" href="{{ url('game_create') }}" role="button">
-                    {{ 'app.homepage.create' | trans }}
-                    <span class="glyphicon glyphicon-expand"></span>
-                </a>
-            </p>
+            <div class="row">
+                <div class="col-md-3">
+                    <img
+                        src="{{ asset('images/space-invaders.png') }}"
+                        alt="{{ 'app.global.name' | trans }}"
+                        title="{{ 'app.global.name' | trans }}"
+                        class="img-responsive"
+                        style="margin-bottom: 15px;"
+                    />
+
+                    <br>
+                    <br>
+
+                    <a class="btn btn-primary btn-block btn-lg" href="{{ url('rules') }}" role="button">
+                        {{ 'app.homepage.rules' | trans }}
+                        <span class="glyphicon glyphicon-info-sign"></span>
+                    </a>
+
+                    <br>
+
+                    <a class="btn btn-success btn-block btn-lg" href="{{ url('game_create') }}" role="button">
+                        {{ 'app.homepage.create' | trans }}
+                        <span class="glyphicon glyphicon-expand"></span>
+                    </a>
+                </div>
+                <div class="col-md-9">
+                    <p>
+                        {{ 'app.homepage.upper-text.1' | trans | raw}}
+                        {{ 'app.homepage.upper-text.2' | trans | raw }}
+                    </p>
+                    <p>
+                        {{ 'app.homepage.lower-text.1' | trans | raw }}
+                        {{ 'app.homepage.lower-text.2' | trans | raw }}
+                        {{ 'app.homepage.lower-text.3' | trans | raw }}
+                    </p>
+                    <ul class="lead">
+                        <li class="text-success">
+                            {{ 'app.homepage.score.1' | trans | raw }}
+                        </li>
+                        <li class="text-success">
+                            {{ 'app.homepage.score.2' | trans | raw }}
+                        </li>
+                        <li class="text-danger">
+                            {{ 'app.homepage.score.3' | trans | raw }}
+                        </li>
+                    </ul>
+                </div>
+            </div>
         </div>
     </div>
 

@@ -17,6 +17,7 @@ app:
             1:              "Your API will move a starship competing with the other player APIs in a real time challenge."
             2:              "All the starships will start in a different random position."
             3:              "The winner will be the starship with the highest score."
+            4:              "The scoring system is:"
 
         score:
             1:              "<strong>100 points</strong> to kill another player's starship."
