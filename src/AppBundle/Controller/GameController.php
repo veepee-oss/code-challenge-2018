@@ -39,15 +39,32 @@ class GameController extends Controller
     public function createAction(Request $request) : Response
     {
         $now = new \DateTime('now');
-        $limit = \DateTime::createFromFormat(
+
+        $startTime = \DateTime::createFromFormat(
             $this->getParameter('default_time_format'),
-            $this->getParameter('default_time_limit')
+            $this->getParameter('game_start_time')
         );
+
+        $endTime = \DateTime::createFromFormat(
+            $this->getParameter('default_time_format'),
+            $this->getParameter('game_end_time')
+        );
+
+        $freeTime = \DateTime::createFromFormat(
+            $this->getParameter('default_time_format'),
+            $this->getParameter('game_free_time')
+        );
+
         $admin = $request->query->get('admin', false);
 
-        if ($now >= $limit && !$admin) {
+        if (!$admin
+            && ($now <= $startTime
+            || ($now >= $endTime
+            && $now <= $freeTime))) {
             return $this->render('game/gameOver.html.twig', array(
-                'time_limit' => $limit
+                'now' => $now,
+                'start_time' => $startTime,
+                'end_time' => $endTime
             ));
         }
 

@@ -75,8 +75,11 @@ app:
     gameover:
         title:          "Game over"
         texts:
-            1:              "The <strong>Code Challenge 2018</strong> is over. You can't create more games since <strong>%date%</strong>."
-            2:              "Please send your API <strong>URL</strong> or <strong>IP</strong> address to <strong>%email%</strong> if you didn't do before."
+            1:              "The <strong>Code Challenge 2018</strong> hasn't started."
+            2:              "You can't start creating games until <strong>%date%</strong>."
+            3:              "The <strong>Code Challenge 2018</strong> is over."
+            4:              "You can't create more games since <strong>%date%</strong>."
+            5:              "If you have any question you can email to: <strong>%email%</strong>."
         buttons:
             back:           "Go Back"
 
