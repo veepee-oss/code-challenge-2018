@@ -38,9 +38,10 @@ interface PlayerRequestInterface
      *             "x1": "int",
      *             "y2": "int",
      *             "x2": "int"
-     *         }
+     *         },
+     *         "fire: "bool"
      *     },
-     *     "maze": {
+     *     "board": {
      *         "size": {
      *             "height": "int",
      *             "width": "int"
@@ -55,11 +56,10 @@ interface PlayerRequestInterface
      *     "players": [
      *         {
      *             "y": "int",
-     *             "x": "int",
-     *             "fire: "bool"
+     *             "x": "int"
      *         }
      *     ],
-     *     "ghosts": [
+     *     "invaders": [
      *         {
      *             "y": "int",
      *             "x": "int",

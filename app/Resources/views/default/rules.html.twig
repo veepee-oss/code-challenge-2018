@@ -240,11 +240,13 @@
             <h4>
                 Request format
             </h4>
+
             <pre>{% include 'default/rulesEndpointNameRequest.html.twig' %}</pre>
 
             <h4>
                 Response format
             </h4>
+
             <pre>{% include 'default/rulesEndpointNameResponse.html.twig' %}</pre>
 
             <h3 id="move-endpoint">
@@ -259,11 +261,13 @@
             <h4>
                 Request format
             </h4>
+
             <pre>{% include 'default/rulesEndpointMoveRequest.html.twig' %}</pre>
 
             <h4>
                 Response format
             </h4>
+
             <pre>{% include 'default/rulesEndpointMoveResponse.html.twig' %}</pre>
         </div>
 
@@ -273,19 +277,19 @@
                     Visible area
                 </h2>
                 <p>
-                    The labyrinth is a 0-based matrix, where [0, 0] is the upper left corner.
-                    The height and width are sent in the <code>maze.size.height</code> and <code>maze.size.width</code>
+                    The board is a 0-based matrix, where [0, 0] is the upper left corner.
+                    The height and width are sent in the <code>board.size.height</code> and <code>board.size.width</code>
                     vars of the request body in the <a href="#move-endpoint">Move endpoint</a>.
                     Each player has its own <strong>visible area</strong> based on its current position
                     (see <a href="#figure-1">Figure 1</a>).
                     The visible area is sent in the <code>player.area</code> var which is an object with four vars
                     <code>y1</code>, <code>x1</code>, <code>y2</code> and <code>x2</code>.
-                    The information sent in <code>maze.walls</code> and <code>ghosts</code> vars depends on the visible
-                    area.
+                    The information sent in <code>board.walls</code>, <code>ghosts</code> and <code>players</code> vars
+                    depends on the visible area.
                 </p>
                 <div class="row">
                     <div class="col-xs-12 col-sm-offset-2 col-sm-8 col-md-offset-3 col-md-6">
-                        <img class="img-responsive" src="{{ asset('images/full-maze02.png') }}">
+                        <img class="img-responsive" src="{{ asset('images/starship-screen02.png') }}">
                         <div class="text-center small" id="figure-1">
                             <i>Figure 1: Visible area</i>
                         </div>

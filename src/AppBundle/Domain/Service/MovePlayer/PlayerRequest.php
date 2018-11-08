@@ -38,9 +38,10 @@ class PlayerRequest implements PlayerRequestInterface
      *             "x1": "int",
      *             "y2": "int",
      *             "x2": "int"
-     *         }
+     *         },
+     *         "fire: "bool"
      *     },
-     *     "maze": {
+     *     "board": {
      *         "size": {
      *             "height": "int",
      *             "width": "int"
@@ -55,11 +56,10 @@ class PlayerRequest implements PlayerRequestInterface
      *     "players": [
      *         {
      *             "y": "int",
-     *             "x": "int",
-     *             "fire: "bool"
+     *             "x": "int"
      *         }
      *     ],
-     *     "ghosts": [
+     *     "invaders": [
      *         {
      *             "y": "int",
      *             "x": "int",
@@ -125,9 +125,10 @@ class PlayerRequest implements PlayerRequestInterface
                     'x1'        => $x1,
                     'y2'        => $y2,
                     'x2'        => $x2
-                )
+                ),
+                'fire'      => !$player->isReloading()
             ),
-            'maze'      => array(
+            'board'     => array(
                 'size'      => array(
                     'height'    => $height,
                     'width'     => $width
@@ -135,7 +136,7 @@ class PlayerRequest implements PlayerRequestInterface
                 'walls'     => $this->getVisibleWalls($game->maze(), $y1, $x1, $y2, $x2),
             ),
             'players'   => $this->getVisiblePlayers($game->players(), $player, $y1, $x1, $y2, $x2),
-            'ghosts'    => $this->getVisibleGhosts($game->ghosts(), $y1, $x1, $y2, $x2)
+            'invaders'  => $this->getVisibleGhosts($game->ghosts(), $y1, $x1, $y2, $x2)
         );
 
         if ($asArray) {
@@ -195,8 +196,7 @@ class PlayerRequest implements PlayerRequestInterface
                 && $playerPos->x() <= $x2) {
                 $players[] = array(
                     'y' => $playerPos->y(),
-                    'x' => $playerPos->x(),
-                    'fire' => !$player->isReloading()
+                    'x' => $playerPos->x()
                 );
             }
         }
