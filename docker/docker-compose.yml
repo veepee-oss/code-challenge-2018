@@ -3,7 +3,10 @@ services:
 
     # See: docker/Dockerfile
     cc18_server:
-        build: .
+        build:
+            context: .
+            args:
+                - "DOCKER_USER=david"
 
         image: "php:7.2-apache-ch18-svr"
 
@@ -53,6 +56,7 @@ services:
         networks:
             - "cc18_network"
 
+    # See: https://hub.docker.com/_/rabbitmq/
     cc18_rabbitmq:
         image: "rabbitmq:3-management"
 

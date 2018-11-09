@@ -2,7 +2,7 @@
 
 DIR=$(dirname $0)
 cd ${DIR}
-source ./includes
+source ./includes.sh
 
 enabled=$( docker ps --format "{{.Names}}" | grep -i "${DOCKER_SERVER}" )
 if [ "$enabled" == "" ]

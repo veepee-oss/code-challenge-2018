@@ -2,10 +2,10 @@
 
 DIR=$(dirname $0)
 cd ${DIR}
-source ./includes
+source ./includes.sh
 
-echo -e "Stopping ${DOCKER_FILE}..."
+echo -e "Stopping ${DOCKER_COMPOSE_FILE}..."
 
-docker-compose -f ${DOCKER_FILE} down --remove-orphans
+docker-compose ${DOCKER_COMPOSE_FILE} down --remove-orphans
 
 echo -e ""
