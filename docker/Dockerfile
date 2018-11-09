@@ -11,6 +11,10 @@ RUN docker-php-ext-install pdo_mysql bcmath opcache && \
 RUN pecl install apcu && \
     docker-php-ext-enable apcu
 
+COPY 000-default.conf /etc/apache2/sites-available/000-default.conf
+
+RUN a2enmod rewrite
+
 RUN useradd -m -u 1000 -U $DOCKER_USER
 
 RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" \
