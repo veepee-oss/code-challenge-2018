@@ -1,6 +1,6 @@
 #!/bin/bash
 
-DOCKER_COMPOSE_FILE="-f docker-compose.yml"
+DOCKER_COMPOSE_FILE="-f docker-compose.yml -f docker-compose.dev.yml"
 DOCKER_SERVER_USER="david"
 DOCKER_SERVER="docker_cc18_server"
 

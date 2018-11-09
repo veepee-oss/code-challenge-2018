@@ -1,0 +1,28 @@
+version: "2.1"
+services:
+
+    # See: docker/Dockerfile
+    cc18_server:
+        build:
+            args:
+                - "DOCKER_USER=david"
+
+        environment:
+            APACHE_RUN_USER: "david"
+            APACHE_RUN_GROUP: "david"
+
+        ports:
+            - "8080:80"
+
+    # See: https://hub.docker.com/_/mysql
+    cc18_mysql:
+        ports:
+            - "3307:3306"
+
+    # See: https://hub.docker.com/_/rabbitmq/
+    cc18_rabbitmq:
+        image: "rabbitmq:3-management"
+
+        ports:
+            - "5672:5672"
+            - "15672:15672"

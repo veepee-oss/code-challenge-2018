@@ -14,9 +14,6 @@ services:
         ports:
             - "80:80"
 
-        volumes:
-            - "../.:/var/www/html"
-
     # See: https://hub.docker.com/_/mysql
     cc18_mysql:
         ports: []
