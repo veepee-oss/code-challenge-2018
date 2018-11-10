@@ -335,7 +335,7 @@ class Player extends MazeObject
     }
 
     /**
-     * Return the fire direction if firing the position is compromised
+     * Return the fire direction if the position is compromised
      *
      * @param Position $pos
      * @return null|string

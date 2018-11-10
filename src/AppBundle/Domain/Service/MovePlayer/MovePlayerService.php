@@ -36,7 +36,7 @@ class MovePlayerService implements MovePlayerServiceInterface
             if (!$player->isReloading()) {
                 $player->fire($move);
             } else {
-                // Invalid movement: The player stops
+                // Invalid movement while reloading
                 $player->move($player->position());
                 $moved = false;
             }
