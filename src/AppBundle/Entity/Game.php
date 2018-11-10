@@ -138,6 +138,15 @@ class Game
     private $ghosts;
 
     /**
+     * All the data of the ghosts
+     *
+     * @var array
+     *
+     * @ORM\Column(name="killed_ghosts", type="json_array", nullable=true)
+     */
+    private $killedGhosts;
+
+    /**
      * Game constructor.
      *
      * @param $source
@@ -159,6 +168,7 @@ class Game
             $this->maze = array();
             $this->players = array();
             $this->ghosts = array();
+            $this->killedGhosts = array();
         } elseif ($source instanceof Game) {
             $this->id = $source->getId();
             $this->uuid = $source->getUuid();
@@ -173,6 +183,7 @@ class Game
             $this->maze = $source->getMaze();
             $this->players = $source->getPlayers();
             $this->ghosts = $source->getGhosts();
+            $this->killedGhosts = $source->getKilledGhosts();
         } elseif ($source instanceof DomainGame\Game) {
             $this->id = null;
             $this->fromDomainEntity($source);
@@ -203,10 +214,16 @@ class Game
             $ghostsArray[] = DomainGhost\Ghost::unserialize($ghost);
         }
 
+        $killedGhostsArray = array();
+        foreach ($this->killedGhosts as $ghost) {
+            $killedGhostsArray[] = DomainGhost\Ghost::unserialize($ghost);
+        }
+
         return new DomainGame\Game(
             $mazeObj,
             $playersArray,
             $ghostsArray,
+            $killedGhostsArray,
             $this->ghostRate,
             $this->minGhosts,
             $this->status,
@@ -231,6 +248,7 @@ class Game
         $this->setMaze($game->maze());
         $this->setPlayers($game->players());
         $this->setGhosts($game->ghosts());
+        $this->setKilledGhosts($game->killedGhosts());
         $this->setGhostRate($game->ghostRate());
         $this->setMinGhosts($game->minGhosts());
         $this->SetLimit($game->limit());
@@ -542,5 +560,36 @@ class Game
     public function getGhosts()
     {
         return $this->ghosts;
+    }
+
+    /**
+     * Set killed ghosts
+     *
+     * @param array $killedGhosts
+     * @return $this
+     */
+    public function setKilledGhosts($killedGhosts = null)
+    {
+        $this->killedGhosts = array();
+        if (null !== $killedGhosts && count($killedGhosts) > 0) {
+            foreach ($killedGhosts as $killedGhost) {
+                if ($killedGhost instanceof DomainGhost\Ghost) {
+                    $this->killedGhosts[] = $killedGhost->serialize();
+                } else {
+                    $this->killedGhosts[] = $killedGhost;
+                }
+            }
+        }
+        return $this;
+    }
+
+    /**
+     * Set killed ghosts
+     *
+     * @return array
+     */
+    public function getKilledGhosts()
+    {
+        return $this->killedGhosts;
     }
 }

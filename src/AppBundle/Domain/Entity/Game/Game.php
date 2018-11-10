@@ -36,6 +36,9 @@ class Game
     /** @var Ghost[] the active ghosts */
     protected $ghosts;
 
+    /** @var Ghost[] the recently killed ghosts  */
+    protected $killedGhosts;
+
     /** @var int the frequency of new ghosts */
     protected $ghostRate;
 
@@ -63,10 +66,12 @@ class Game
      * @param Maze $maze
      * @param Player[] $players
      * @param Ghost[] $ghosts
+     * @param Ghost[] $killedGhosts
      * @param int $ghostRate
      * @param int $minGhosts
      * @param int $status
      * @param int $moves
+     * @param int $limit
      * @param string $uuid
      * @param string $name
      * @throws \Exception
@@ -75,6 +80,7 @@ class Game
         Maze $maze,
         array $players,
         array $ghosts,
+        array $killedGhosts = [],
         $ghostRate = 0,
         $minGhosts = 0,
         $status = self::STATUS_NOT_STARTED,
@@ -86,6 +92,7 @@ class Game
         $this->maze = $maze;
         $this->players = $players;
         $this->ghosts = $ghosts;
+        $this->killedGhosts = $killedGhosts;
         $this->ghostRate = $ghostRate;
         $this->minGhosts = $minGhosts;
         $this->status = $status;
@@ -123,6 +130,16 @@ class Game
     public function ghosts()
     {
         return $this->ghosts;
+    }
+
+    /**
+     * Get The the recently killed ghosts
+     *
+     * @return Ghost[]
+     */
+    public function killedGhosts(): array
+    {
+        return $this->killedGhosts;
     }
 
     /**
@@ -280,10 +297,22 @@ class Game
     {
         $this->moves = 0;
         $this->ghosts = array();
+        $this->resetKilledGhosts();
         $this->status = static::STATUS_NOT_STARTED;
         foreach ($this->players as $player) {
             $player->resetAll($player->start());
         }
+        return $this;
+    }
+
+    /**
+     * Removes all the killed ghosts
+     *
+     * @return $this
+     */
+    public function resetKilledGhosts()
+    {
+        $this->killedGhosts = [];
         return $this;
     }
 
@@ -360,6 +389,7 @@ class Game
     {
         foreach ($this->ghosts as $key => $item) {
             if ($ghost == $item) {
+                $this->killedGhosts[] = $ghost;
                 unset($this->ghosts[$key]);
                 break;
             }

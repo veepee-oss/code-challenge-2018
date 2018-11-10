@@ -2,7 +2,6 @@
 
 namespace AppBundle\Controller;
 
-use AppBundle\Domain\Entity\Game\Game;
 use AppBundle\Domain\Entity\Player\Player;
 use AppBundle\Domain\Service\GameEngine\ConsumerDaemonManagerInterface;
 use AppBundle\Domain\Service\GameEngine\GameDaemonManagerInterface;

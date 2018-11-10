@@ -83,6 +83,17 @@ class MazeIconRender implements MazeRenderInterface
                     $class = $this->getMazeWallCss();
                 }
 
+                // Check if there is killed ghost in this position
+                if (null === $class) {
+                    foreach ($game->killedGhosts() as $index => $ghost) {
+                        if ($ghost->position()->x() == $col
+                            && $ghost->position()->y() == $row) {
+                            $class = $this->getGhostKilledCss($index, $direction);
+                            break;
+                        }
+                    }
+                }
+
                 // Check if there is a shot in this position
                 if (null === $class) {
                     foreach ($game->players() as $player) {
@@ -146,8 +157,13 @@ class MazeIconRender implements MazeRenderInterface
         return 'x-ghost-bad';
     }
 
+    protected function getGhostKilledCss($index, $direction)
+    {
+        return 'x-empty';
+    }
+
     protected function getShotDirCss($direction)
     {
-        return 'none';
+        return 'x-empty';
     }
 }

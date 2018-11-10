@@ -265,6 +265,13 @@
 
 /**********************************************************************************************************************/
 
+.x-maze .x-ghost-explosion {
+    background: #000000 url("../images/starship-invader-explosion.png") no-repeat;
+    background-size: 100%;
+}
+
+/**********************************************************************************************************************/
+
 .x-maze .x-starship-shot-right {
     background: #000000 url("../images/starship-shot-right.png") no-repeat;
     background-size: 100%;

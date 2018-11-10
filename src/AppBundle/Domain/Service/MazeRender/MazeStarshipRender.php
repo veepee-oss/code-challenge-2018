@@ -32,6 +32,11 @@ class MazeStarshipRender extends MazeIconRender
         return 'x-ghost' . $num . '-angry';
     }
 
+    protected function getGhostKilledCss($index, $direction)
+    {
+        return 'x-ghost-explosion';
+    }
+
     protected function getShotDirCss($direction)
     {
         return 'x-starship-shot-' . $direction;

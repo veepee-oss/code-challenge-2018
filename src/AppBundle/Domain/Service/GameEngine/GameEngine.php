@@ -77,6 +77,7 @@ class GameEngine
             $maze,
             $players,
             array(),
+            array(),
             $ghostRate,
             $minGhosts,
             Game::STATUS_NOT_STARTED,
@@ -112,6 +113,7 @@ class GameEngine
      */
     public function move(Game &$game) : bool
     {
+        $game->resetKilledGhosts();
         $this->resetFire($game);
         $this->movePlayers($game);
         $this->checkPlayersFire($game);
