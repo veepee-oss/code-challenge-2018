@@ -124,8 +124,11 @@ app:
         title:          "Game Details"
 
     credits:
-        title:          "Credits and Attributions"
+        title:          "License, Credits and Attributions"
 
         texts:
-            libraries:      "Libraries attributions"
-            icons:          "Icons attributions"
+            license:        "License"
+            constributors:  "Contributors"
+            attributions:   "Attributions"
+            libraries:      "Software Libraries"
+            graphics:       "Graphics and Icons"
