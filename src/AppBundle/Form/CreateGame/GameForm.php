@@ -42,8 +42,9 @@ class GameForm extends AbstractType
         ));
 
         $resolver->setDefaults(array(
+            'csrf_protection' => false,
             'data_class' => GameEntity::class,
-            'action'     => null
+            'action' => null
         ));
     }
 
