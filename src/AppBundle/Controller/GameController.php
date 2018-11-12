@@ -38,25 +38,13 @@ class GameController extends Controller
     public function createAction(Request $request) : Response
     {
         $now = new \DateTime('now');
+        $dateFormat = $this->getParameter('default_time_format');
+        $startTime = \DateTime::createFromFormat($dateFormat, $this->getParameter('game_start_time'));
+        $endTime = \DateTime::createFromFormat($dateFormat, $this->getParameter('game_end_time'));
+        $freeTime = \DateTime::createFromFormat($dateFormat, $this->getParameter('game_free_time'));
+        $accessGranted = $this->isGranted('ROLE_GUEST');
 
-        $startTime = \DateTime::createFromFormat(
-            $this->getParameter('default_time_format'),
-            $this->getParameter('game_start_time')
-        );
-
-        $endTime = \DateTime::createFromFormat(
-            $this->getParameter('default_time_format'),
-            $this->getParameter('game_end_time')
-        );
-
-        $freeTime = \DateTime::createFromFormat(
-            $this->getParameter('default_time_format'),
-            $this->getParameter('game_free_time')
-        );
-
-        $admin = $request->query->get('admin', false);
-
-        if (!$admin
+        if (!$accessGranted
             && ($now <= $startTime
             || ($now >= $endTime
             && $now <= $freeTime))) {
@@ -70,16 +58,9 @@ class GameController extends Controller
         // Create game data entity
         $gameEntity = new GameEntity();
 
-        $params = array();
-        if ($admin) {
-            $params = array(
-                'admin' => 1
-            );
-        }
-
         // Create the game data form (step 1)
         $form = $this->createForm(GameForm::class, $gameEntity, array(
-            'action'    => $this->generateUrl('game_create', $params),
+            'action'    => $this->generateUrl('game_create'),
             'form_type' => GameForm::TYPE_GAME_DATA
         ));
 
@@ -548,7 +529,7 @@ class GameController extends Controller
     }
 
     /**
-     * Admin game daemon
+     * Admin game view
      *
      * @Route("/admin", name="admin_view")
      * @return Response

@@ -5,6 +5,8 @@ app:
         title:          "Code Challenge 2018"
         description:    "Space Invaders tribute is the title of the Privalia Code Challenge 2018"
         author:         "david.amigo@privalia.com"
+        login:          "Login"
+        logout:         "Logout"
 
     homepage:
         title:          "Homepage"

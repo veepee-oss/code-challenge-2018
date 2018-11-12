@@ -45,6 +45,19 @@ class DefaultController extends Controller
     }
 
     /**
+     * @Route("/login", name="login")
+     * @return Response
+     */
+    public function loginAction() : Response
+    {
+        if ($this->isGranted('ROLE_ADMIN')) {
+            $this->redirectToRoute('admin_view');
+        }
+
+        return $this->redirectToRoute('homepage');
+    }
+
+    /**
      * Get the logger
      *
      * @return LoggerInterface
