@@ -4,6 +4,7 @@ namespace AppBundle\Domain\Entity\Player;
 
 use AppBundle\Domain\Entity\Fire\Fire;
 use AppBundle\Domain\Entity\Maze\MazeObject;
+use AppBundle\Domain\Entity\Position\Direction;
 use AppBundle\Domain\Entity\Position\Position;
 use Ramsey\Uuid\Uuid;
 
@@ -352,6 +353,12 @@ class Player extends MazeObject
         $dir = Fire::direction($this->firingDir());
         for ($i = 0; $i < $this->fireRange(); $i++) {
             $endPos->moveTo($dir);
+        }
+
+        if ($dir == Direction::LEFT || $dir == Direction::UP) {
+            $tempPos = $startPos;
+            $startPos = $endPos;
+            $endPos = $tempPos;
         }
 
         if ($startPos->y() <= $pos->y() &&
