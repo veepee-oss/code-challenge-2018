@@ -554,26 +554,30 @@ class GameController extends Controller
         );
 
         $playingGames = array();
+        $pausedGames = array();
+        $notStartedGames = array();
         $finishedGames = array();
-        $stoppedGames = array();
 
         foreach ($entities as $entity) {
             $game = $entity->toDomainEntity();
             if ($game->playing()) {
                 $playingGames[] = $game;
-            } elseif ($game->finished()) {
-                $finishedGames[] = $game;
+            } elseif ($game->paused()) {
+                $pausedGames[] = $game;
+            } elseif (!$game->finished()) {
+                $notStartedGames[] = $game;
             } else {
-                $stoppedGames[] = $game;
+                $finishedGames[] = $game;
             }
         }
 
         return $this->render('game/admin.html.twig', array(
-            'processId'     => $processId,
-            'consumerIds'   => $consumerIds,
-            'playingGames'  => $playingGames,
-            'finishedGames' => $finishedGames,
-            'stoppedGames'  => $stoppedGames
+            'processId'       => $processId,
+            'consumerIds'     => $consumerIds,
+            'playingGames'    => $playingGames,
+            'pausedGames'     => $pausedGames,
+            'notStartedGames' => $notStartedGames,
+            'finishedGames'   => $finishedGames
         ));
     }
 

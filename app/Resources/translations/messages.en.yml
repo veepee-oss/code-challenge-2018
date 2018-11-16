@@ -104,6 +104,7 @@ app:
             games:
                 not-started:    "Not started games"
                 running:        "Running games"
+                paused:         "Paused games"
                 finished:       "Finished games"
                 none:           "No games found!"
 
