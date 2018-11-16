@@ -212,12 +212,6 @@ class AskPlayerApiService implements AskNextMovementInterface, AskPlayerNameInte
 
         $responseBody = $response->getBody(true);
 
-        $this->logger->debug(
-            'AskPlayerApiService - Response received - ' .
-            'Code: ' . $responseCode . ' - ' .
-            'Body: ' . $responseBody
-        );
-
         $responseData = json_decode($responseBody, true);
         if (null === $responseData || !is_array($responseData)) {
             $message = 'Invalid API response!';
@@ -226,7 +220,11 @@ class AskPlayerApiService implements AskNextMovementInterface, AskPlayerNameInte
             }
 
             $this->logger->error(
-                'AskPlayerApiService - Error decoding JSON message - Message: "' . $message . '".'
+                'AskPlayerApiService - Invalid response received - ' . $responseBody
+            );
+
+            $this->logger->error(
+                'AskPlayerApiService - Error decoding JSON message - ' . $message
             );
 
             $this->dbLogger->log($game, $player, $this->buildErrorContextArray(
@@ -241,6 +239,12 @@ class AskPlayerApiService implements AskNextMovementInterface, AskPlayerNameInte
 
             throw new MovePlayerException($message);
         }
+
+        $this->logger->debug(
+            'AskPlayerApiService - Valid response received - ' .
+            'Code: ' . $responseCode . ' - ' .
+            'Body: ' . $responseBody
+        );
 
         $this->dbLogger->log($game, $player, $this->buildErrorContextArray(
             $requestUrl,
