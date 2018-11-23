@@ -24,6 +24,11 @@ class MazeIconRender implements MazeRenderInterface
     {
         $maze = $game->maze();
         $class = $this->getMazeGlobalCss();
+
+        if ($game->finished()) {
+            $class .= " finished";
+        }
+
         $html = '<table class="' . $class .'">';
 
         $rows = $maze->height();
