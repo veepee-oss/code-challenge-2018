@@ -300,7 +300,7 @@ class Game
         $this->resetKilledGhosts();
         $this->status = static::STATUS_NOT_STARTED;
         foreach ($this->players as $player) {
-            $player->resetAll($player->start());
+            $player->resetAll($this->maze->createStartPosition());
         }
         return $this;
     }

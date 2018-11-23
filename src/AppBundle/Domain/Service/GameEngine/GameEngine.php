@@ -268,7 +268,7 @@ class GameEngine
 
         foreach ($players as $player) {
             if (!$player->isKilled()) {
-                if ( $player->position()->equals($ghost->position())) {
+                if ($player->position()->equals($ghost->position())) {
                     if (!$player->isPowered()
                         && !$ghost->isNeutral()) {
                         $player->killed()->addScore(self::SCORE_DEAD);
