@@ -22,10 +22,10 @@ class Game
     const STATUS_FINISHED = 16;
 
     /** @var int the default limit of moves */
-    const DEFAULT_MOVES_LIMIT = 500;
+    const DEFAULT_MOVES_LIMIT = 100;
 
     /** @var int The default view range and fire range */
-    const DEFAULT_VIEW_RANGE = 5;
+    const DEFAULT_VIEW_RANGE = 4;
 
     /** @var Maze the maze */
     protected $maze;

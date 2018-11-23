@@ -18,35 +18,35 @@ class GameEntity
      * @Assert\NotBlank()
      * @Assert\Range(min=10, max=100)
      */
-    private $height = 25;
+    private $height = 15;
 
     /**
      * @var int
      * @Assert\NotBlank()
      * @Assert\Range(min=10, max=100)
      */
-    private $width = 50;
+    private $width = 30;
 
     /**
      * @var int
      * @Assert\NotBlank()
      * @Assert\Range(min=1, max=8)
      */
-    private $playerNum = 2;
+    private $playerNum = 1;
 
     /**
      * @var int
      * @Assert\NotBlank()
      * @Assert\Range(min=0, max=50)
      */
-    private $minGhosts = 1;
+    private $minGhosts = 10;
 
     /**
      * @var int
      * @Assert\NotBlank()
      * @Assert\Range(min=0, max=200)
      */
-    private $ghostRate = 50;
+    private $ghostRate = 10;
 
     /**
      * @var int
