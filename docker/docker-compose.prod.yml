@@ -11,6 +11,9 @@ services:
             APACHE_RUN_USER: "ubuntu"
             APACHE_RUN_GROUP: "ubuntu"
 
+        external_links:
+            - "cc18_api_java:apijava.com"
+
         ports:
             - "80:80"
 

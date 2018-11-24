@@ -3,25 +3,26 @@
 namespace AppBundle\Controller;
 
 use AppBundle\Domain\Entity\Player\Player;
-use AppBundle\Domain\Service\GameEngine\ConsumerDaemonManagerInterface;
 use AppBundle\Domain\Service\GameEngine\GameDaemonManagerInterface;
 use AppBundle\Domain\Service\GameEngine\GameEngine;
 use AppBundle\Domain\Service\MazeBuilder\MazeBuilderInterface;
+use AppBundle\Domain\Service\MazeRender\MazeRenderInterface;
 use AppBundle\Domain\Service\MovePlayer\ValidatePlayerServiceInterface;
 use AppBundle\Form\CreateGame\GameEntity;
 use AppBundle\Form\CreateGame\GameForm;
 use AppBundle\Form\CreateGame\PlayerEntity;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
+use AppBundle\Repository\GameRepository;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\Form\FormError;
+use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
- * Game and game admin controller
+ * Game controller
  *
  * @package AppBundle\Controller
  * @Route("/game")
@@ -59,10 +60,11 @@ class GameController extends Controller
         $gameEntity = new GameEntity();
 
         // Create the game data form (step 1)
-        $form = $this->createForm(GameForm::class, $gameEntity, array(
-            'action'    => $this->generateUrl('game_create'),
-            'form_type' => GameForm::TYPE_GAME_DATA
-        ));
+        $form = $this->createNewGameForm(
+            $gameEntity,
+            $this->generateUrl('game_create'),
+            GameForm::TYPE_GAME_DATA
+        );
 
         // Handle the request & if the data is valid...
         $form->handleRequest($request);
@@ -73,10 +75,11 @@ class GameController extends Controller
             }
 
             // Create the players form (step 2)
-            $form = $this->createForm(gameForm::class, $gameEntity, array(
-                'action'    => $this->generateUrl('game_create_next'),
-                'form_type' => GameForm::TYPE_PLAYERS
-            ));
+            $form = $this->createNewGameForm(
+                $gameEntity,
+                $this->generateUrl('game_create_next'),
+                GameForm::TYPE_PLAYERS
+            );
         }
 
         return $this->render('game/create.html.twig', array(
@@ -98,10 +101,11 @@ class GameController extends Controller
         $gameEntity = new GameEntity();
 
         // Create the players form (step 2)
-        $form = $this->createForm(gameForm::class, $gameEntity, array(
-            'action'    => $this->generateUrl('game_create_next'),
-            'form_type' => GameForm::TYPE_PLAYERS
-        ));
+        $form = $this->createNewGameForm(
+            $gameEntity,
+            $this->generateUrl('game_create_next'),
+            GameForm::TYPE_PLAYERS
+        );
 
         // Handle the request & if the data is valid...
         $form->handleRequest($request);
@@ -182,7 +186,7 @@ class GameController extends Controller
         $this->checkDaemon();
 
         /** @var \AppBundle\Entity\Game $entity */
-        $entity = $this->getDoctrine()->getRepository('AppBundle:Game')->findOneBy(array(
+        $entity = $this->getGameDoctrineRepository()->findOneBy(array(
             'uuid' => $uuid
         ));
 
@@ -190,7 +194,7 @@ class GameController extends Controller
             throw new NotFoundHttpException();
         }
 
-        $renderer = $this->get('app.maze.renderer');
+        $renderer = $this->getMazeRendererService();
         $game = $entity->toDomainEntity();
         $maze = $renderer->render($game);
 
@@ -215,7 +219,7 @@ class GameController extends Controller
         $this->checkDaemon();
 
         /** @var \AppBundle\Entity\Game $entity */
-        $entity = $this->getDoctrine()->getRepository('AppBundle:Game')->findOneBy(array(
+        $entity = $this->getGameDoctrineRepository()->findOneBy(array(
             'uuid' => $uuid
         ));
 
@@ -223,7 +227,7 @@ class GameController extends Controller
             throw new NotFoundHttpException();
         }
 
-        $renderer = $this->get('app.maze.renderer');
+        $renderer = $this->getMazeRendererService();
         $game = $entity->toDomainEntity();
         $maze = $renderer->render($game);
 
@@ -248,7 +252,7 @@ class GameController extends Controller
         $this->checkDaemon();
 
         /** @var \AppBundle\Entity\Game $entity */
-        $entity = $this->getDoctrine()->getRepository('AppBundle:Game')->findOneBy(array(
+        $entity = $this->getGameDoctrineRepository()->findOneBy(array(
             'uuid' => $uuid
         ));
 
@@ -256,7 +260,7 @@ class GameController extends Controller
             throw new NotFoundHttpException();
         }
 
-        $renderer = $this->get('app.maze.renderer');
+        $renderer = $this->getMazeRendererService();
         $game = $entity->toDomainEntity();
         $maze = $renderer->render($game);
 
@@ -267,35 +271,7 @@ class GameController extends Controller
     }
 
     /**
-     * View Game Details
-     *
-     * @Route("/{uuid}/view/details", name="game_view_details",
-     *     requirements={"uuid": "[0-9a-f]{8}\-[0-9a-f]{4}\-[0-9a-f]{4}\-[0-9a-f]{4}\-[0-9a-f]{12}"})
-     *
-     * @param string $uuid
-     * @return Response
-     * @throws \Exception
-     */
-    public function viewDetailsAction($uuid)
-    {
-        /** @var \AppBundle\Entity\Game $entity */
-        $entity = $this->getDoctrine()->getRepository('AppBundle:Game')->findOneBy(array(
-            'uuid' => $uuid
-        ));
-
-        if (!$entity) {
-            throw new NotFoundHttpException();
-        }
-
-        $game = $entity->toDomainEntity();
-
-        return $this->render(':game:details.html.twig', array(
-            'game' => $game
-        ));
-    }
-
-    /**
-     * View only maze
+     * Get the refreshed maze view
      *
      * @Route("/{uuid}/refresh", name="game_refresh",
      *     requirements={"uuid": "[0-9a-f]{8}\-[0-9a-f]{4}\-[0-9a-f]{4}\-[0-9a-f]{4}\-[0-9a-f]{12}"})
@@ -309,7 +285,7 @@ class GameController extends Controller
         $this->checkDaemon();
 
         /** @var \AppBundle\Entity\Game $entity */
-        $entity = $this->getDoctrine()->getRepository('AppBundle:Game')->findOneBy(array(
+        $entity = $this->getGameDoctrineRepository()->findOneBy(array(
             'uuid' => $uuid
         ));
 
@@ -317,7 +293,7 @@ class GameController extends Controller
             throw new NotFoundHttpException();
         }
 
-        $renderer = $this->get('app.maze.renderer');
+        $renderer = $this->getMazeRendererService();
         $game = $entity->toDomainEntity();
         $maze = $renderer->render($game);
 
@@ -356,7 +332,7 @@ class GameController extends Controller
         $this->checkDaemon();
 
         /** @var \AppBundle\Entity\Game $entity */
-        $entity = $this->getDoctrine()->getRepository('AppBundle:Game')->findOneBy(array(
+        $entity = $this->getGameDoctrineRepository()->findOneBy(array(
             'uuid' => $uuid
         ));
 
@@ -390,7 +366,7 @@ class GameController extends Controller
         $this->checkDaemon();
 
         /** @var \AppBundle\Entity\Game $entity */
-        $entity = $this->getDoctrine()->getRepository('AppBundle:Game')->findOneBy(array(
+        $entity = $this->getGameDoctrineRepository()->findOneBy(array(
             'uuid' => $uuid
         ));
 
@@ -422,7 +398,7 @@ class GameController extends Controller
     public function resetAction($uuid)
     {
         /** @var \AppBundle\Entity\Game $entity */
-        $entity = $this->getDoctrine()->getRepository('AppBundle:Game')->findOneBy(array(
+        $entity = $this->getGameDoctrineRepository()->findOneBy(array(
             'uuid' => $uuid
         ));
 
@@ -445,39 +421,6 @@ class GameController extends Controller
         $em->flush();
 
         return new Response();
-    }
-
-    /**
-     * remove the game
-     *
-     * @Route("/{uuid}/remove", name="game_remove",
-     *     requirements={"uuid": "[0-9a-f]{8}\-[0-9a-f]{4}\-[0-9a-f]{4}\-[0-9a-f]{4}\-[0-9a-f]{12}"})
-     * @Method("POST")
-     *
-     * @param string $uuid
-     * @return Response
-     * @throws \Exception
-     */
-    public function removeAction($uuid)
-    {
-        $em = $this->getDoctrine()->getManager();
-
-        /** @var \AppBundle\Entity\Game $entity */
-        $entity = $em->getRepository('AppBundle:Game')->findOneBy(array(
-            'uuid' => $uuid
-        ));
-
-        if (!$entity) {
-            throw new NotFoundHttpException();
-        }
-
-        $logger = $this->get('app.logger');
-        $logger->clear($uuid);
-
-        $em->remove($entity);
-        $em->flush();
-
-        return new Response('', 204);
     }
 
     /**
@@ -517,142 +460,50 @@ class GameController extends Controller
     }
 
     /**
-     * Checks if the daemon is running in the background
+     * Creates the form to ask for new game params
      *
-     * @return void
+     * @param GameEntity $gameEntity
+     * @param string $action
+     * @param string $formType
+     * @return FormInterface
      */
-    private function checkDaemon()
+    private function createNewGameForm(GameEntity $gameEntity, string $action, string $formType) : FormInterface
     {
-        /** @var GameDaemonManagerInterface $gameDaemonManager */
-        $gameDaemonManager = $this->get('app.game.daemon');
-        $gameDaemonManager->start();
-    }
-
-    /**
-     * Admin game view
-     *
-     * @Route("/admin", name="admin_view")
-     * @return Response
-     * @throws \Exception
-     */
-    public function adminAction()
-    {
-        /** @var GameDaemonManagerInterface $gameDaemonManager */
-        $gameDaemonManager = $this->get('app.game.daemon');
-        $processId = $gameDaemonManager->getProcessId();
-
-        /** @var ConsumerDaemonManagerInterface $gameDaemonManager */
-        $consumerDaemonManager = $this->get('app.consumer.daemon');
-        $consumerIds = $consumerDaemonManager->getProcessIds();
-
-        /** @var \AppBundle\Entity\Game[] $entities */
-        $entities = $this->getDoctrine()->getRepository('AppBundle:Game')->findBy(
-            array(),    // Criteria
-            array(      // Order by
-                'status'  => 'asc'
-            )
-        );
-
-        $playingGames = array();
-        $pausedGames = array();
-        $notStartedGames = array();
-        $finishedGames = array();
-
-        foreach ($entities as $entity) {
-            $game = $entity->toDomainEntity();
-            if ($game->playing()) {
-                $playingGames[] = $game;
-            } elseif ($game->paused()) {
-                $pausedGames[] = $game;
-            } elseif (!$game->finished()) {
-                $notStartedGames[] = $game;
-            } else {
-                $finishedGames[] = $game;
-            }
-        }
-
-        return $this->render('game/admin.html.twig', array(
-            'processId'       => $processId,
-            'consumerIds'     => $consumerIds,
-            'playingGames'    => $playingGames,
-            'pausedGames'     => $pausedGames,
-            'notStartedGames' => $notStartedGames,
-            'finishedGames'   => $finishedGames
+        return $this->createForm(GameForm::class, $gameEntity, array(
+            'action'    => $action,
+            'form_type' => $formType
         ));
     }
 
     /**
-     * Start the game daemon
+     * Checks if the daemon is running in the background
      *
-     * @Route("/admin/daemon/start", name="admin_daemon_start")
-     * @return Response
+     * @return void
      */
-    public function startDaemonAction()
+    private function checkDaemon() : void
     {
         /** @var GameDaemonManagerInterface $gameDaemonManager */
         $gameDaemonManager = $this->get('app.game.daemon');
         $gameDaemonManager->start();
-
-        return $this->redirectToRoute('admin_view');
     }
 
     /**
-     * Stop the game daemon
+     * Return the repository object to Game entity
      *
-     * @Route("/admin/daemon/stop", name="admin_daemon_stop")
-     * @return Response
+     * @return GameRepository
      */
-    public function stopDaemonAction()
+    private function getGameDoctrineRepository() : GameRepository
     {
-        /** @var GameDaemonManagerInterface $gameDaemonManager */
-        $gameDaemonManager = $this->get('app.game.daemon');
-        $gameDaemonManager->stop();
-
-        return $this->redirectToRoute('admin_view');
+        return $this->getDoctrine()->getRepository('AppBundle:Game');
     }
 
     /**
-     * Restart the game daemon
+     * Get the object to render de maze
      *
-     * @Route("/admin/daemon/restart", name="admin_daemon_restart")
-     * @return Response
+     * @return MazeRenderInterface
      */
-    public function restartDaemonAction()
+    private function getMazeRendererService(): MazeRenderInterface
     {
-        /** @var GameDaemonManagerInterface $gameDaemonManager */
-        $gameDaemonManager = $this->get('app.game.daemon');
-        $gameDaemonManager->start(true);
-
-        return $this->redirectToRoute('admin_view');
-    }
-
-    /**
-     * Start a consumer daemon
-     *
-     * @Route("/admin/consumer/start", name="admin_consumer_start")
-     * @return Response
-     */
-    public function startConsumerAction()
-    {
-        /** @var ConsumerDaemonManagerInterface $consumerDaemonManager */
-        $consumerDaemonManager = $this->get('app.consumer.daemon');
-        $consumerDaemonManager->start();
-
-        return $this->redirectToRoute('admin_view');
-    }
-
-    /**
-     * Stop all the consumer daemons
-     *
-     * @Route("/admin/consumer/stop", name="admin_consumer_stop")
-     * @return Response
-     */
-    public function stopConsumerAction()
-    {
-        /** @var ConsumerDaemonManagerInterface $consumerDaemonManager */
-        $consumerDaemonManager = $this->get('app.consumer.daemon');
-        $consumerDaemonManager->stop();
-
-        return $this->redirectToRoute('admin_view');
+        return $this->get('app.maze.renderer');
     }
 }
