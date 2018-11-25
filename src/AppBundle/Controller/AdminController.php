@@ -41,20 +41,29 @@ class AdminController extends Controller
         $consumerIds = $consumerDaemonManager->getProcessIds();
 
         /** @var \AppBundle\Entity\Game[] $entities */
-        $entities = $this->getGameDoctrineRepository()->findBy(
-            array(),    // Criteria
-            array(      // Order by
-                'status'  => 'asc'
-            )
-        );
+        $entities = $this->getGameDoctrineRepository()->findAll();
 
-        $playingGames = array();
-        $pausedGames = array();
-        $notStartedGames = array();
-        $finishedGames = array();
-
+        /** @var Game[] $allGames */
+        $allGames = [];
         foreach ($entities as $entity) {
-            $game = $entity->toDomainEntity();
+            $allGames[] = $entity->toDomainEntity();
+        }
+
+        // Sort by status and last updated date
+        usort($allGames, function (Game $game1, Game $game2) {
+            $res = $game1->status() <=> $game2->status();
+            if (0 === $res) {
+                $res = $game2->lastUpdatedAt()->getTimestamp() <=> $game1->lastUpdatedAt()->getTimestamp();
+            }
+            return $res;
+        });
+
+        // Split by status
+        $playingGames = [];
+        $pausedGames = [];
+        $notStartedGames = [];
+        $finishedGames = [];
+        foreach ($allGames as $game) {
             if ($game->playing()) {
                 $playingGames[] = $game;
             } elseif ($game->paused()) {
@@ -136,6 +145,54 @@ class AdminController extends Controller
                             'email' => $player->email(),
                             'url' => $player->url()
                         ];
+                    }
+                }
+            } catch (\Exception $exc) {
+                // Do nothing
+            }
+        }
+
+        return new JsonResponse($result);
+    }
+
+    /**
+     * Get urls data
+     *
+     * @Route("/urls", name="admin_get_urls")
+     * @return JsonResponse
+     */
+    public function getUrlsAction()
+    {
+        /** @var \AppBundle\Entity\Game $entities[] */
+        $entities = $this->getGameDoctrineRepository()->findAll();
+
+        $result = [];
+
+        /** @var \AppBundle\Entity\Game $entity */
+        foreach ($entities as $entity) {
+            try {
+                /** @var Game $game */
+                $game = $entity->toDomainEntity();
+
+                /** @var Player $player */
+                foreach ($game->players() as $player) {
+                    $found = array_filter($result, function ($item) use ($player) {
+                        return $item['url'] == $player->url();
+                    });
+                    if (empty($found)) {
+                        $result[] = [
+                            'url' => $player->url(),
+                            'game' => [
+                                $game->uuid()
+                            ]
+                        ];
+                    } else {
+                        foreach ($found as $key => $value) {
+                            $uuid = $game->uuid();
+                            if (!in_array($uuid, $result[$key]['game'])) {
+                                $result[$key]['game'][] = $uuid;
+                            }
+                        }
                     }
                 }
             } catch (\Exception $exc) {
