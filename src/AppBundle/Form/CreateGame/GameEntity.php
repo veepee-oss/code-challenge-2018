@@ -16,14 +16,14 @@ class GameEntity
     /**
      * @var int
      * @Assert\NotBlank()
-     * @Assert\Range(min=10, max=100)
+     * @Assert\Range(min=10, max=25)
      */
     private $height = 15;
 
     /**
      * @var int
      * @Assert\NotBlank()
-     * @Assert\Range(min=10, max=100)
+     * @Assert\Range(min=10, max=50)
      */
     private $width = 30;
 
@@ -44,7 +44,7 @@ class GameEntity
     /**
      * @var int
      * @Assert\NotBlank()
-     * @Assert\Range(min=0, max=200)
+     * @Assert\Range(min=0, max=100)
      */
     private $ghostRate = 10;
 
