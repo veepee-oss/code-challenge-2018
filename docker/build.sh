@@ -1,9 +1,11 @@
 #!/bin/bash
 
-dockerfile="docker-compose.yml"
-dir=$(dirname $0)
-cd $dir
+DIR=$(dirname $0)
+cd ${DIR}
+source ./includes.sh
 
-echo -e "Building $dockerfile..."
+echo -e "Building ${DOCKER_COMPOSE_FILE}..."
 
-docker-compose -f $dockerfile build --pull --force --no-cache
+docker-compose ${DOCKER_COMPOSE_FILE} build --pull --force --no-cache
+
+echo -e ""

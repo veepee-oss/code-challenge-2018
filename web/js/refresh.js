@@ -12,7 +12,8 @@
         refreshUrl = $game.data('url'),
         startUrl = $btnStart.data('url'),
         stopUrl = $btnStop.data('url'),
-        resetUrl = $btnReset.data('url');
+        resetUrl = $btnReset.data('url'),
+        refreshTimer = null;
 
     /**
      * configureButtons()
@@ -84,11 +85,28 @@
      */
     var startTimer = function () {
         if ($btnStop.attr('disabled') != 'disabled') {
+            if (refreshTimer !== null) {
+                win.clearTimeout(refreshTimer);
+                refreshTimer = null;
+            }
+            win.location.hash = '';
             win.setTimeout(refreshMaze, 500);
         } else {
-            win.setTimeout(function () {
-                location.reload();
-            }, 30000);
+            var num = 0;
+            var hash = win.location.hash;
+            if (hash[0] === "#") {
+                num = parseInt(hash.substr(1));
+                if (isNaN(num)) {
+                    num = 0;
+                }
+            }
+            num++;
+            win.location.hash = num;
+            if (num < 120) {
+                refreshTimer = win.setTimeout(function () {
+                    location.reload();
+                }, 30000);
+            }
         }
 
     };

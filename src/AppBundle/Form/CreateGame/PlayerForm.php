@@ -3,6 +3,7 @@
 namespace AppBundle\Form\CreateGame;
 
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\UrlType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -21,7 +22,7 @@ class PlayerForm extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults(array(
-            'data_class' => '\AppBundle\Form\CreateGame\PlayerEntity'
+            'data_class' => PlayerEntity::class
         ));
     }
 
@@ -39,7 +40,7 @@ class PlayerForm extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $builder->add('url', 'Symfony\Component\Form\Extension\Core\Type\UrlType', array(
+        $builder->add('url', UrlType::class, array(
             'label' => 'app.createpage.form.url'
         ));
     }

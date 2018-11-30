@@ -2,9 +2,6 @@
 
 namespace AppBundle\Domain\Service\MovePlayer;
 
-use AppBundle\Domain\Entity\Game\Game;
-use AppBundle\Domain\Entity\Player\Player;
-
 /**
  * Interface AskNextMovementInterface
  *
@@ -15,10 +12,12 @@ interface AskNextMovementInterface
     /**
      * Reads the next movement of the player: "up", "down", "left" or "right".
      *
-     * @param Player $player
-     * @param Game $game
+     * @param string $url     the base URL to call
+     * @param string $player  the player UUID
+     * @param string $game    the game UUID
+     * @param string $request the player request
      * @return string The next movement
      * @throws MovePlayerException
      */
-    public function askNextMovement(Player $player, Game $game);
+    public function askNextMovement(string $url, string $player, string $game, string $request) : string;
 }

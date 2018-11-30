@@ -1,57 +1,57 @@
-version: '2.1'
+version: "2.1"
 services:
 
     # See: docker/Dockerfile
-    code_challenge_server:
-        build: .
+    cc18_server:
+        build:
+            context: .
+
+        image: "php:7.2-apache-ch18-svr"
 
         restart: "always"
 
-        container_name: "docker_code_challenge_server"
-
-        environment:
-            APACHE_RUN_USER: "david"
-            APACHE_RUN_GROUP: "david"
-
-        ports:
-            - "8080:80"
+        container_name: "docker_cc18_server"
 
         volumes:
             - "../.:/var/www/html"
 
         depends_on:
-            - "code_challenge_mysql"
-
-        external_links:
-            - "code_challenge_api:testapi.com"
+            - "cc18_mysql"
 
         networks:
-            - "code_challenge_network"
+            - "cc18_network"
 
     # See: https://hub.docker.com/_/mysql
-    code_challenge_mysql:
+    cc18_mysql:
         image: "mysql:5.7"
 
         restart: "always"
 
-        container_name: "docker_code_challenge_mysql"
+        container_name: "docker_cc18_mysql"
 
         environment:
             MYSQL_ROOT_PASSWORD: "root"
-            MYSQL_DATABASE: "code_challenge_db"
-            MYSQL_USER: "code_challenge_user"
-            MYSQL_PASSWORD: "code_challenge_pass"
-
-        ports:
-            - "3307:3306"
+            MYSQL_DATABASE: "cc18_db"
+            MYSQL_USER: "cc18_user"
+            MYSQL_PASSWORD: "cc18_pass"
 
         volumes:
             - "../var/docker/mysql:/var/lib/mysql"
 
         networks:
-            - "code_challenge_network"
+            - "cc18_network"
+
+    # See: https://hub.docker.com/_/rabbitmq/
+    cc18_rabbitmq:
+        container_name: "docker_cc18_rabbitmq"
+
+        volumes:
+            - "../var/docker/rabbitmq:/var/lib/rabbitmq"
+
+        networks:
+            - "cc18_network"
 
 networks:
-    code_challenge_network:
+    cc18_network:
         driver: "bridge"
-        name: "code_challenge_network"
+        name: "cc18_network"

@@ -17,7 +17,7 @@
                 if (win.confirm(question)) {
                     $.post(url)
                         .done(function() {
-                            if (typeof refresh == 'undefined') {
+                            if (typeof refresh === 'undefined') {
                                 win.location.reload(true);
                             } else {
                                 win.location.assign(refresh);

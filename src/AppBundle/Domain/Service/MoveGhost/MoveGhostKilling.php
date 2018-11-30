@@ -5,7 +5,7 @@ namespace AppBundle\Domain\Service\MoveGhost;
 use AppBundle\Domain\Entity\Game\Game;
 use AppBundle\Domain\Entity\Ghost\Ghost;
 use AppBundle\Domain\Entity\Maze\Maze;
-use AppBundle\Domain\Entity\Maze\MazeCell;
+use AppBundle\Domain\Entity\Player\Player;
 use AppBundle\Domain\Entity\Position\Direction;
 use AppBundle\Domain\Entity\Position\Position;
 
@@ -16,17 +16,17 @@ use AppBundle\Domain\Entity\Position\Position;
  */
 class MoveGhostKilling extends MoveGhost
 {
-    /** @var array */
+    /** @var Player[] the players array */
     private $players;
 
-    /** @var array */
-    private $maze;
-
-    /** @var int */
+    /** @var int the height of the maze */
     private $height;
 
-    /** @var int */
+    /** @var int the width of the maze */
     private $width;
+
+    /** @var array */
+    private $content;
 
     /** @var int */
     private $iter;
@@ -37,7 +37,6 @@ class MoveGhostKilling extends MoveGhost
      * @param Ghost $ghost
      * @param Game  $game
      * @return string The next movement
-     * @throws MoveGhostException
      */
     protected function computeNextMovement(Ghost $ghost, Game $game)
     {
@@ -55,14 +54,13 @@ class MoveGhostKilling extends MoveGhost
         $moves = Direction::directions();
         foreach ($moves as $move) {
             $newPos = Position::move($pos, $move);
-            $content = $maze[$newPos->y()][$newPos->x()]->getContent();
-            if ($content != MazeCell::CELL_WALL && $content != MazeCell::CELL_GOAL) {
+            if ($maze[$newPos->y()][$newPos->x()]->isEmpty()) {
                 if ($this->isPlayerKilled($newPos)) {
                     return $move;
                 }
-                $iter = $this->testMove($maze, $pos, $move);
-                if ($iter > 0 && $iter < $minIter) {
-                    $minIter = $iter;
+                $resultIter = $this->testMove($maze, $pos, $move);
+                if ($resultIter > 0 && $resultIter < $minIter) {
+                    $minIter = $resultIter;
                     $dir = $move;
                 }
             }
@@ -82,16 +80,14 @@ class MoveGhostKilling extends MoveGhost
     private function testMove(Maze $maze, Position $position, $dir)
     {
         $pos = clone $position;
-        $this->maze = array();
+        $this->content = array();
         for ($y = 0; $y < $this->height; ++$y) {
-            $this->maze[$y] = array();
+            $this->content[$y] = array();
             for ($x = 0; $x < $this->width; ++$x) {
-                $content = $maze[$y][$x]->getContent();
-                if ($content == MazeCell::CELL_WALL
-                    || $content == MazeCell::CELL_GOAL) {
-                    $this->maze[$y][$x] = -1;
+                if (!$maze[$y][$x]->isEmpty()) {
+                    $this->content[$y][$x] = -1;
                 } else {
-                    $this->maze[$y][$x] = 0;
+                    $this->content[$y][$x] = 0;
                 }
             }
         }
@@ -120,8 +116,8 @@ class MoveGhostKilling extends MoveGhost
     private function nextMove(Position $position, $dir)
     {
         $pos = clone $position;
-        if (0 == $this->maze[$pos->y()][$pos->x()]) {
-            $this->maze[$pos->y()][$pos->x()] = $this->iter++;
+        if (0 == $this->content[$pos->y()][$pos->x()]) {
+            $this->content[$pos->y()][$pos->x()] = $this->iter++;
         }
 
         // Compute posible directions and positions
@@ -137,7 +133,8 @@ class MoveGhostKilling extends MoveGhost
 
         // Test if player reached
         foreach ($this->players as $player) {
-            if ($player->alive()) {
+            if (!$player->isKilled()
+                && !$player->isPowered()) {
                 if ($forwardPos->equals($player->position())) {
                     return $forwardDir;
                 }
@@ -174,19 +171,19 @@ class MoveGhostKilling extends MoveGhost
         // Else: go back
         $moves = array();
 
-        $currentContent = $this->maze[$pos->y()][$pos->x()];
-        $this->maze[$pos->y()][$pos->x()] = -2;
+        $currentContent = $this->content[$pos->y()][$pos->x()];
+        $this->content[$pos->y()][$pos->x()] = -2;
         $this->iter = $currentContent + 1;
 
         if ($this->isValidPosition($forwardPos, false)) {
-            $forwardContent = $this->maze[$forwardPos->y()][$forwardPos->x()];
+            $forwardContent = $this->content[$forwardPos->y()][$forwardPos->x()];
             if ($forwardContent > 0 && $forwardContent < $currentContent) {
                 $moves[$forwardContent] = $forwardDir;
             }
         }
 
         if ($this->isValidPosition($rightPos, false)) {
-            $rightContent = $this->maze[$rightPos->y()][$rightPos->x()];
+            $rightContent = $this->content[$rightPos->y()][$rightPos->x()];
             if ($rightContent > 0 && $rightContent < $currentContent) {
                 $moves[$rightContent] = $rightDir;
             }
@@ -194,14 +191,14 @@ class MoveGhostKilling extends MoveGhost
 
 
         if ($this->isValidPosition($leftPos, false)) {
-            $leftContent = $this->maze[$leftPos->y()][$leftPos->x()];
+            $leftContent = $this->content[$leftPos->y()][$leftPos->x()];
             if ($leftContent > 0 && $leftContent < $currentContent) {
                 $moves[$leftContent] = $leftDir;
             }
         }
 
         if ($this->isValidPosition($backPos, false)) {
-            $backContent = $this->maze[$backPos->y()][$backPos->x()];
+            $backContent = $this->content[$backPos->y()][$backPos->x()];
             if ($backContent > 0 && $backContent < $currentContent) {
                 $moves[$backContent] = $backDir;
             }
@@ -240,12 +237,12 @@ class MoveGhostKilling extends MoveGhost
             return false;
         }
 
-        $content = $this->maze[$pos->y()][$pos->x()];
-        if ($content < 0) {
+        $currentContent = $this->content[$pos->y()][$pos->x()];
+        if ($currentContent < 0) {
             return false;
         }
 
-        if ($onlyEmpty && $content != 0) {
+        if ($onlyEmpty && $currentContent != 0) {
             return false;
         }
 
@@ -262,7 +259,9 @@ class MoveGhostKilling extends MoveGhost
     {
         $pos = clone $position;
         foreach ($this->players as $player) {
-            if ($player->alive() && $pos->equals($player->position())) {
+            if (!$player->isKilled()
+                && !$player->isPowered()
+                && $pos->equals($player->position())) {
                 return true;
             }
         }

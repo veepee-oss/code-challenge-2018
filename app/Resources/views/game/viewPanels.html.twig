@@ -16,6 +16,10 @@
                     <p>
                         {{ 'app.mazepage.texts.moves' | trans }}:
                         <strong class="text-info">{{ game.moves }}</strong>
+                        {% if game.limit > 0 %}
+                            {{ 'app.mazepage.texts.of' | trans }}
+                            <strong class="text-info">{{ game.limit }}</strong>
+                        {% endif %}
                     </p>
                     <p>
                         {{ 'app.mazepage.texts.players' | trans }}:
@@ -36,86 +40,48 @@
                 </div>
             </div>
         </div>
-        <div class="col-sm-3">
-            <div class="panel panel-success">
-                <div class="panel-heading">
-                    <h3 class="panel-title">
-                        {{ 'app.mazepage.texts.winners' | trans }}
-                    </h3>
-                </div>
-                <div class="panel-body">
-                    {% for player in game.classification if player.winner %}
-                        <p>
-                            {{ game.playerNum(player) }}.-
-                            <span class="text-success">
-                                {% if player.email is empty %}
-                                    {{ player.name }}
-                                {% else %}
-                                    <span title="{{ player.email }}">
-                                        {{ player.name }}
-                                    </span>
-                                {% endif %}
-                            </span>
-                        </p>
-                    {% else %}
-                        {{ 'app.mazepage.texts.no-winners' | trans }}
-                    {% endfor %}
-                </div>
-            </div>
-        </div>
-        <div class="col-sm-3">
-            <div class="panel panel-danger">
-                <div class="panel-heading">
-                    <h3 class="panel-title">
-                        {{ 'app.mazepage.texts.dead' | trans }}
-                    </h3>
-                </div>
-                <div class="panel-body">
-                    {% for player in game.classification | reverse if player.dead %}
-                        <p>
-                            {{ game.playerNum(player) }}.-
-                            <span class="text-danger">
-                                {% if player.email is empty %}
-                                    {{ player.name }}
-                                {% else %}
-                                    <span title="{{ player.email }}">
-                                        {{ player.name }}
-                                    </span>
-                                {% endif %}
-                            </span>
-                        </p>
-                    {% else %}
-                        {{ 'app.mazepage.texts.no-dead' | trans }}
-                    {% endfor %}
-                </div>
-            </div>
-        </div>
-        <div class="col-sm-3">
+
+        <div class="col-sm-9">
             <div class="panel panel-info">
                 <div class="panel-heading">
                     <h3 class="panel-title">
-                        {{ 'app.mazepage.texts.player-list' | trans }}
+                        {{ 'app.mazepage.texts.score' | trans }}
                     </h3>
                 </div>
                 <div class="panel-body">
-                    {% for player in game.classification if not player.winner and not player.dead %}
-                        <p>
-                            {{ game.playerNum(player) }}.-
-                            <span class="text-info">
-                                {% if player.email is empty %}
-                                    {{ player.name }}
-                                {% else %}
-                                    <span title="{{ player.email }}">
+                    <div class="row">
+                        {% for player in game.classification %}
+                            <div class="col-sm-4">
+                                <img
+                                    src="{{ asset('images/starship-player0' ~ game.playerNum(player) ~ '-right.png') }}"
+                                    class="pull-left image-players"
+                                    alt="{{ player.name }}"
+                                    title="{{ player.name }}">
+
+                                <p class="text-info">
+                                    {% if player.email is empty %}
                                         {{ player.name }}
+                                    {% else %}
+                                        <span title="{{ player.email }}">
+                                            {{ player.name }}
+                                        </span>
+                                    {% endif %}
+                                    <br>
+                                    <span class="lead">
+                                        <strong>{{ player.score }}</strong>
+                                        {{ 'app.mazepage.texts.points' | trans }}
                                     </span>
-                                {% endif %}
-                            </span>
-                        </p>
-                    {% else %}
-                        {{ 'app.mazepage.texts.no-players' | trans }}
-                    {% endfor %}
+                                </p>
+                            </div>
+                        {% else %}
+                            <div class="col-sm-12">
+                                {{ 'app.mazepage.texts.no-players' | trans }}
+                            </div>
+                        {% endfor %}
+                    </div>
                 </div>
             </div>
         </div>
+
     </div>
 </div>

@@ -2,28 +2,31 @@
 # Set parameters here that may be different on each deployment target of the app, e.g. development, staging, production.
 # http://symfony.com/doc/current/best_practices/configuration.html#infrastructure-related-configuration
 parameters:
-    database_host:     127.0.0.1
-    database_port:     ~
-    database_name:     symfony
-    database_user:     root
-    database_password: ~
+    # MySQL database connection
+    database_host:          "127.0.0.1"
+    database_port:          ~
+    database_name:          "symfony"
+    database_user:          "root"
+    database_password:      ~
 
-    # You should uncomment this if you want use pdo_sqlite
-    # database_path: "%kernel.root_dir%/data.db3"
-
-    mailer_transport:  smtp
-    mailer_host:       127.0.0.1
-    mailer_user:       ~
-    mailer_password:   ~
+    # RabbitMQ connection
+    rabbitmq_host:          "localhost"
+    rabbitmq_port:          "5672"
+    rabbitmq_user:          "guest"
+    rabbitmq_pass:          "guest"
+    rabbitmq_vhost:         "/"
 
     # A secret key that's used to generate certain security-related tokens
-    secret:            ThisTokenIsNotSoSecretChangeIt
+    secret:                 "ThisTokenIsNotSoSecretChangeIt"
 
     # Defaults: mail address, time limit, timeout
-    default_email:       "david.amigo@privalia.com"
-    default_time_limit:  "2017-06-09 00:00:00"
-    default_time_format: "Y-m-d H:i:s"
-    default_timeout:     3
+    default_email:          "david.amigo@privalia.com"
+    game_start_time:        "2018-11-30 00:00:00"
+    game_end_time:          "2018-12-13 23:59:59"
+    game_free_time:         "2018-12-15 00:00:00"
+    default_time_format:    "Y-m-d H:i:s"
+    default_timeout:        3
 
     # Password for admin. Use: php bin/console security:encode-password
     admin_password: ~
+    guest_password: ~

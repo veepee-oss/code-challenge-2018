@@ -10,6 +10,9 @@ security:
                     admin:
                         password: '%admin_password%'
                         roles: 'ROLE_ADMIN'
+                    privalia:
+                        password: '%guest_password%'
+                        roles: 'ROLE_GUEST'
 
     # Tell Symfony what algorithm was used to encode the passwords for the users
     # To create a password for the admin user try:
@@ -39,6 +42,14 @@ security:
             # http://symfony.com/doc/current/cookbook/security/form_login_setup.html
             # form_login: ~
 
+            logout:
+                path:   /logout
+                target: /
+
+    role_hierarchy:
+        ROLE_ADMIN: ROLE_GUEST
+
     access_control:
         # require ROLE_ADMIN for /game/admin*
         - { path: ^/game/admin, roles: ROLE_ADMIN }
+        - { path: ^/login$, roles: [ IS_AUTHENTICATED_FULLY, IS_AUTHENTICATED_REMEMBERED ] }

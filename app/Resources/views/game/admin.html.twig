@@ -22,6 +22,16 @@
                     <p>
                         <strong class="lead">{{ processId | default('app.adminpage.texts.not-running' | trans) }}</strong>
                     </p>
+                    <p>
+                        <small class="text-primary">{{ 'app.adminpage.texts.consumer-ids' | trans }}:</small>
+                    </p>
+                    <p>
+                        {% for consumerId in consumerIds %}
+                            <strong class="lead">{{ consumerId }}</strong><br>
+                        {% else %}
+                            <strong class="lead">{{ 'app.adminpage.texts.not-running' | trans }}</strong>
+                        {% endfor %}
+                    </p>
                 </div>
 
                 <div class="well">
@@ -31,12 +41,12 @@
                         </small>
                     </p>
 
-                    <div class="btn-group-vertical">
+                    <p>
                         <a  {% if processId %}
                                 disabled="disabled"
                             {% endif %}
-                            class="btn btn-success js-btn-start"
-                            href="{{ url('admin_start') }}">
+                            class="btn btn-success btn-block js-btn-start"
+                            href="{{ url('admin_daemon_start') }}">
                             <span class="glyphicon glyphicon-play" aria-hidden="true"></span>
                             {{ 'app.adminpage.buttons.start' | trans }}
                         </a>
@@ -44,8 +54,8 @@
                         <a  {% if not processId %}
                                 disabled="disabled"
                             {% endif %}
-                            class="btn btn-danger js-btn-stop"
-                            href="{{ url('admin_stop') }}">
+                            class="btn btn-danger btn-block js-btn-stop"
+                            href="{{ url('admin_daemon_stop') }}">
                             <span class="glyphicon glyphicon-stop" aria-hidden="true"></span>
                             {{ 'app.adminpage.buttons.stop' | trans }}
                         </a>
@@ -53,14 +63,38 @@
                         <a  {% if not processId %}
                                 disabled="disabled"
                             {% endif %}
-                            class="btn btn-warning js-btn-restart"
-                            href="{{ url('admin_restart') }}">
+                            class="btn btn-warning btn-block js-btn-restart"
+                            href="{{ url('admin_daemon_restart') }}">
                             <span class="glyphicon glyphicon-refresh" aria-hidden="true"></span>
                             {{ 'app.adminpage.buttons.restart' | trans }}
                         </a>
-                    </div>
+                    </p>
 
                     <br>
+
+                    <p>
+                        <small class="text-info">
+                            {{ 'app.adminpage.texts.consumer-actions' | trans }}:
+                        </small>
+                    </p>
+
+                    <p>
+                        <a  class="btn btn-success btn-block js-btn-start-cons"
+                            href="{{ url('admin_consumer_start') }}">
+                            <span class="glyphicon glyphicon-play" aria-hidden="true"></span>
+                            {{ 'app.adminpage.buttons.start-cons' | trans }}
+                        </a>
+
+                        <a  {% if consumerIds is empty %}
+                            disabled="disabled"
+                        {% endif %}
+                            class="btn btn-danger btn-block js-btn-stop-cons"
+                            href="{{ url('admin_consumer_stop') }}">
+                            <span class="glyphicon glyphicon-stop" aria-hidden="true"></span>
+                            {{ 'app.adminpage.buttons.stop-cons' | trans }}
+                        </a>
+                    </p>
+
                     <br>
 
                     <p>
@@ -69,13 +103,13 @@
                         </small>
                     </p>
 
-                    <div class="btn-group-vertical">
-                        <a  class="btn btn-default"
+                    <p>
+                        <a  class="btn btn-default btn-block"
                             href="{{ url('game_create') }}">
                             <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
                             {{ 'app.adminpage.buttons.create' | trans }}
                         </a>
-                    </div>
+                    </p>
                 </div>
             </div>
 
@@ -97,16 +131,16 @@
                     </div>
                 </div>
 
-                <div class="panel panel-info">
+                <div class="panel panel-warning">
                     <div class="panel-heading">
-                        {{ 'app.adminpage.texts.games.not-started' | trans }}
-                        <a href="#panel-stopped" data-toggle="collapse" class="badge pull-right">
-                            {{ stoppedGames | length }}
+                        {{ 'app.adminpage.texts.games.paused' | trans }}
+                        <a href="#panel-paused" data-toggle="collapse" class="badge pull-right">
+                            {{ pausedGames | length }}
                         </a>
                     </div>
-                    <div id="panel-stopped"
-                         class="panel-body panel-list-striped collapse">
-                        {% for game in stoppedGames %}
+                    <div id="panel-paused"
+                         class="panel-body panel-body-scroll panel-list-striped collapse {% if pausedGames | length > 0 %}in{% endif %}">
+                        {% for game in pausedGames %}
                             {% include ':game:adminGame.html.twig' with { 'game' : game }  %}
                         {% else %}
                             {{ 'app.adminpage.texts.games.none' | trans }}
@@ -114,7 +148,24 @@
                     </div>
                 </div>
 
-                <div class="panel panel-warning">
+                <div class="panel panel-info">
+                    <div class="panel-heading">
+                        {{ 'app.adminpage.texts.games.not-started' | trans }}
+                        <a href="#panel-stopped" data-toggle="collapse" class="badge pull-right">
+                            {{ notStartedGames | length }}
+                        </a>
+                    </div>
+                    <div id="panel-stopped"
+                         class="panel-body panel-body-scroll panel-list-striped collapse {% if notStartedGames | length > 0 %}in{% endif %}">
+                        {% for game in notStartedGames %}
+                            {% include ':game:adminGame.html.twig' with { 'game' : game }  %}
+                        {% else %}
+                            {{ 'app.adminpage.texts.games.none' | trans }}
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="panel panel-danger">
                     <div class="panel-heading">
                         {{ 'app.adminpage.texts.games.finished' | trans }}
                         <a href="#panel-finished" data-toggle="collapse" class="badge pull-right">
@@ -122,7 +173,7 @@
                         </a>
                     </div>
                     <div id="panel-finished"
-                         class="panel-body panel-list-striped collapse">
+                         class="panel-body panel-body-scroll panel-list-striped collapse">
                         {% for game in finishedGames if game.finished %}
                             {% include ':game:adminGame.html.twig' with { 'game' : game }  %}
                         {% else %}

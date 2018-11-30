@@ -1,16 +1,16 @@
 #!/bin/bash
 
-user="david"
-service="docker_code_challenge_server";
+DIR=$(dirname $0)
+cd ${DIR}
+source ./includes.sh
 
-enabled=$( docker ps --format "{{.Names}}" | grep -i "$service" )
+enabled=$( docker ps --format "{{.Names}}" | grep -i "${DOCKER_SERVER}" )
 if [ "$enabled" == "" ]
 then
-    echo -e "\033[31mContainer \033[33m$service\033[31m not started!\033[0m\n";
+    echo -e "\033[31mContainer \033[33m${DOCKER_SERVER}\033[31m not started!\033[0m\n";
     exit 1;
 fi;
 
-dir=$(dirname $0)
-cd $dir
+docker logs ${DOCKER_SERVER}
 
-docker logs $service
+echo -e ""
