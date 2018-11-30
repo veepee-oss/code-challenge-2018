@@ -8,15 +8,16 @@ use AppBundle\Domain\Service\MovePlayer\AskPlayerNameInterface;
 use AppBundle\Domain\Service\MovePlayer\MovePlayerException;
 use Davamigo\HttpClient\Domain\HttpClient;
 use Davamigo\HttpClient\Domain\HttpException;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 /**
- * Class ApiPlayerService
+ * Class AskPlayerApiService
  *
  * @package AppBundle\Service\MovePlayer
  */
-class ApiPlayerService implements AskNextMovementInterface, AskPlayerNameInterface
+class AskPlayerApiService implements AskNextMovementInterface, AskPlayerNameInterface
 {
     /** @var HttpClient */
     protected $httpClient;
@@ -25,7 +26,10 @@ class ApiPlayerService implements AskNextMovementInterface, AskPlayerNameInterfa
     protected $validator;
 
     /** @var LoggerServiceInterface */
-    protected $logger;
+    protected $dbLogger;
+
+    /** @var LoggerInterface */
+    private $logger;
 
     /** @var int */
     protected $timeout;
@@ -39,17 +43,20 @@ class ApiPlayerService implements AskNextMovementInterface, AskPlayerNameInterfa
      *
      * @param HttpClient             $httpClient
      * @param ValidatorInterface     $validator
-     * @param LoggerServiceInterface $logger
+     * @param LoggerServiceInterface $dbLogger
+     * @param LoggerInterface        $logger
      * @param int                    $timeout
      */
     public function __construct(
         HttpClient $httpClient,
         ValidatorInterface $validator,
-        LoggerServiceInterface $logger,
+        LoggerServiceInterface $dbLogger,
+        LoggerInterface $logger,
         $timeout = 3
     ) {
         $this->httpClient = $httpClient;
         $this->validator = $validator;
+        $this->dbLogger = $dbLogger;
         $this->logger = $logger;
         $this->timeout = $timeout;
     }
@@ -170,11 +177,26 @@ class ApiPlayerService implements AskNextMovementInterface, AskPlayerNameInterfa
             CURLOPT_TIMEOUT         => $this->timeout
         );
 
+        $this->logger->debug(
+            'AskPlayerApiService - Calling player API for ' .
+            'game "' . $game . '" and player "' . $player . '".'
+        );
+
+        $this->logger->debug(
+            'AskPlayerApiService - Request created - ' .
+            'URL: ' . $requestUrl . ' - ' .
+            'Body: ' . $requestBody
+        );
+
         try {
             $response = $this->httpClient->post($requestUrl, $requestHeaders, $requestBody, $options)->send();
             $responseCode = $response->getStatusCode();
         } catch (HttpException $exc) {
-            $this->logger->log($game, $player, $this->buildErrorContextArray(
+            $this->logger->error(
+                'AskPlayerApiService - HttpException occurred - Message: "' . $exc->getMessage() . '".'
+            );
+
+            $this->dbLogger->log($game, $player, $this->buildErrorContextArray(
                 $requestUrl,
                 $requestHeaders,
                 $requestBody,
@@ -189,6 +211,7 @@ class ApiPlayerService implements AskNextMovementInterface, AskPlayerNameInterfa
         }
 
         $responseBody = $response->getBody(true);
+
         $responseData = json_decode($responseBody, true);
         if (null === $responseData || !is_array($responseData)) {
             $message = 'Invalid API response!';
@@ -196,7 +219,15 @@ class ApiPlayerService implements AskNextMovementInterface, AskPlayerNameInterfa
                 $message .= ' - ' . json_last_error_msg();
             }
 
-            $this->logger->log($game, $player, $this->buildErrorContextArray(
+            $this->logger->error(
+                'AskPlayerApiService - Invalid response received - ' . $responseBody
+            );
+
+            $this->logger->error(
+                'AskPlayerApiService - Error decoding JSON message - ' . $message
+            );
+
+            $this->dbLogger->log($game, $player, $this->buildErrorContextArray(
                 $requestUrl,
                 $requestHeaders,
                 $requestBody,
@@ -209,7 +240,13 @@ class ApiPlayerService implements AskNextMovementInterface, AskPlayerNameInterfa
             throw new MovePlayerException($message);
         }
 
-        $this->logger->log($game, $player, $this->buildErrorContextArray(
+        $this->logger->debug(
+            'AskPlayerApiService - Valid response received - ' .
+            'Code: ' . $responseCode . ' - ' .
+            'Body: ' . $responseBody
+        );
+
+        $this->dbLogger->log($game, $player, $this->buildErrorContextArray(
             $requestUrl,
             $requestHeaders,
             $requestBody,

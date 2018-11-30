@@ -3,7 +3,7 @@
 namespace AppBundle\Domain\Entity\Position;
 
 /**
- * Class Position
+ * Domain entity Position
  *
  * @package AppBundle\Domain\Entity\Player
  */
@@ -21,7 +21,7 @@ class Position
      * @param int $y
      * @param int $x
      */
-    public function __construct($y, $x)
+    public function __construct(int $y, int $x)
     {
         $this->y = $y;
         $this->x = $x;
@@ -32,7 +32,7 @@ class Position
      *
      * @return int
      */
-    public function y()
+    public function y() : int
     {
         return $this->y;
     }
@@ -42,7 +42,7 @@ class Position
      *
      * @return int
      */
-    public function x()
+    public function x() : int
     {
         return $this->x;
     }
@@ -53,7 +53,7 @@ class Position
      * @param string $dir
      * @return $this
      */
-    public function moveTo($dir)
+    public function moveTo(?string $dir) : Position
     {
         switch ($dir) {
             case Direction::UP:
@@ -71,6 +71,9 @@ class Position
             case Direction::RIGHT:
                 ++$this->x;
                 break;
+
+            default:
+                break;
         }
         return $this;
     }
@@ -79,22 +82,22 @@ class Position
      * Moves a position in a direction, returning a new object.
      *
      * @param Position $pos
-     * @param int $dir
+     * @param string $dir
      * @return Position
      */
-    public static function move(Position $pos, $dir)
+    public static function move(Position $pos, string $dir) : Position
     {
         $new = clone $pos;
         return $new->moveTo($dir);
     }
 
     /**
-     * Return if tis the same position
+     * Return true if is the same position
      *
      * @param Position $pos
      * @return bool
      */
-    public function equals(Position $pos)
+    public function equals(Position $pos) : bool
     {
         return ($this->y() == $pos->y()
             && $this->x() == $pos->x());
@@ -119,8 +122,11 @@ class Position
      * @param array $data
      * @return Position
      */
-    public static function unserialize(array $data)
+    public static function unserialize(array $data) : Position
     {
-        return new static($data['y'], $data['x']);
+        return new static(
+            intval($data['y'] ?? 0),
+            intval($data['x'] ?? 0)
+        );
     }
 }

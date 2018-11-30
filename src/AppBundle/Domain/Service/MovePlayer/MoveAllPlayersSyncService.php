@@ -32,14 +32,14 @@ class MoveAllPlayersSyncService implements MoveAllPlayersServiceInterface
      * @return void
      * @throws MovePlayerException
      */
-    public function move(Game &$game)
+    public function move(Game &$game) : void
     {
         /** @var Player[] $players */
         $players = $game->players();
         shuffle($players);
 
         foreach ($players as $player) {
-            if ($player->status() == Player::STATUS_PLAYING) {
+            if (!$player->isKilled()) {
                 $this->movePlayer->move($player, $game);
             }
         }

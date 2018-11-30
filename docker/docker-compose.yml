@@ -3,7 +3,8 @@ services:
 
     # See: docker/Dockerfile
     cc18_server:
-        build: .
+        build:
+            context: .
 
         image: "php:7.2-apache-ch18-svr"
 
@@ -11,21 +12,11 @@ services:
 
         container_name: "docker_cc18_server"
 
-        environment:
-            APACHE_RUN_USER: "david"
-            APACHE_RUN_GROUP: "david"
-
-        ports:
-            - "8080:80"
-
         volumes:
             - "../.:/var/www/html"
 
         depends_on:
             - "cc18_mysql"
-
-        external_links:
-            - "cc18_api:testapi.com"
 
         networks:
             - "cc18_network"
@@ -44,23 +35,15 @@ services:
             MYSQL_USER: "cc18_user"
             MYSQL_PASSWORD: "cc18_pass"
 
-        ports:
-            - "3307:3306"
-
         volumes:
             - "../var/docker/mysql:/var/lib/mysql"
 
         networks:
             - "cc18_network"
 
+    # See: https://hub.docker.com/_/rabbitmq/
     cc18_rabbitmq:
-        image: "rabbitmq:3-management"
-
         container_name: "docker_cc18_rabbitmq"
-
-        ports:
-            - "5672:5672"
-            - "15672:15672"
 
         volumes:
             - "../var/docker/rabbitmq:/var/lib/rabbitmq"

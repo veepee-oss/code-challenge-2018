@@ -1,25 +1,33 @@
 # messages.en.yml
 app:
     global:
-        name:           "Maze Escape"
-        title:          "Privalia Code Challenge 2018"
-        description:    "Maze Escape is the title of the Privalia Code Challenge 2018"
+        name:           "Space Invaders tribute"
+        title:          "Code Challenge 2018"
+        description:    "Space Invaders tribute is the title of the Privalia Code Challenge 2018"
         author:         "david.amigo@privalia.com"
+        login:          "Login"
+        logout:         "Logout"
 
     homepage:
         title:          "Homepage"
 
         upper-text:
-            1:              "The 2018 event of the <strong>Privalia Code Challenge</strong> is called <strong>Maze Escape Code Challenge</strong>!"
-            2:              "The goal is easy: You have to create a bot to <strong>escape from a labyrinth</strong>."
+            1:              "The 2018 event of the <strong>Privalia Code Challenge</strong> is called <strong>Space Invaders Tribute</strong>!"
+            2:              "The goal is easy: You have to create a REST API to <strong>kill the invaders</strong> (and the other players too)."
 
         lower-text:
-            1:              "Your bot will be trapped in a maze and is expected to find its way out competing with the other player bots in a real time challenge."
-            2:              "All the bots will start at the same random position and they won't be visible to each other."
-            3:              "The first bot to find its way out of the maze wins the game."
+            1:              "Your API will move a starship competing with the other player APIs in a real time challenge."
+            2:              "All the starships will start in a different random position."
+            3:              "The winner will be the starship with the highest score."
+            4:              "The scoring system is:"
+
+        score:
+            1:              "<strong>100 points</strong> to kill another player's starship."
+            2:              "<strong>50 points</strong> to kill a space invader."
+            3:              "<strong>-25 points</strong> when killed by another player or invader."
 
         rules:          "See the rules"
-        create:         "Create test game"
+        create:         "Create game"
 
     rulespage:
         title:          "Rules"
@@ -28,11 +36,12 @@ app:
         title:          "Create new game"
 
         form:
-            height:         "Height of the maze"
-            width:          "Width of the maze"
-            player-num:     "Number of players (1 to 20)"
-            min-ghosts:     "Minimum number of ghosts)"
-            ghost-rate:     "Movements to create a new ghost (0 for no ghosts al all)"
+            height:         "Height of the board (10 to 25)"
+            width:          "Width of the board (10 to 50)"
+            player-num:     "Number of players (1 to 8)"
+            min-ghosts:     "Minimum number of enemies (0 to 50)"
+            ghost-rate:     "Movements to create a new enemy (0 for no enemies at all)"
+            limit:          "Movements to end the game (100 to 5000)"
             url:            "URL"
             name-optional:  "Game name (optional)"
             next:           "Next step"
@@ -50,23 +59,29 @@ app:
             game:           "Game"
             status:         "Status"
             moves:          "Moves"
+            of:             "of"
             players:        "Players"
-            ghosts:         "Ghosts"
-            min-ghosts:     "Min. ghosts"
-            ghosts-rate:    "Ghost rate"
-            status-text:    "{0} Not started|{1} Playing|{9}Finished"
+            ghosts:         "Invaders"
+            min-ghosts:     "Min. invaders"
+            ghosts-rate:    "Invaders rate"
+            status-text:    "{0} Not started|{1} Playing|{8} Paused|{16}Finished"
             winners:        "Winners"
             dead:           "Dead players"
             player-list:    "Player list"
             no-winners:     "No winners yet!"
             no-dead:        "No dead players yet!"
             no-players:     "No remaining players!"
+            score:          "Score"
+            points:         "points"
 
     gameover:
         title:          "Game over"
         texts:
-            1:              "The <strong>Code Challenge 2018</strong> is over. You can't create more games since <strong>%date%</strong>."
-            2:              "Please send your API <strong>URL</strong> or <strong>IP</strong> address to <strong>%email%</strong> if you didn't do before."
+            1:              "The <strong>Code Challenge 2018</strong> hasn't started."
+            2:              "You can't start creating games until <strong>%date%</strong>."
+            3:              "The <strong>Code Challenge 2018</strong> is over."
+            4:              "You can't create more games since <strong>%date%</strong>."
+            5:              "If you have any question you can email to: <strong>%email%</strong>."
         buttons:
             back:           "Go Back"
 
@@ -89,6 +104,7 @@ app:
             games:
                 not-started:    "Not started games"
                 running:        "Running games"
+                paused:         "Paused games"
                 finished:       "Finished games"
                 none:           "No games found!"
 
@@ -101,7 +117,7 @@ app:
             create:         "Create game"
             view:           "View game"
             view-details:   "View game details"
-            view-maze:      "View game maze"
+            view-maze:      "View game board"
             view-panels:    "View game panels"
             remove:         "Remove game"
 
@@ -109,8 +125,11 @@ app:
         title:          "Game Details"
 
     credits:
-        title:          "Credits and Attributions"
+        title:          "License, Credits and Attributions"
 
         texts:
-            libraries:      "Libraries attributions"
-            icons:          "Icons attributions"
+            license:        "License"
+            constributors:  "Contributors"
+            attributions:   "Attributions"
+            libraries:      "Software Libraries"
+            graphics:       "Graphics and Icons"

@@ -131,16 +131,16 @@
                     </div>
                 </div>
 
-                <div class="panel panel-info">
+                <div class="panel panel-warning">
                     <div class="panel-heading">
-                        {{ 'app.adminpage.texts.games.not-started' | trans }}
-                        <a href="#panel-stopped" data-toggle="collapse" class="badge pull-right">
-                            {{ stoppedGames | length }}
+                        {{ 'app.adminpage.texts.games.paused' | trans }}
+                        <a href="#panel-paused" data-toggle="collapse" class="badge pull-right">
+                            {{ pausedGames | length }}
                         </a>
                     </div>
-                    <div id="panel-stopped"
-                         class="panel-body panel-list-striped collapse">
-                        {% for game in stoppedGames %}
+                    <div id="panel-paused"
+                         class="panel-body panel-body-scroll panel-list-striped collapse {% if pausedGames | length > 0 %}in{% endif %}">
+                        {% for game in pausedGames %}
                             {% include ':game:adminGame.html.twig' with { 'game' : game }  %}
                         {% else %}
                             {{ 'app.adminpage.texts.games.none' | trans }}
@@ -148,7 +148,24 @@
                     </div>
                 </div>
 
-                <div class="panel panel-warning">
+                <div class="panel panel-info">
+                    <div class="panel-heading">
+                        {{ 'app.adminpage.texts.games.not-started' | trans }}
+                        <a href="#panel-stopped" data-toggle="collapse" class="badge pull-right">
+                            {{ notStartedGames | length }}
+                        </a>
+                    </div>
+                    <div id="panel-stopped"
+                         class="panel-body panel-body-scroll panel-list-striped collapse {% if notStartedGames | length > 0 %}in{% endif %}">
+                        {% for game in notStartedGames %}
+                            {% include ':game:adminGame.html.twig' with { 'game' : game }  %}
+                        {% else %}
+                            {{ 'app.adminpage.texts.games.none' | trans }}
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="panel panel-danger">
                     <div class="panel-heading">
                         {{ 'app.adminpage.texts.games.finished' | trans }}
                         <a href="#panel-finished" data-toggle="collapse" class="badge pull-right">
@@ -156,7 +173,7 @@
                         </a>
                     </div>
                     <div id="panel-finished"
-                         class="panel-body panel-list-striped collapse">
+                         class="panel-body panel-body-scroll panel-list-striped collapse">
                         {% for game in finishedGames if game.finished %}
                             {% include ':game:adminGame.html.twig' with { 'game' : game }  %}
                         {% else %}

@@ -3,6 +3,8 @@
 namespace AppBundle\Domain\Service\MovePlayer;
 
 use AppBundle\Domain\Entity\Game\Game;
+use AppBundle\Domain\Entity\Ghost\Ghost;
+use AppBundle\Domain\Entity\Maze\Maze;
 use AppBundle\Domain\Entity\Maze\MazeCell;
 use AppBundle\Domain\Entity\Player\Player;
 
@@ -36,16 +38,13 @@ class PlayerRequest implements PlayerRequestInterface
      *             "x1": "int",
      *             "y2": "int",
      *             "x2": "int"
-     *         }
+     *         },
+     *         "fire: "bool"
      *     },
-     *     "maze": {
+     *     "board": {
      *         "size": {
      *             "height": "int",
      *             "width": "int"
-     *         },
-     *         "goal": {
-     *             "y": "int",
-     *             "x": "int"
      *         },
      *         "walls": [
      *             {
@@ -54,10 +53,17 @@ class PlayerRequest implements PlayerRequestInterface
      *             }
      *         ]
      *     },
-     *     "ghosts": [
+     *     "players": [
      *         {
      *             "y": "int",
      *             "x": "int"
+     *         }
+     *     ],
+     *     "invaders": [
+     *         {
+     *             "y": "int",
+     *             "x": "int",
+     *             "neutral": "bool"
      *         }
      *     ]
      * }
@@ -88,45 +94,15 @@ class PlayerRequest implements PlayerRequestInterface
         $x2 = $pos->x() + $viewRange;
 
         if ($y1 < 0) {
-//            $y2 -= $y1;
             $y1 = 0;
         } elseif ($y2 >= $height) {
-//            $y1 -= ($pos->y() - $height + 1);
             $y2 = $height - 1;
         }
 
         if ($x1 < 0) {
-//            $x2 -= $x1;
             $x1 = 0;
         } elseif ($x2 >= $width) {
-//            $x1 -= ($pos->x() - $width + 1);
             $x2 = $width - 1;
-        }
-
-        $walls = array();
-        for ($y = $y1; $y <= $y2; ++$y) {
-            for ($x = $x1; $x <= $x2; ++$x) {
-                if ($maze[$y][$x]->getContent() == MazeCell::CELL_WALL) {
-                    $walls[] = array(
-                        'y' => $y,
-                        'x' => $x
-                    );
-                }
-            }
-        }
-
-        $ghosts = array();
-        foreach ($game->ghosts() as $ghost) {
-            $ghostPos = $ghost->position();
-            if ($ghostPos->y() >= $y1
-                && $ghostPos->y() <= $y2
-                && $ghostPos->x() >= $x1
-                && $ghostPos->x() <= $x2) {
-                $ghosts[] = array(
-                    'y' => $ghostPos->y(),
-                    'x' => $ghostPos->x()
-                );
-            }
         }
 
         $data = array(
@@ -149,20 +125,18 @@ class PlayerRequest implements PlayerRequestInterface
                     'x1'        => $x1,
                     'y2'        => $y2,
                     'x2'        => $x2
-                )
+                ),
+                'fire'      => !$player->isReloading()
             ),
-            'maze'      => array(
+            'board'     => array(
                 'size'      => array(
                     'height'    => $height,
                     'width'     => $width
                 ),
-                'goal'  => array(
-                    'y'         => $maze->goal()->y(),
-                    'x'         => $maze->goal()->x()
-                ),
-                'walls'     => $walls
+                'walls'     => $this->getVisibleWalls($game->maze(), $y1, $x1, $y2, $x2),
             ),
-            'ghosts'    => $ghosts
+            'players'   => $this->getVisiblePlayers($game->players(), $player, $y1, $x1, $y2, $x2),
+            'invaders'  => $this->getVisibleGhosts($game->ghosts(), $y1, $x1, $y2, $x2)
         );
 
         if ($asArray) {
@@ -170,5 +144,91 @@ class PlayerRequest implements PlayerRequestInterface
         }
 
         return json_encode($data);
+    }
+
+    /**
+     * Get the visible walls array
+     *
+     * @param Maze $maze
+     * @param int  $y1
+     * @param int  $x1
+     * @param int  $y2
+     * @param int  $x2
+     * @return array
+     */
+    public function getVisibleWalls(Maze $maze, int $y1, int $x1, int $y2, int $x2)
+    {
+        $walls = array();
+        for ($y = $y1; $y <= $y2; ++$y) {
+            for ($x = $x1; $x <= $x2; ++$x) {
+                if ($maze[$y][$x]->getContent() == MazeCell::CELL_WALL) {
+                    $walls[] = array(
+                        'y' => $y,
+                        'x' => $x
+                    );
+                }
+            }
+        }
+        return $walls;
+    }
+
+    /**
+     * Get the visible players array
+     *
+     * @param Player[] $allPlayers
+     * @param Player   $current;
+     * @param int      $y1
+     * @param int      $x1
+     * @param int      $y2
+     * @param int      $x2
+     * @return array
+     */
+    public function getVisiblePlayers(array $allPlayers, Player $current, int $y1, int $x1, int $y2, int $x2)
+    {
+        $players = [];
+        foreach ($allPlayers as $player) {
+            $playerPos = $player->position();
+            if ($player->uuid() != $current->uuid()
+                && !$player->isKilled()
+                && $playerPos->y() >= $y1
+                && $playerPos->y() <= $y2
+                && $playerPos->x() >= $x1
+                && $playerPos->x() <= $x2) {
+                $players[] = array(
+                    'y' => $playerPos->y(),
+                    'x' => $playerPos->x()
+                );
+            }
+        }
+        return $players;
+    }
+
+    /**
+     * Get the visible ghosts array
+     *
+     * @param Ghost[] $allGhosts
+     * @param int     $y1
+     * @param int     $x1
+     * @param int     $y2
+     * @param int     $x2
+     * @return array
+     */
+    public function getVisibleGhosts(array $allGhosts, int $y1, int $x1, int $y2, int $x2)
+    {
+        $ghosts = [];
+        foreach ($allGhosts as $ghost) {
+            $ghostPos = $ghost->position();
+            if ($ghostPos->y() >= $y1
+                && $ghostPos->y() <= $y2
+                && $ghostPos->x() >= $x1
+                && $ghostPos->x() <= $x2) {
+                $ghosts[] = array(
+                    'y' => $ghostPos->y(),
+                    'x' => $ghostPos->x(),
+                    'neutral' => $ghost->isNeutral()
+                );
+            }
+        }
+        return $ghosts;
     }
 }

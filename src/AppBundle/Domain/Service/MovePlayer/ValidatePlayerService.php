@@ -30,26 +30,22 @@ class ValidatePlayerService implements ValidatePlayerServiceInterface
      *
      * @param Player $player
      * @param Game $game
-     * @return bool true=success, false=error
+     * @return void
+     * @throws MovePlayerException
      */
     public function validate(Player& $player, Game $game = null)
     {
-        try {
-            // Asks for the name and email of the player
-            $data = $this->askPlayerNameService->askPlayerName(
-                $player->url(),
-                $player->uuid(),
-                $game ? $game->uuid() :  null
-            );
+        // Asks for the name and email of the player
+        $data = $this->askPlayerNameService->askPlayerName(
+            $player->url(),
+            $player->uuid(),
+            $game ? $game->uuid() :  null
+        );
 
-            if (!$data) {
-                return false;
-            }
-        } catch (MovePlayerException $exc) {
-            return false;
+        if (!$data || !isset($data['name'])) {
+            throw new MovePlayerException('Invalid API response - missing "name"!');
         }
 
-        $player->setPlayerIds($data['name'], $data['email']);
-        return true;
+        $player->setPlayerIds($data['name'], $data['email'] ?? null);
     }
 }

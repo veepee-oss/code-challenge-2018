@@ -5,6 +5,7 @@ namespace AppBundle\Domain\Entity\Game;
 use AppBundle\Domain\Entity\Ghost\Ghost;
 use AppBundle\Domain\Entity\Maze\Maze;
 use AppBundle\Domain\Entity\Player\Player;
+use AppBundle\Domain\Entity\Position\Position;
 use Ramsey\Uuid\Uuid;
 
 /**
@@ -14,35 +15,49 @@ use Ramsey\Uuid\Uuid;
  */
 class Game
 {
+    /** @var int Game statuses */
     const STATUS_NOT_STARTED = 0;
     const STATUS_RUNNING = 1;
-    const STATUS_FINISHED = 9;
+    const STATUS_PAUSED = 8;
+    const STATUS_FINISHED = 16;
 
-    /** @var Maze */
+    /** @var int the default limit of moves */
+    const DEFAULT_MOVES_LIMIT = 100;
+
+    /** @var int The default view range and fire range */
+    const DEFAULT_VIEW_RANGE = 4;
+
+    /** @var Maze the maze */
     protected $maze;
 
-    /** @var Player[] */
+    /** @var Player[] the players array */
     protected $players;
 
-    /** @var Ghost[] */
+    /** @var Ghost[] the active ghosts */
     protected $ghosts;
 
-    /** @var int */
+    /** @var Ghost[] the recently killed ghosts  */
+    protected $killedGhosts;
+
+    /** @var int the frequency of new ghosts */
     protected $ghostRate;
 
-    /** @var int */
+    /** @var int the minimum ghosts any time */
     protected $minGhosts;
 
-    /** @var int */
+    /** @var int the status of the game: playing, paused, ... */
     protected $status;
 
-    /** @var int */
+    /** @var int the number of moves done */
     protected $moves;
 
-    /** @var string */
+    /** @var int the limit of movements to do */
+    protected $limit;
+
+    /** @var string the UUID of the game */
     protected $uuid;
 
-    /** @var string */
+    /** @var string the name of the game (optional) */
     protected $name;
 
     /**
@@ -51,37 +66,44 @@ class Game
      * @param Maze $maze
      * @param Player[] $players
      * @param Ghost[] $ghosts
+     * @param Ghost[] $killedGhosts
      * @param int $ghostRate
      * @param int $minGhosts
      * @param int $status
      * @param int $moves
+     * @param int $limit
      * @param string $uuid
      * @param string $name
+     * @throws \Exception
      */
     public function __construct(
         Maze $maze,
         array $players,
         array $ghosts,
+        array $killedGhosts = [],
         $ghostRate = 0,
         $minGhosts = 0,
         $status = self::STATUS_NOT_STARTED,
         $moves = 0,
+        $limit = self::DEFAULT_MOVES_LIMIT,
         $uuid = null,
         $name = null
     ) {
         $this->maze = $maze;
         $this->players = $players;
         $this->ghosts = $ghosts;
+        $this->killedGhosts = $killedGhosts;
         $this->ghostRate = $ghostRate;
         $this->minGhosts = $minGhosts;
         $this->status = $status;
         $this->moves = $moves;
+        $this->limit = $limit;
         $this->uuid = $uuid ?: Uuid::uuid4()->toString();
         $this->name = $name ?: $this->uuid;
     }
 
     /**
-     * Get maze
+     * Get the maze
      *
      * @return Maze
      */
@@ -91,7 +113,7 @@ class Game
     }
 
     /**
-     * Get Players
+     * Get the players array
      *
      * @return Player[]
      */
@@ -101,7 +123,7 @@ class Game
     }
 
     /**
-     * Get Ghosts
+     * Get the active ghosts array
      *
      * @return Ghost[]
      */
@@ -111,7 +133,17 @@ class Game
     }
 
     /**
-     * Get ghost rate
+     * Get The the recently killed ghosts
+     *
+     * @return Ghost[]
+     */
+    public function killedGhosts(): array
+    {
+        return $this->killedGhosts;
+    }
+
+    /**
+     * Get the frequency of new ghosts
      *
      * @return int
      */
@@ -121,7 +153,7 @@ class Game
     }
 
     /**
-     * Get min ghosts
+     * Get the minimum ghosts any time
      *
      * @return int
      */
@@ -131,7 +163,7 @@ class Game
     }
 
     /**
-     * Get status
+     * Get the status of the game: playing, paused, ...
      *
      * @return int
      */
@@ -141,7 +173,7 @@ class Game
     }
 
     /**
-     * Get moves
+     * Get the number of moves done
      *
      * @return int
      */
@@ -151,7 +183,17 @@ class Game
     }
 
     /**
-     * Get uuid
+     * Get the limit of movements to do
+     *
+     * @return int
+     */
+    public function limit()
+    {
+        return $this->limit;
+    }
+
+    /**
+     * Get the UUID of the game
      *
      * @return string
      */
@@ -161,13 +203,24 @@ class Game
     }
 
     /**
-     * Get name
+     * Get the name of the game
      *
      * @return string
      */
     public function name()
     {
         return $this->name;
+    }
+
+    /**
+     * Returns if the game is started
+     *
+     * @return bool
+     */
+    public function started()
+    {
+        return static::STATUS_RUNNING == $this->status
+            || static::STATUS_PAUSED == $this->status;
     }
 
     /**
@@ -178,6 +231,16 @@ class Game
     public function playing()
     {
         return static::STATUS_RUNNING == $this->status;
+    }
+
+    /**
+     * Returns if the game is paused
+     *
+     * @return bool
+     */
+    public function paused()
+    {
+        return static::STATUS_PAUSED == $this->status;
     }
 
     /**
@@ -208,8 +271,8 @@ class Game
      */
     public function stopPlaying()
     {
-        if ($this->status != static::STATUS_FINISHED) {
-            $this->status = static::STATUS_NOT_STARTED;
+        if ($this->status == static::STATUS_RUNNING) {
+            $this->status = static::STATUS_PAUSED;
         }
         return $this;
     }
@@ -234,10 +297,22 @@ class Game
     {
         $this->moves = 0;
         $this->ghosts = array();
+        $this->resetKilledGhosts();
         $this->status = static::STATUS_NOT_STARTED;
         foreach ($this->players as $player) {
-            $player->reset($this->maze()->start());
+            $player->resetAll($this->maze->createStartPosition());
         }
+        return $this;
+    }
+
+    /**
+     * Removes all the killed ghosts
+     *
+     * @return $this
+     */
+    public function resetKilledGhosts()
+    {
+        $this->killedGhosts = [];
         return $this;
     }
 
@@ -286,6 +361,9 @@ class Game
     public function incMoves()
     {
         $this->moves++;
+        if ($this->moves >= $this->limit) {
+            $this->endGame();
+        }
         return $this;
     }
 
@@ -311,6 +389,7 @@ class Game
     {
         foreach ($this->ghosts as $key => $item) {
             if ($ghost == $item) {
+                $this->killedGhosts[] = $ghost;
                 unset($this->ghosts[$key]);
                 break;
             }
@@ -319,60 +398,57 @@ class Game
     }
 
     /**
-     * Checks if a player reached the goal
+     * Finds the ghosts at a position in the maze
      *
-     * @param Player $player
-     * @return bool
+     * @param Position $pos
+     * @return Ghost[]
      */
-    public function isGoalReached(Player $player)
+    public function ghostsAtPosition(Position $pos)
     {
-        $pos = $player->position();
-        $goal = $this->maze()->goal();
-        if ($pos->y() == $goal->y() && $pos->x() == $goal->x()) {
-            return true;
-        }
-        return false;
-    }
-
-    /**
-     * Checks if there are at least one player alive
-     *
-     * @return bool
-     */
-    public function arePlayersAlive()
-    {
-        foreach ($this->players as $player) {
-            if ($player->status() == Player::STATUS_PLAYING) {
-                return true;
+        $result = [];
+        foreach ($this->ghosts as $ghost) {
+            if ($ghost->position()->equals($pos)) {
+                $result[] = $ghost;
             }
         }
-        return false;
+        return $result;
     }
 
     /**
-     * Get the current classification
+     * Finds the players at a position in the maze
+     *
+     * @param Position $pos
+     * @return Player[]
+     */
+    public function playersAtPosition(Position $pos)
+    {
+        $result = [];
+        foreach ($this->players as $player) {
+            if ($player->position()->equals($pos)) {
+                $result[] = $player;
+            }
+        }
+        return $result;
+    }
+
+    /**
+     * Get the current classification (based on playes score)
      *
      * @return Player[]
      */
     public function classification()
     {
-        $players = $this->players;
-        usort($players, function (Player $p1, Player $p2) {
-            if ($p1->status() == $p2->status()) {
-                if ($p1->timestamp() < $p2->timestamp()) {
-                    return -1;
-                } elseif ($p1->timestamp() > $p2->timestamp()) {
-                    return 1;
-                } else {
-                    return 0;
-                }
-            } elseif ($p1->winner() || $p2->dead()) {
-                return -1;
-            } else {
-                return 1;
+        $playersCopy = $this->players;
+        usort($playersCopy, function (Player $p1, Player $p2) {
+            // Order by score in the first time
+            $condition = $p2->score() <=> $p1->score();
+            if (0 == $condition) {
+                // Order by timestamp when the same score
+                $condition = $p2->timestamp()->getTimestamp() <=> $p1->timestamp()->getTimestamp();
             }
+            return $condition;
         });
-        return $players;
+        return $playersCopy;
     }
 
     /**
@@ -383,26 +459,13 @@ class Game
      */
     public function playerNum(Player $player)
     {
-        foreach ($this->players as $index => $p) {
+        $index = 0;
+        foreach ($this->players as $p) {
+            ++$index;
             if ($player->uuid() == $p->uuid()) {
-                return 1 + $index;
+                return $index;
             }
         }
         return -1;
-    }
-
-    /**
-     * Return if is killing time. Killing time occurs after a number of movements and changes the behabiour of the
-     * ghosts. Before killing time the ghosts move ramdomly; In killing time the ghosts pursue the players.
-     *
-     * @return bool
-     */
-    public function isKillingTime()
-    {
-        $limit = $this->height() * $this->width() / 5;
-        if ($this->moves() > $limit) {
-            return true;
-        }
-        return false;
     }
 }

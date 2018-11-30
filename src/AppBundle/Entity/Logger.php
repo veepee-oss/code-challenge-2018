@@ -283,13 +283,13 @@ class Logger
     {
         $this->setGameUuid($gameUuid);
         $this->setPlayerUuid($playerUuid);
-        $this->setRequestUrl(isset($data['requestUrl']) ? $data['requestUrl'] : null);
-        $this->setRequestHeaders(isset($data['requestHeaders']) ? $data['requestHeaders'] : null);
-        $this->setRequestBody(isset($data['requestBody']) ? $data['requestBody'] : null);
-        $this->setResponseCode(isset($data['responseCode']) ? $data['responseCode'] : null);
-        $this->setResponseHeaders(isset($data['responseHeaders']) ? $data['responseHeaders'] : null);
-        $this->setResponseBody(isset($data['responseBody']) ? $data['responseBody'] : null);
-        $this->setErrorMessage(isset($data['errorMessage']) ? $data['errorMessage'] : null);
+        $this->setRequestUrl($data['requestUrl'] ?? null);
+        $this->setRequestHeaders($data['requestHeaders'] ?? null);
+        $this->setRequestBody($data['requestBody'] ?? null);
+        $this->setResponseCode($data['responseCode'] ?? null);
+        $this->setResponseHeaders($data['responseHeaders'] ?? null);
+        $this->setResponseBody($data['responseBody'] ?? null);
+        $this->setErrorMessage($data['errorMessage'] ?? null);
         return $this;
     }
 

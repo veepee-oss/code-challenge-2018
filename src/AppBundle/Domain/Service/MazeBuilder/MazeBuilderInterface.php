@@ -19,5 +19,5 @@ interface MazeBuilderInterface
      * @return Maze
      * @throws MazeBuilderException
      */
-    public function buildRandomMaze($height, $width);
+    public function buildRandomMaze($height, $width) : Maze;
 }

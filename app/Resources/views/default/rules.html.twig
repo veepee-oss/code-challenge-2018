@@ -12,12 +12,18 @@
                 </small>
             </h1>
             <p class="lead">
-                The idea is quite simple: <strong>You have to create a <a href="#api-documentation">REST API</a>
-                to escape from a labyrinth</strong> before the other players escape. You will know the size of the
-                labyrinth, the position of your character and some other data, but you won't see the entire labyrinth.
-                The game engine will call your API, sending the current conditions, and your API will have to response
-                with your next move: <strong>up</strong>, <strong>down</strong>, <strong>left</strong> or
-                <strong>right</strong>.
+                The idea is quite simple: You have to <strong>create a <a href="#api-documentation">REST API</a></strong>
+                to <strong>move a starship</strong> across a random generated board. In this board there are also a
+                number of <strong>space invaders</strong> and the other players' starships. You could
+                <strong>move</strong> or <strong>fire</strong> at any direction (up, down, left or right), but you will
+                have limited shots.
+            </p>
+            <p class="lead">
+                You will know the size of the board, the position of your character and some other data, but you won't
+                see the entire board. The game engine will call your API, sending the current conditions, and your API
+                will have to response with your next move: <strong>up</strong>, <strong>down</strong>, <strong>left</strong>,
+                <strong>right</strong>, <strong>fire-up</strong>, <strong>fire-down</strong>, <strong>fire-left</strong>
+                or <strong>fire-right</strong>.
             </p>
         </div>
     </div>
@@ -30,91 +36,97 @@
             <div class="row">
                 <div class="col-sm-12 col-md-6">
                     <p>
-                        <img class="img-responsive" src="{{ asset('images/full-maze01.png') }}">
+                        <img class="img-responsive" src="{{ asset('images/starship-screen01.png') }}">
                     </p>
                 </div>
                 <div class="col-sm-12 col-md-6">
                     <div class="row">
                         <div class="col-xs-2">
                             <p>
-                                <img class="img-responsive" src="{{ asset('images/maze-player1-right.png') }}">
+                                <img class="img-responsive" src="{{ asset('images/starship-player01-right.png') }}">
                             </p>
                         </div>
                         <div class="col-xs-10">
-                            <p>
-                                The <strong>Player</strong>, also named <strong>Pacman</strong> is the character moved
-                                by the <a href="#api-documentation">player's API REST</a>. The game can manage up to 20
-                                players concurrently.
+                            <p class="lead">
+                                The <strong>Player's Starship</strong> is the character moved by the
+                                <a href="#api-documentation">player's REST API</a>. The game engine can manage up to 8
+                                differenct starships concurrently.
                             </p>
                         </div>
                     </div>
+
                     <div class="row">
                         <div class="col-xs-2">
                             <p>
-                                <img class="img-responsive" src="{{ asset('images/maze-ghost.png') }}">
+                                <img class="img-responsive" src="{{ asset('images/starship-invader01-regular.png') }}">
                             </p>
                         </div>
                         <div class="col-xs-10">
-                            <p>
-                                A <strong>ghost</strong> can kill a player. The ghosts move randomly by the maze.
-                                The number of ghosts in the game and the spawn frequency can be configured and changes
-                                from game to game.
+                            <p class="lead">
+                                The <strong>Space Invaders</strong> will kill a you if they catch you. The invaders move
+                                randomly across the board. The number of invaders in the game and the spawn frequency
+                                can be configured and it changes from game to game.
                             </p>
                         </div>
                     </div>
+
                     <div class="row">
                         <div class="col-xs-2">
                             <p>
-                                <img class="img-responsive" src="{{ asset('images/maze-ghost-neutral.png') }}">
+                                <img class="img-responsive" src="{{ asset('images/starship-invader02-neutral.png') }}">
                             </p>
                         </div>
                         <div class="col-xs-10">
-                            <p>
-                                When a new ghost is born, he is a <strong>neutral ghost</strong> for 5 movements.
-                                A neutral ghost can't kill a players. After 5 movements a neutral ghost becomes a
-                                normal ghost.
+                            <p class="lead">
+                                When a new space invader is born, he is <strong>neutral</strong> for some movements.
+                                A neutral invader cannot kill a player, but players can kill neutral space invaders by
+                                touching them. After a few movements a neutral invader becomes a regular space invader.
                             </p>
                         </div>
                     </div>
+
                     <div class="row">
                         <div class="col-xs-2">
                             <p>
-                                <img class="img-responsive" src="{{ asset('images/maze-killed1.png') }}">
+                                <img class="img-responsive" src="{{ asset('images/starship-explosion.png') }}">
                             </p>
                         </div>
                         <div class="col-xs-10">
-                            <p>
-                                When a player is killed, it's <strong>tombstone</strong> remains in the place where
-                                he was killed.
+                            <p class="lead">
+                                When a player is killed, he <strong>explodes</strong>. A killed player will remain
+                                dead for some movements and then he respaws in the same place where he was killed.
                             </p>
                         </div>
                     </div>
+
                     <div class="row">
                         <div class="col-xs-2">
                             <p>
-                                <img class="img-responsive" src="{{ asset('images/maze-start.png') }}">
+                                <img class="img-responsive" src="{{ asset('images/starship-shot-right.png') }}">
                             </p>
                         </div>
                         <div class="col-xs-10">
-                            <p>
-                                All the players begin from the same <strong>starting point</strong>.
-                            </p>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-xs-2">
-                            <p>
-                                <img class="img-responsive" src="{{ asset('images/maze-goal.png') }}">
-                            </p>
-                        </div>
-                        <div class="col-xs-10">
-                            <p>
-                                When a player reaches the <strong>goal</strong>, he wins the game.
+                            <p class="lead">
+                                This is a <strong>shot</strong>. A player fired. If a shot hunts a player or an invader,
+                                it kills him.
                             </p>
                         </div>
                     </div>
                 </div>
             </div>
+
+            <p class="lead">
+                The game engine processes all the <strong>movements</strong> from the players and then the
+                <strong>shots</strong>. So a player can dodge a shot. When all the movements and the shots are
+                processed the game engine moves the <strong>invaders</strong>. So the invaders cannot dodge a shot.
+            </p>
+
+            <p class="lead">
+                The shots are instantaneous, but limited to the
+                <a href="#visible-area"><strong>visible area</strong></a>. If two players shot each other at the same
+                time, the both die. After shoting, a player must reload and he cannot shot again until after a few
+                movements.
+            </p>
         </div>
     </div>
 
@@ -125,12 +137,14 @@
                     <h2>
                         Rules
                     </h2>
+
                     <h3>
                         Basics
                     </h3>
-                    <ul>
+
+                    <ul class="lead">
                         <li>
-                            The <strong>Code Challenge 2107</strong> is a programming competition.
+                            The <strong>Code Challenge 2018</strong> is a programming competition.
                         </li>
                         <li>
                             It's opened to <strong>all Privalia employees</strong> particularly those ones in the IT department.
@@ -139,83 +153,79 @@
                             The required <strong>programming level</strong> to participate is high.
                         </li>
                     </ul>
-                    <h3>
-                        Join
-                    </h3>
-                    <ul>
-                        <li>
-                            To join the challenge you'll need to <strong>upload your API to your own Internet server</strong>.
-                        </li>
-                        <li>
-                            Your API has to be <strong>accessible</strong> from the game server through an URL or IP address.
-                        </li>
-                        <li>
-                            No support will be given to create the API or upload it to a server.
-                        </li>
-                        <li>
-                            <strike>Then you'll have to <strong>send your API URL or IP</strong> to
-                            <a href="mailto:{{ default_email }}">{{ default_email }}</a>.</strike>
-                        </li>
-                    </ul>
-                    <h3>
-                        <strike>Dates</strike>
-                    </h3>
-                    <ul>
-                        <li>
-                            <strike><strong>May 26<sup>th</sup></strong> to <strong>June 8<sup>th</sup></strong>: Develop your API.</strike>
-                        </li>
-                        <li>
-                            <strike><strong>June 9<sup>th</sup></strong>: Competition at Privalia office (upstairs).</strike>
-                        </li>
-                        <li>
-                            <strike><strong>July 14<sup>th</sup></strong>: Awards ceremony.</strike>
-                        </li>
-                    </ul>
-                    <h3>
-                        <strike>Prizes</strike>
-                    </h3>
-                    <ul>
-                        <li>
-                            <strike>A t-shirt for all participants who send a valid API.</strike>
-                        </li>
-                        <li>
-                            <strike>Three special prizes for the bests.</strike>
-                        </li>
-                    </ul>
-                    <h3>
-                        <strike>Competition format</strike>
-                    </h3>
-                    <ul>
-                        <li>
-                            <strike>The Competition format will depend on <strong>the number of participants</strong>.</strike>
-                        </li>
-                        <li>
-                            <strike>The idea is to do some semifinals to discard non-optimized APIs and then a
-                            <strong>big final</strong>.</strike>
-                        </li>
-                        <li>
-                            <strike>The game parameters (size of the labyrinth, number of ghosts, etc) will be decided
-                            <strong>before June 9<sup>th</sup></strong>.</strike>
-                        </li>
-                    </ul>
-                    <h3>
-                        Update
-                    </h3>
-                    <p>
-                        The competition is over. Now the code challenge server is opened to everyone who want to test.
-                    </p>
-                    <p></p>
                 </div>
+
                 <div class="col-xs-12 col-md-4 center-block">
-                    <p></p>
+                    <p>&nbsp;</p>
+                    <p>&nbsp;</p>
                     <img
-                        src="{{ asset('images/labyrinth.png') }}"
+                        src="{{ asset('images/space-invaders.png') }}"
                         alt="{{ 'app.global.name' | trans }}"
                         title="{{ 'app.global.name' | trans }}"
                         class="img-responsive"
                     />
                 </div>
             </div>
+
+            <h3>
+                Join
+            </h3>
+
+            <ul class="lead">
+                <li>
+                    To join the challenge you'll need to <strong>upload your API to your own Internet server</strong>.
+                </li>
+                <li>
+                    Your API has to be <strong>accessible</strong> from the game server through an URL or IP address.
+                </li>
+                <li>
+                    No support will be given to create the API or upload it to a server.
+                </li>
+            </ul>
+
+            <h3>
+                Dates
+            </h3>
+
+            <ul class="lead">
+                <li>
+                    <strong>November 30<sup>th</sup></strong> to <strong>December 13<sup>rd</sup></strong>: Develop your API.
+                </li>
+                <li>
+                    <strong>December 14<sup>th</sup></strong> at <strong>13:00h</strong>: Competition at Privalia training room.
+                </li>
+            </ul>
+
+            <h3>
+                Prizes
+            </h3>
+
+            <ul class="lead">
+                <li>
+                    A t-shirt for all participants.
+                </li>
+                <li>
+                    Three special prizes for the bests.
+                </li>
+            </ul>
+
+            <h3>
+                Competition format
+            </h3>
+
+            <ul class="lead">
+                <li>
+                    The Competition format will depend on <strong>the number of participants</strong>.
+                </li>
+                <li>
+                    The idea is to do some semifinals to discard non-optimized APIs and then a
+                    <strong>big final</strong>.
+                </li>
+                <li>
+                    The game parameters (size of the board, number of invaders, etc) will be revealed
+                    the day of the competition.
+                </li>
+            </ul>
         </div>
     </div>
 
@@ -252,11 +262,13 @@
             <h4>
                 Request format
             </h4>
+
             <pre>{% include 'default/rulesEndpointNameRequest.html.twig' %}</pre>
 
             <h4>
                 Response format
             </h4>
+
             <pre>{% include 'default/rulesEndpointNameResponse.html.twig' %}</pre>
 
             <h3 id="move-endpoint">
@@ -271,11 +283,13 @@
             <h4>
                 Request format
             </h4>
+
             <pre>{% include 'default/rulesEndpointMoveRequest.html.twig' %}</pre>
 
             <h4>
                 Response format
             </h4>
+
             <pre>{% include 'default/rulesEndpointMoveResponse.html.twig' %}</pre>
         </div>
 
@@ -284,32 +298,48 @@
                 <h2 id="visible-area">
                     Visible area
                 </h2>
-                <p>
-                    The labyrinth is a 0-based matrix, where [0, 0] is the upper left corner.
-                    The height and width are sent in the <code>maze.size.height</code> and <code>maze.size.width</code>
-                    vars of the request body in the <a href="#move-endpoint">Move endpoint</a>.
-                    Each player has its own <strong>visible area</strong> based on its current position
-                    (see <a href="#figure-1">Figure 1</a>).
-                    The visible area is sent in the <code>player.area</code> var which is an object with four vars
-                    <code>y1</code>, <code>x1</code>, <code>y2</code> and <code>x2</code>.
-                    The information sent in <code>maze.walls</code> and <code>ghosts</code> vars depends on the visible
-                    area.
-                </p>
+
                 <div class="row">
-                    <div class="col-xs-12 col-sm-offset-2 col-sm-8 col-md-offset-3 col-md-6">
-                        <img class="img-responsive" src="{{ asset('images/full-maze02.png') }}">
+                    <div class="col-sm-12 col-md-6">
+                        <p class="lead">
+                            The board is a 0-based matrix, where [0, 0] is the upper left corner.
+                            The height and width are sent in the <code>board.size.height</code> and <code>board.size.width</code>
+                            vars of the request body in the <a href="#move-endpoint">Move endpoint</a>.
+                        </p>
+                        <p class="lead">
+                            Each player has its own <strong>visible area</strong> based on its current position
+                            (see <a href="#figure-1">Figure 1</a>).
+                            The visible area is sent in the <code>player.area</code> var which is an object with four vars
+                            <code>y1</code>, <code>x1</code>, <code>y2</code> and <code>x2</code>.
+                        </p>
+                        <p class="lead">
+                            The information sent in <code>board.walls</code>, <code>invaders</code> and <code>players</code> vars
+                            depends on the <strong>visible area</strong>.
+                        </p>
+                        <p class="lead">
+                            The <strong>fire range</strong> also depends on the <strong>visible area</strong>. You can
+                            shot at any straight direction (up, down, left or right) and the fire range is limited to
+                            what you can see.
+                        </p>
+                    </div>
+                    <div class="col-sm-12 col-md-6">
+                        <img class="img-responsive" src="{{ asset('images/starship-screen02.png') }}">
                         <div class="text-center small" id="figure-1">
                             <i>Figure 1: Visible area</i>
                         </div>
                     </div>
                 </div>
+
                 <h3>
                     Example of request
                 </h3>
+
                 <pre>{% include 'default/rulesEndpointMoveRequestExample.html.twig' %}</pre>
+
                 <h3>
                     Example of response
                 </h3>
+
                 <pre>{% include 'default/rulesEndpointMoveResponseExample.html.twig' %}</pre>
             </div>
         </div>

@@ -1,3 +1,5 @@
+/**********************************************************************************************************************/
+
 .x-maze {
     margin-left: auto;
     margin-right: auto;
@@ -8,8 +10,8 @@
 /**********************************************************************************************************************/
 
 .x-maze td {
-    width: 24px;
-    height: 24px;
+    width: 40px;
+    height: 40px;
     /*border: #FFFFFF dashed 1px;*/
 }
 
@@ -156,7 +158,6 @@
     background-size: 100%;
 }
 
-
 .x-maze .x-ghost-neutral {
     background: #000000 url("../images/maze-ghost-neutral.png") no-repeat;
     background-size: 100%;
@@ -177,7 +178,6 @@
 .x-maze .x-player1-left {
     background: #000000 url("../images/maze-player1-left.png") no-repeat;
     background-size: 100%;
-    content: "\2776";
 }
 
 .x-maze .x-player1-up {

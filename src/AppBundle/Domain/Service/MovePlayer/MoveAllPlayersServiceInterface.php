@@ -18,5 +18,5 @@ interface MoveAllPlayersServiceInterface
      * @return void
      * @throws MovePlayerException
      */
-    public function move(Game &$game);
+    public function move(Game &$game) : void;
 }

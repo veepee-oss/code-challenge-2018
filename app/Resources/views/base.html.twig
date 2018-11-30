@@ -30,6 +30,7 @@
                 <link rel="stylesheet" href="{{ asset('css/maze.css') }}" />
                 <link rel="stylesheet" href="{{ asset('css/xmaze.css') }}" />
                 <link rel="stylesheet" href="{{ asset('css/xmas.css') }}" />
+                <link rel="stylesheet" href="{{ asset('css/starship.css') }}" />
             {% endblock %}
 
             {% block more_stylesheets %}{% endblock %}
@@ -64,14 +65,31 @@
                                 Copyright &copy;
                                 <a href="http://www.privalia.com/">Privalia Venta Directa S.A.U.</a> 2006-2018
                             </div>
+
                             <div class="col-sm-6 text-footer-right">
-                                <br>
-                                <a href="{{ url('admin_view') }}">{{ 'app.adminpage.title' | trans }}</a>
-                                <span class="glyphicon glyphicon-wrench" aria-hidden="true"></span> |
                                 <a href="{{ url('rules') }}">{{ 'app.homepage.rules' | trans }}</a>
                                 <span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span> |
+
                                 <a href="{{ url('credits') }}">{{ 'app.credits.title' | trans }}</a>
                                 <span class="glyphicon glyphicon-copyright-mark" aria-hidden="true"></span>
+
+                                <br>
+
+                                {% if is_granted('ROLE_ADMIN') %}
+                                    <a href="{{ url('admin_view') }}">{{ 'app.adminpage.title' | trans }}</a>
+                                    <span class="glyphicon glyphicon-wrench" aria-hidden="true"></span> |
+                                {%  elseif is_granted('IS_AUTHENTICATED_FULLY') or is_granted('IS_AUTHENTICATED_REMEMBERED') %}
+                                    <a href="{{ url('game_create') }}">{{ 'app.homepage.create' | trans }}</a>
+                                    <span class="glyphicon glyphicon-expand" aria-hidden="true"></span> |
+                                {% endif %}
+
+                                {% if is_granted('IS_AUTHENTICATED_FULLY') or is_granted('IS_AUTHENTICATED_REMEMBERED') %}
+                                    <a href="{{ url('logout') }}">{{ 'app.global.logout' | trans }}</a>
+                                    <span class="glyphicon glyphicon-off" aria-hidden="true"></span>
+                                {% else %}
+                                    <a href="{{ url('login') }}">{{ 'app.global.login' | trans }}</a>
+                                    <span class="glyphicon glyphicon-user" aria-hidden="true"></span>
+                                {% endif %}
                             </div>
                         </div>
                     </footer>

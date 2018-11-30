@@ -2,9 +2,7 @@
 
 DIR=$(dirname $0)
 cd ${DIR}
-source ./includes
-
-APP_COMPOSER="/usr/local/bin/composer"
+source ./includes.sh
 
 enabled=$( docker ps --format "{{.Names}}" | grep -i "${DOCKER_SERVER}" )
 if [ "$enabled" == "" ]

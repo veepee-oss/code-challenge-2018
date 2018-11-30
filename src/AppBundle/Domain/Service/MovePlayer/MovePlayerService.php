@@ -2,9 +2,9 @@
 
 namespace AppBundle\Domain\Service\MovePlayer;
 
+use AppBundle\Domain\Entity\Fire\Fire;
 use AppBundle\Domain\Entity\Game\Game;
 use AppBundle\Domain\Entity\Maze\Maze;
-use AppBundle\Domain\Entity\Maze\MazeCell;
 use AppBundle\Domain\Entity\Player\Player;
 use AppBundle\Domain\Entity\Position\Direction;
 use AppBundle\Domain\Entity\Position\Position;
@@ -27,23 +27,32 @@ class MovePlayerService implements MovePlayerServiceInterface
     public function move(Player& $player, Game $game, string $move = null) : bool
     {
         // Validations
+        $moved = true;
         if (!$move) {
-            return false;
+            $moved = false;
         }
 
-        // Computes the new position
-        $position = $this->computeNewPosition($player->position(), $move);
-        if (!$this->validatePosition($position, $game->maze())) {
-            return false;
+        if (Fire::firing($move)) {
+            if (!$player->isReloading()) {
+                $player->fire($move);
+            } else {
+                // Invalid movement while reloading
+                $player->move($player->position());
+                $moved = false;
+            }
+        } else {
+            // Computes the new position
+            $position = $this->computeNewPosition($player->position(), $move);
+            if (!$this->validatePosition($position, $game->maze())) {
+                $position = $player->position();
+                $moved = false;
+            }
+
+            // Move the player to the new computed position
+            $player->move($position);
         }
 
-        $player->move($position);
-
-        if ($game->isGoalReached($player)) {
-            $player->wins();
-        }
-
-        return true;
+        return $moved;
     }
 
     /**
@@ -95,7 +104,7 @@ class MovePlayerService implements MovePlayerServiceInterface
 
         if ($y < 0 || $y >= $maze->height()
             || $x < 0 || $x >= $maze->width()
-            || $maze[$y][$x]->getContent() == MazeCell::CELL_WALL) {
+            || !$maze[$y][$x]->isEmpty()) {
             return false;
         }
 

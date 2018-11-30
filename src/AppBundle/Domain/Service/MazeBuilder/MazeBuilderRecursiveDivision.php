@@ -4,7 +4,6 @@ namespace AppBundle\Domain\Service\MazeBuilder;
 
 use AppBundle\Domain\Entity\Maze\Maze;
 use AppBundle\Domain\Entity\Maze\MazeCell;
-use AppBundle\Domain\Entity\Position\Position;
 
 /**
  * Maze builder using recursive division method
@@ -13,7 +12,7 @@ use AppBundle\Domain\Entity\Position\Position;
  */
 class MazeBuilderRecursiveDivision implements MazeBuilderInterface
 {
-    /** @var \AppBundle\Domain\Entity\Maze\Maze */
+    /** @var Maze */
     protected $maze = null;
 
     /** Constants */
@@ -26,15 +25,13 @@ class MazeBuilderRecursiveDivision implements MazeBuilderInterface
      * @param int $height
      * @param int $width
      * @return Maze
-     * @throws MazeBuilderException
      */
-    public function buildRandomMaze($height, $width)
+    public function buildRandomMaze($height, $width) : Maze
     {
         $this
             ->createMaze($height, $width)
             ->createBorders()
-            ->makeDivisions(0, 0, $width - 1, $height - 1)
-            ->createStartAndGoal();
+            ->makeDivisions(0, 0, $width - 1, $height - 1);
 
         return $this->maze;
     }
@@ -83,6 +80,7 @@ class MazeBuilderRecursiveDivision implements MazeBuilderInterface
      * @param int $y1
      * @param int $x2
      * @param int $y2
+     * @param int $orientation
      * @return $this
      */
     protected function makeDivisions($x1, $y1, $x2, $y2, $orientation = null)
@@ -90,7 +88,7 @@ class MazeBuilderRecursiveDivision implements MazeBuilderInterface
         $width = $x2 - $x1 + 1;
         $height = $y2 - $y1 + 1;
         if ($width < 5|| $height < 5) {
-            return;
+            return $this;
         }
 
         $px = rand($x1 + 2, $x2 - 2);
@@ -112,69 +110,6 @@ class MazeBuilderRecursiveDivision implements MazeBuilderInterface
         $this->makeDivisions($px, $y1, $x2, $py, $orientation);
         $this->makeDivisions($px, $py, $x2, $y2, $orientation);
 
-        return $this;
-    }
-
-    /**
-     * Creates the goal in a random wall
-     *
-     * @return $this
-     */
-    protected function createStartAndGoal()
-    {
-        $width = $this->maze->width();
-        $height = $this->maze->height();
-
-        $wall = rand(0, 3);
-        switch ($wall) {
-            case 0:
-            case 1:
-                $x = rand(1, $width - 2);
-                if ($wall == 0) {
-                    // Start on top wall
-                    $this->maze->setStart(new Position(1, $width - $x - 1));
-                    $this->maze[1][$width - $x - 1]->setContent(MazeCell::CELL_START);
-
-                    // Goal on bottom wall
-                    $this->maze->setGoal(new Position($height - 1, $x));
-                    $this->maze[$height - 1][$x]->setContent(MazeCell::CELL_GOAL);
-                    $this->maze[$height - 2][$x]->setContent(MazeCell::CELL_EMPTY);
-                } else {
-                    // Start on bottom wall
-                    $this->maze->setStart(new Position($height - 2, $width - $x - 1));
-                    $this->maze[$height - 2][$width - $x - 1]->setContent(MazeCell::CELL_START);
-
-                    // Goal on top wall
-                    $this->maze->setGoal(new Position(0, $x));
-                    $this->maze[0][$x]->setContent(MazeCell::CELL_GOAL);
-                    $this->maze[1][$x]->setContent(MazeCell::CELL_EMPTY);
-                }
-                break;
-
-            case 2:
-            case 3:
-                $y = rand(1, $height - 2);
-                if ($wall == 2) {
-                    // Start on left wall
-                    $this->maze->setStart(new Position($height - $y - 1, 1));
-                    $this->maze[$height - $y - 1][1]->setContent(MazeCell::CELL_START);
-
-                    // Goal on right wall
-                    $this->maze->setGoal(new Position($y, $width - 1));
-                    $this->maze[$y][$width - 1]->setContent(MazeCell::CELL_GOAL);
-                    $this->maze[$y][$width - 2]->setContent(MazeCell::CELL_EMPTY);
-                } else {
-                    // Start on right wall
-                    $this->maze->setStart(new Position($height - $y - 1, $width - 2));
-                    $this->maze[$height - $y -1][$width - 2]->setContent(MazeCell::CELL_START);
-
-                    // Goal on left wall
-                    $this->maze->setGoal(new Position($y, 0));
-                    $this->maze[$y][0]->setContent(MazeCell::CELL_GOAL);
-                    $this->maze[$y][1]->setContent(MazeCell::CELL_EMPTY);
-                }
-                break;
-        }
         return $this;
     }
 

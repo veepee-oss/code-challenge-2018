@@ -41,6 +41,7 @@ class LoggerService implements LoggerServiceInterface
         $logger = new Logger();
         $logger->setRawData($gameUuid, $playerUuid, $data);
         $this->em->persist($logger);
+        $this->em->flush();
     }
 
     /**

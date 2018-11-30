@@ -24,16 +24,6 @@ class MazeXmasIconRender extends MazeIconRender
         return 'x-mas-wall';
     }
 
-    protected function getMazeStartCss()
-    {
-        return 'x-start';
-    }
-
-    protected function getMazeGoalCss()
-    {
-        return 'x-goal';
-    }
-
     protected function getPlayerCss($index, $direction)
     {
         return 'x-player' . $index;
@@ -42,11 +32,6 @@ class MazeXmasIconRender extends MazeIconRender
     protected function getPlayedKilledCss($index, $direction)
     {
         return 'x-killed' . $index;
-    }
-
-    protected function getPlayerWinnerCss($index, $direction)
-    {
-        return 'x-winner';
     }
 
     protected function getGhostCss($index, $direction)

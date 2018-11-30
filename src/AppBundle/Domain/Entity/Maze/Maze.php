@@ -1,63 +1,54 @@
 <?php
 
 namespace AppBundle\Domain\Entity\Maze;
-
 use AppBundle\Domain\Entity\Position\Position;
 
 /**
- * Domain Entity Maze
+ * Domain entity Maze
  *
  * @package AppBundle\Domain\Entity\Maze
  */
 class Maze implements \ArrayAccess, \Countable, \Iterator
 {
-    /** @var int */
+    /** @var int the width of the maze */
     protected $width;
 
-    /** @var int */
+    /** @var int the height of the maze */
     protected $height;
 
-    /** @var Position */
-    protected $start;
-
-    /** @var  Position */
-    protected $goal;
-
-    /** @var MazeRow[] */
+    /** @var MazeRow[] the maze rows */
     protected $rows;
 
     /** @var int */
-    protected $index;
+    protected $pos;
 
     /**
      * Maze constructor.
      *
-     * @param int $height
-     * @param int $width
-     * @param Position $start
-     * @param Position $goal
-     * @param array $cells
+     * @param int $height the width of the maze
+     * @param int $width  the height of the maze
+     * @param array $cells the initial content of the maze
      */
     public function __construct(
-        $height,
-        $width,
-        Position $start = null,
-        Position $goal = null,
+        int $height,
+        int $width,
         array $cells = null
     ) {
         $this->validateHeight($height);
         $this->validateWidth($width);
         $this->height = $height;
         $this->width = $width;
-        $this->start = $start ? clone $start : null;
-        $this->goal = $goal ? clone $goal: null;
-        $this->rows = array();
-        $this->index = 0;
+        $this->rows = [];
+        $this->pos = 0;
+
+        if (null == $cells) {
+            $cells = [];
+        }
 
         for ($i = 0; $i < $this->height; ++$i) {
             $this->rows[$i] = new MazeRow($this->width);
             for ($j = 0; $j < $this->width; $j++) {
-                $this[$i][$j]->setContent($cells[$i][$j]);
+                $this[$i][$j]->setContent($cells[$i][$j] ?? 0);
             }
         }
     }
@@ -67,7 +58,7 @@ class Maze implements \ArrayAccess, \Countable, \Iterator
      *
      * @return int
      */
-    public function width()
+    public function width() : int
     {
         return $this->width;
     }
@@ -77,75 +68,50 @@ class Maze implements \ArrayAccess, \Countable, \Iterator
      *
      * @return int
      */
-    public function height()
+    public function height() : int
     {
         return $this->height;
     }
 
     /**
-     * Get start position
+     * Creates a random start position for a player
      *
      * @return Position
      */
-    public function start()
+    public function createStartPosition() : Position
     {
-        return $this->start;
-    }
+        do {
+            $y = rand(1, $this->height() - 2);
+            $x = rand(1, $this->width() - 2);
+        } while (!$this[$y][$x]->isEmpty());
 
-    /**
-     * Set start position
-     *
-     * @param Position $start
-     */
-    public function setStart(Position $start)
-    {
-        $this->start = $start;
-    }
-
-    /**
-     * Get goal position
-     *
-     * @return Position
-     */
-    public function goal()
-    {
-        return $this->goal;
-    }
-
-    /**
-     * Set goal position
-     *
-     * @param Position $goal
-     */
-    public function setGoal(Position $goal)
-    {
-        $this->goal = $goal;
+        return new Position($y, $x);
     }
 
     /**
      * Whether a offset exists
      *
      * @link http://php.net/manual/en/arrayaccess.offsetexists.php
-     * @param int $offset An offset to check for.
+     * @param mixed $offset An offset to check for.
      * @return boolean true on success or false on failure.
      */
     public function offsetExists($offset)
     {
         $this->validateHeight($offset);
-        return $this->valid();
+        return ($offset >= 0 && $offset < $this->height);
     }
 
     /**
      * Offset to retrieve
      *
      * @link http://php.net/manual/en/arrayaccess.offsetget.php
-     * @param int $offset The offset to retrieve.
+     * @param mixed $offset The offset to retrieve.
      * @return MazeRow
      */
     public function offsetGet($offset)
     {
         if (!$this->offsetExists($offset)) {
-            throw new \InvalidArgumentException('The height ' . $offset . ' doen\'t exists.');
+            $this->throwOffsetNotExist($offset);
         }
 
         return $this->rows[$offset];
@@ -155,14 +121,14 @@ class Maze implements \ArrayAccess, \Countable, \Iterator
      * Offset to set
      *
      * @link http://php.net/manual/en/arrayaccess.offsetset.php
-     * @param int $offset The offset to assign the value to.
+     * @param mixed $offset The offset to assign the value to.
      * @param MazeRow $value The value to set.
      * @return void
      */
     public function offsetSet($offset, $value)
     {
         if (!$this->offsetExists($offset)) {
-            throw new \InvalidArgumentException('The height ' . $offset . ' doen\'t exists.');
+            $this->throwOffsetNotExist($offset);
         }
 
         $this->rows[$offset] = $value;
@@ -172,13 +138,13 @@ class Maze implements \ArrayAccess, \Countable, \Iterator
      * Offset to unset
      *
      * @link http://php.net/manual/en/arrayaccess.offsetunset.php
-     * @param int $offset The offset to unset.
+     * @param mixed $offset The offset to unset.
      * @return void
      */
     public function offsetUnset($offset)
     {
         if (!$this->offsetExists($offset)) {
-            throw new \InvalidArgumentException('The height ' . $offset . ' doen\'t exists.');
+            $this->throwOffsetNotExist($offset);
         }
         $this->rows[$offset] = new MazeRow($this->width);
     }
@@ -202,7 +168,7 @@ class Maze implements \ArrayAccess, \Countable, \Iterator
      */
     public function current()
     {
-        return $this[$this->index];
+        return $this[$this->pos];
     }
 
     /**
@@ -213,7 +179,7 @@ class Maze implements \ArrayAccess, \Countable, \Iterator
      */
     public function next()
     {
-        ++$this->index;
+        ++$this->pos;
     }
 
     /**
@@ -224,7 +190,7 @@ class Maze implements \ArrayAccess, \Countable, \Iterator
      */
     public function key()
     {
-        return $this->index;
+        return $this->pos;
     }
 
     /**
@@ -235,7 +201,7 @@ class Maze implements \ArrayAccess, \Countable, \Iterator
      */
     public function valid()
     {
-        return ($this->index >= 0 && $this->index < $this->height);
+        return ($this->pos >= 0 && $this->pos < $this->height);
     }
 
     /**
@@ -246,7 +212,7 @@ class Maze implements \ArrayAccess, \Countable, \Iterator
      */
     public function rewind()
     {
-        $this->index = 0;
+        $this->pos = 0;
     }
 
     /**
@@ -270,10 +236,20 @@ class Maze implements \ArrayAccess, \Countable, \Iterator
      * @return void
      * @throws \InvalidArgumentException
      */
-    protected function validateHeight($height)
+    protected function validateHeight($height) : void
     {
         if (!is_numeric($height) || $height != intval($height)) {
-            throw new \InvalidArgumentException('The height ' . $height . ' is not an integer.');
+            throw new \InvalidArgumentException('The height offset ' . $height . ' is not an integer.');
         }
+    }
+
+    /**
+     * @param mixed $offset
+     * @return void
+     * @throws \InvalidArgumentException
+     */
+    private function throwOffsetNotExist($offset) : void
+    {
+        throw new \InvalidArgumentException('The height offset ' . $offset . ' does not exists.');
     }
 }

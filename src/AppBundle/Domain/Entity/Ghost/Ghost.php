@@ -12,17 +12,17 @@ use AppBundle\Domain\Entity\Position\Position;
  */
 class Ghost extends MazeObject
 {
-    /** Ghost types */
+    /** @var int Ghost types */
     const TYPE_RANDOM = 1;
     const TYPE_KILLING = 2;
 
-    /** @var int */
-    protected $type;
-
-    /** Default neutral time */
+    /** @var int Default values */
     const DEFAULT_NEUTRAL_TIME = 5;
 
-    /** @var int */
+    /** @var int the type of ghost */
+    protected $type;
+
+    /** @var int the number of moves whiles it's neutral */
     protected $neutralTime;
 
     /**
@@ -34,18 +34,18 @@ class Ghost extends MazeObject
      * @param int      $neutralTime
      */
     public function __construct(
-        $type,
         Position $position,
         Position $previous = null,
-        $neutralTime = 0
+        int $type = null,
+        int $neutralTime = null
     ) {
         parent::__construct($position, $previous);
-        $this->type = $type;
-        $this->neutralTime = $neutralTime;
+        $this->type = $type ?? self::TYPE_RANDOM;
+        $this->neutralTime = $neutralTime ?? self::DEFAULT_NEUTRAL_TIME;
     }
 
     /**
-     * Get type
+     * Get type of ghost: neutral, random or killing
      *
      * @return int
      */
@@ -55,13 +55,13 @@ class Ghost extends MazeObject
     }
 
     /**
-     * Get grace time
+     * Get if the ghost is neutral
      *
-     * @return int
+     * @return bool
      */
-    public function isNeutralTime()
+    public function isNeutral()
     {
-        return $this->neutralTime < static::DEFAULT_NEUTRAL_TIME;
+        return $this->neutralTime > 0;
     }
 
     /**
@@ -80,13 +80,12 @@ class Ghost extends MazeObject
      * @param Position $position
      * @return $this
      */
-    public function move(Position $position)
+    public function move(Position $position) : MazeObject
     {
         parent::move($position);
-        if ($this->isNeutralTime()) {
-            $this->neutralTime++;
+        if ($this->neutralTime > 0) {
+            $this->neutralTime--;
         }
-
         return $this;
     }
 
@@ -98,9 +97,9 @@ class Ghost extends MazeObject
     public function serialize()
     {
         return array(
-            'type' => $this->type(),
             'position' => $this->position()->serialize(),
             'previous' => $this->previous()->serialize(),
+            'type' => $this->type(),
             'neutralTime' => $this->neutralTime
         );
     }
@@ -113,11 +112,13 @@ class Ghost extends MazeObject
      */
     public static function unserialize(array $data)
     {
+        $previous = $data['previous'] ?? null;
+
         return new static(
-            $data['type'],
             Position::unserialize($data['position']),
-            Position::unserialize(isset($data['previous']) ? $data['previous'] : $data['position']),
-            isset($data['neutralTime']) ? $data['neutralTime'] : 0
+            $previous ? Position::unserialize($previous) : null,
+            $data['type'] ?? null,
+            $data['neutralTime'] ?? null
         );
     }
 }

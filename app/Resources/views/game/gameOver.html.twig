@@ -13,9 +13,24 @@
             </h1>
         </div>
 
+        {% if now <= start_time %}
+            <p class="lead">
+                {{ 'app.gameover.texts.1' | trans | raw }}
+            </p>
+            <p class="lead">
+                {{ 'app.gameover.texts.2' | trans({ '%date%': start_time | date }) | raw }}
+            </p>
+        {% else %}
+            <p class="lead">
+                {{ 'app.gameover.texts.3' | trans | raw }}
+            </p>
+            <p class="lead">
+                {{ 'app.gameover.texts.4' | trans({ '%date%': end_time | date }) | raw }}
+            </p>
+        {% endif %}
+
         <p class="lead">
-            {{ 'app.gameover.texts.1' | trans({ '%date%': time_limit | date }) | raw }}
-            {{ 'app.gameover.texts.2' | trans({ '%email%': '<a href="mailto:' ~ default_email ~ '">' ~ default_email ~'</a>' }) | raw }}
+            {{ 'app.gameover.texts.5' | trans({ '%email%': '<a href="mailto:' ~ default_email ~ '">' ~ default_email ~'</a>' }) | raw }}
         </p>
 
         <p>
