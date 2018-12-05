@@ -178,21 +178,35 @@ class AdminController extends Controller
 
                 /** @var Player $player */
                 foreach ($game->players() as $player) {
-                    $found = array_filter($result, function ($item) use ($player) {
+                    $urlsMatching = array_filter($result, function ($item) use ($player) {
                         return $item['url'] == $player->url();
                     });
-                    if (empty($found)) {
+                    if (empty($urlsMatching)) {
                         $result[] = [
                             'url' => $player->url(),
-                            'game' => [
+                            'names' => [[
+                                'name' => $player->name(),
+                                'email' => $player->email()
+                            ]],
+                            'games' => [
                                 $game->uuid()
                             ]
                         ];
                     } else {
-                        foreach ($found as $key => $value) {
+                        foreach ($urlsMatching as $key => $value) {
                             $uuid = $game->uuid();
-                            if (!in_array($uuid, $result[$key]['game'])) {
-                                $result[$key]['game'][] = $uuid;
+                            if (!in_array($uuid, $result[$key]['games'])) {
+                                $result[$key]['games'][] = $uuid;
+                            }
+                            $playersMatching = array_filter($result[$key]['names'], function ($item) use ($player) {
+                                return $item['name'] == $player->name()
+                                    && $item['email'] == $player->email();
+                            });
+                            if (empty($playersMatching)) {
+                                $result[$key]['names'][] = [
+                                    'name' => $player->name(),
+                                    'email' => $player->email()
+                                ];
                             }
                         }
                     }
