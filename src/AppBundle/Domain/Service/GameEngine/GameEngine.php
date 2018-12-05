@@ -113,6 +113,7 @@ class GameEngine
      */
     public function move(Game &$game) : bool
     {
+        $this->createGhosts($game);
         $game->resetKilledGhosts();
         $this->resetFire($game);
         $this->movePlayers($game);
@@ -124,7 +125,6 @@ class GameEngine
             return false;
         }
 
-        $this->createGhosts($game);
         return true;
     }
 
@@ -164,6 +164,28 @@ class GameEngine
         } catch (MovePlayerException $exc) {
             $this->logger->error('Error moving players in class: ' . get_class($this->moveAllPlayersService));
             $this->logger->error($exc);
+        }
+        return $this;
+    }
+
+    /**
+     * Checks the players positions searching overlapping
+     *
+     * @param Game $game
+     * @return $this
+     */
+    protected function checkPlayersPositions(Game &$game) : GameEngine
+    {
+        $players = $game->players();
+        $count = count($players);
+
+        for ($i = 0; $i < $count - 1; ++$i) {
+            for ($j = $i + 1; $j < $count; $j++) {
+                if ($players[$i]->position()->equals($players[$j]->position())) {
+                    $players[$i]->killed()->addScore(self::SCORE_DEAD);
+                    $players[$j]->killed()->addScore(self::SCORE_DEAD);
+                }
+            }
         }
         return $this;
     }
