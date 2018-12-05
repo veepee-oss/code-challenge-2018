@@ -6,7 +6,9 @@ use AppBundle\Domain\Entity\Game\Game;
 use AppBundle\Domain\Entity\Player\Player;
 use AppBundle\Domain\Service\GameEngine\ConsumerDaemonManagerInterface;
 use AppBundle\Domain\Service\GameEngine\GameDaemonManagerInterface;
+use AppBundle\Domain\Service\MovePlayer\MovePlayerException;
 use AppBundle\Repository\GameRepository;
+use AppBundle\Service\MovePlayer\AskPlayerApiService;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -192,6 +194,58 @@ class AdminController extends Controller
                             if (!in_array($uuid, $result[$key]['game'])) {
                                 $result[$key]['game'][] = $uuid;
                             }
+                        }
+                    }
+                }
+            } catch (\Exception $exc) {
+                // Do nothing
+            }
+        }
+
+        return new JsonResponse($result);
+    }
+
+    /**
+     * Get urls data
+     *
+     * @Route("/urls/check", name="admin_check_urls")
+     * @return JsonResponse
+     */
+    public function checkUrlsAction()
+    {
+        /** @var \AppBundle\Entity\Game $entities[] */
+        $entities = $this->getGameDoctrineRepository()->findAll();
+
+        $result = [];
+
+        /** @var AskPlayerApiService $service */
+        $service = $this->get('app.player.move.api');
+
+        /** @var \AppBundle\Entity\Game $entity */
+        foreach ($entities as $entity) {
+            try {
+                /** @var Game $game */
+                $game = $entity->toDomainEntity();
+
+                /** @var Player $player */
+                foreach ($game->players() as $player) {
+                    $found = array_filter($result, function ($item) use ($player) {
+                        return $item['url'] == $player->url();
+                    });
+                    if (empty($found)) {
+                        try {
+                            $response = $service->askPlayerName($player->url(), $player->name());
+                            $result[] = [
+                                'url' => $player->url(),
+                                'name' => $response['name'],
+                                'email' => $response['email'],
+                            ];
+                        } catch (MovePlayerException $exc) {
+                            $result[] = [
+                                'url' => $player->url(),
+                                'name' => $player->name(),
+                                'error' => $exc->getMessage()
+                            ];
                         }
                     }
                 }
