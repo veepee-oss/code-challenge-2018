@@ -52,11 +52,11 @@ class MazeIconRender implements MazeRenderInterface
                         }
 
                         if ($ghost->isNeutral()) {
-                            $class = $this->getGhostNeutralCss($index, $direction);
+                            $class = $this->getGhostNeutralCss($index, $direction, $ghost->display());
                         } elseif (Ghost::TYPE_KILLING == $ghost->type()) {
-                            $class = $this->getGhostAngryCss($index, $direction);
+                            $class = $this->getGhostAngryCss($index, $direction, $ghost->display());
                         } else {
-                            $class = $this->getGhostCss($index, $direction);
+                            $class = $this->getGhostCss($index, $direction, $ghost->display());
                         }
                         break;
                     }
@@ -93,7 +93,7 @@ class MazeIconRender implements MazeRenderInterface
                     foreach ($game->killedGhosts() as $index => $ghost) {
                         if ($ghost->position()->x() == $col
                             && $ghost->position()->y() == $row) {
-                            $class = $this->getGhostKilledCss($index, $direction);
+                            $class = $this->getGhostKilledCss($index, $direction, $ghost->display());
                             break;
                         }
                     }
@@ -147,22 +147,22 @@ class MazeIconRender implements MazeRenderInterface
         return 'x-killed' . $index;
     }
 
-    protected function getGhostCss($index, $direction)
+    protected function getGhostCss($index, $direction, $display)
     {
         return 'x-ghost';
     }
 
-    protected function getGhostNeutralCss($index, $direction)
+    protected function getGhostNeutralCss($index, $direction, $display)
     {
         return 'x-ghost-neutral';
     }
 
-    protected function getGhostAngryCss($index, $direction)
+    protected function getGhostAngryCss($index, $direction, $display)
     {
         return 'x-ghost-bad';
     }
 
-    protected function getGhostKilledCss($index, $direction)
+    protected function getGhostKilledCss($index, $direction, $display)
     {
         return 'x-empty';
     }

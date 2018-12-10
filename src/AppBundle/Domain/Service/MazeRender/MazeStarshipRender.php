@@ -14,25 +14,22 @@ class MazeStarshipRender extends MazeIconRender
         return 'x-starship-explosion';
     }
 
-    protected function getGhostNeutralCss($index, $direction)
+    protected function getGhostNeutralCss($index, $direction, $display)
     {
-        $num = 1 + ($index % 4);
-        return 'x-ghost' . $num . '-neutral';
+        return 'x-ghost' . $display . '-neutral';
     }
 
-    protected function getGhostCss($index, $direction)
+    protected function getGhostCss($index, $direction, $display)
     {
-        $num = 1 + ($index % 4);
-        return 'x-ghost' . $num . '-regular';
+        return 'x-ghost' . $display . '-regular';
     }
 
-    protected function getGhostAngryCss($index, $direction)
+    protected function getGhostAngryCss($index, $direction, $display)
     {
-        $num = 1 + ($index % 4);
-        return 'x-ghost' . $num . '-angry';
+        return 'x-ghost' . $display . '-angry';
     }
 
-    protected function getGhostKilledCss($index, $direction)
+    protected function getGhostKilledCss($index, $direction, $display)
     {
         return 'x-ghost-explosion';
     }

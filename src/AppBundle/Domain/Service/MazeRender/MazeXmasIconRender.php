@@ -34,17 +34,17 @@ class MazeXmasIconRender extends MazeIconRender
         return 'x-killed' . $index;
     }
 
-    protected function getGhostCss($index, $direction)
+    protected function getGhostCss($index, $direction, $display)
     {
         return 'x-ghost-regular';
     }
 
-    protected function getGhostNeutralCss($index, $direction)
+    protected function getGhostNeutralCss($index, $direction, $display)
     {
         return 'x-ghost-neutral';
     }
 
-    protected function getGhostAngryCss($index, $direction)
+    protected function getGhostAngryCss($index, $direction, $display)
     {
         return 'x-ghost-angry';
     }
