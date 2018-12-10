@@ -118,6 +118,7 @@ class GameEngine
         $this->resetFire($game);
         $this->movePlayers($game);
         $this->checkPlayersFire($game);
+        $this->checkPlayersPositions($game);
         $this->moveGhosts($game);
 
         $game->incMoves();
@@ -181,7 +182,9 @@ class GameEngine
 
         for ($i = 0; $i < $count - 1; ++$i) {
             for ($j = $i + 1; $j < $count; $j++) {
-                if ($players[$i]->position()->equals($players[$j]->position())) {
+                if ($players[$i]->position()->equals($players[$j]->position())
+                    && !$players[$i]->isKilled()
+                    && !$players[$j]->isKilled()) {
                     $players[$i]->killed()->addScore(self::SCORE_DEAD);
                     $players[$j]->killed()->addScore(self::SCORE_DEAD);
                 }
@@ -223,7 +226,8 @@ class GameEngine
                     // Check if another player killed
                     $others = $game->playersAtPosition($pos);
                     foreach ($others as $other) {
-                        if ($player->uuid() != $other->uuid()) {
+                        if ($player->uuid() != $other->uuid()
+                            && !$other->isKilled()) {
                             $player->addScore(self::SCORE_KILL_PLAYER);
                             $other->killed()->addScore(self::SCORE_DEAD);
 
