@@ -218,6 +218,7 @@ class AskPlayerApiService implements AskNextMovementInterface, AskPlayerNameInte
             if (JSON_ERROR_NONE != json_last_error()) {
                 $message .= ' - ' . json_last_error_msg();
             }
+            $message .= ' - URL: ' . $requestUrl . ' - Body: ' . $responseBody;
 
             $this->logger->error(
                 'AskPlayerApiService - Invalid response received - ' . $responseBody
