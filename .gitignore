@@ -48,3 +48,4 @@ composer.phar
 .idea/
 .DS_Store
 
+/LICENSE
