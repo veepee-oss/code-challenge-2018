@@ -312,11 +312,14 @@ class Player extends MazeObject
         parent::move($position);
         if ($this->statusCount() > 0) {
             --$this->statusCount;
-            if (0 == $this->statusCount()
-                && ($this->isPowered()
-                || $this->isReloading()
-                || $this->isKilled())) {
-                $this->status = static::STATUS_REGULAR;
+            if (0 == $this->statusCount()) {
+                if ($this->isKilled()) {
+                    $this->status = static::STATUS_RELOADING;
+                    $this->statusCount = 2;
+                } elseif ($this->isPowered()
+                    || $this->isReloading()) {
+                    $this->status = static::STATUS_REGULAR;
+                }
             }
         }
         return $this;

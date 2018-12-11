@@ -47,5 +47,3 @@ composer.phar
 /supervisord*
 .idea/
 .DS_Store
-
-/LICENSE
