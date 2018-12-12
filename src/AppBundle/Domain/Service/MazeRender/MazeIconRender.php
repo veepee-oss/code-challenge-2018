@@ -41,41 +41,44 @@ class MazeIconRender implements MazeRenderInterface
             // For each column...
             for ($col = 0; $col < $cols; ++$col) {
                 $class = null;
+                $title = null;
 
-                // Check if there is a ghost in this position
-                foreach ($game->ghosts() as $index => $ghost) {
-                    if ($ghost->position()->x() == $col
-                        && $ghost->position()->y() == $row) {
-                        $direction = $ghost->direction();
+                // Check if there is a player in this position
+                foreach ($game->players() as $index => $player) {
+                    if ($player->position()->x() == $col
+                        && $player->position()->y() == $row) {
+                        $direction = $player->direction();
                         if (!$direction) {
                             $direction = Direction::RIGHT;
                         }
 
-                        if ($ghost->isNeutral()) {
-                            $class = $this->getGhostNeutralCss($index, $direction, $ghost->display());
-                        } elseif (Ghost::TYPE_KILLING == $ghost->type()) {
-                            $class = $this->getGhostAngryCss($index, $direction, $ghost->display());
+                        if ($player->isKilled()) {
+                            $class = $this->getPlayedKilledCss(1 + $index, $direction);
+                            $title = $player->name();
                         } else {
-                            $class = $this->getGhostCss($index, $direction, $ghost->display());
+                            $class = $this->getPlayerCss(1 + $index, $direction);
+                            $title = $player->name();
                         }
                         break;
                     }
                 }
 
-                // Check if there is a player in this position
+                // Check if there is a ghost in this position
                 if (null === $class) {
-                    foreach ($game->players() as $index => $player) {
-                        if ($player->position()->x() == $col
-                            && $player->position()->y() == $row) {
-                            $direction = $player->direction();
+                    foreach ($game->ghosts() as $index => $ghost) {
+                        if ($ghost->position()->x() == $col
+                            && $ghost->position()->y() == $row) {
+                            $direction = $ghost->direction();
                             if (!$direction) {
                                 $direction = Direction::RIGHT;
                             }
 
-                            if ($player->isKilled()) {
-                                $class = $this->getPlayedKilledCss(1 + $index, $direction);
+                            if ($ghost->isNeutral()) {
+                                $class = $this->getGhostNeutralCss($index, $direction, $ghost->display());
+                            } elseif (Ghost::TYPE_KILLING == $ghost->type()) {
+                                $class = $this->getGhostAngryCss($index, $direction, $ghost->display());
                             } else {
-                                $class = $this->getPlayerCss(1 + $index, $direction);
+                                $class = $this->getGhostCss($index, $direction, $ghost->display());
                             }
                             break;
                         }
@@ -114,7 +117,12 @@ class MazeIconRender implements MazeRenderInterface
                     $class = $this->getEmptyCellCss();
                 }
 
-                $html .= '<td class="' . $class . '"></td>';
+                $html .= '<td ';
+                if ($title) {
+                    $html .= 'title="' . $title . '" ';
+                }
+                $html .= 'class="' . $class . '">';
+                $html .= '</td>';
             }
             $html .= '</tr>';
         }
