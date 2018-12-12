@@ -60,6 +60,9 @@ class Player extends MazeObject
     /** @var Position the stating position */
     protected $start;
 
+    /** @var bool If the player respawned this turn */
+    protected $respawned;
+
     /**
      * Player constructor.
      *
@@ -80,6 +83,7 @@ class Player extends MazeObject
         $this->email = null;
         $this->url = $url;
         $this->start = clone $position;
+        $this->respawned = false;
 
         $this->resetStatus();
         $this->resetScore();
@@ -189,6 +193,16 @@ class Player extends MazeObject
     public function start() : Position
     {
         return $this->start;
+    }
+
+    /**
+     * Get if the player respawned this turn
+     *
+     * @return bool
+     */
+    public function isRespawned() : bool
+    {
+        return $this->respawned;
     }
 
     /**
@@ -315,7 +329,8 @@ class Player extends MazeObject
             if (0 == $this->statusCount()) {
                 if ($this->isKilled()) {
                     $this->status = static::STATUS_RELOADING;
-                    $this->statusCount = 2;
+                    $this->statusCount = 1;
+                    $this->respawned = true;
                 } elseif ($this->isPowered()
                     || $this->isReloading()) {
                     $this->status = static::STATUS_REGULAR;
