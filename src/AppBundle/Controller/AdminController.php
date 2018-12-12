@@ -37,7 +37,7 @@ class AdminController extends Controller
     public function adminAction(Request $request)
     {
         // Get query params
-        $limit = $request->query->get('limit', 2000);
+        $limit = $request->query->get('limit', 200);
         $start = $request->query->get('start', 0);
 
         /** @var GameDaemonManagerInterface $gameDaemonManager */
@@ -52,6 +52,8 @@ class AdminController extends Controller
         $entities = $this->getGameDoctrineRepository()->findBy([], [
             'id' => 'desc'
         ], $limit, $start);
+
+        $total = $this->getGameDoctrineRepository()->count([]);
 
         /** @var Game[] $allGames */
         $allGames = [];
@@ -91,7 +93,11 @@ class AdminController extends Controller
             'playingGames'    => $playingGames,
             'pausedGames'     => $pausedGames,
             'notStartedGames' => $notStartedGames,
-            'finishedGames'   => $finishedGames
+            'finishedGames'   => $finishedGames,
+            'start'           => $start,
+            'limit'           => $limit,
+            'count'           => count($allGames),
+            'total'           => $total
         ));
     }
 

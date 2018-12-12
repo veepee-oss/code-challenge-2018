@@ -101,6 +101,14 @@ app:
             ask-remove:       "Remove %uuid%?"
             last-updated:     "Last updated:"
             unknown:          "Unknown"
+            filters:
+                total:          "Total games"
+                count:          "Showing"
+                limit:          "Page limit"
+                start:          "Offset"
+                submit:         "Search"
+                first:          "First"
+                next:           "Next"
             games:
                 not-started:    "Not started games"
                 running:        "Running games"
