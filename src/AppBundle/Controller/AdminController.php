@@ -14,6 +14,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
@@ -29,11 +30,16 @@ class AdminController extends Controller
      * Admin game view
      *
      * @Route("/", name="admin_view")
+     * @param Request $request
      * @return Response
      * @throws \Exception
      */
-    public function adminAction()
+    public function adminAction(Request $request)
     {
+        // Get query params
+        $limit = $request->query->get('limit', 2000);
+        $start = $request->query->get('start', 0);
+
         /** @var GameDaemonManagerInterface $gameDaemonManager */
         $gameDaemonManager = $this->getGameDaemonManagerService();
         $processId = $gameDaemonManager->getProcessId();
@@ -43,7 +49,9 @@ class AdminController extends Controller
         $consumerIds = $consumerDaemonManager->getProcessIds();
 
         /** @var \AppBundle\Entity\Game[] $entities */
-        $entities = $this->getGameDoctrineRepository()->findAll();
+        $entities = $this->getGameDoctrineRepository()->findBy([], [
+            'id' => 'desc'
+        ], $limit, $start);
 
         /** @var Game[] $allGames */
         $allGames = [];
