@@ -40,7 +40,7 @@
                     <dd class="text-info">{{ game.minGhosts }}</dd>
 
                     <dt class="small">Moves:</dt>
-                    <dd class="text-info">{{ game.moves }}</dd>
+                    <dd class="text-info">{{ game.moves }} of {{ game.limit }}</dd>
 
                     <dt class="small">Last updated:</dt>
                     <dd class="text-info">
@@ -70,12 +70,23 @@
                         <span class="glyphicon glyphicon-list-alt" aria-hidden="true"></span>
                         {{ 'app.adminpage.buttons.view-panels' | trans }}
                     </a>
+                    {% if not game.finished %}
+                        <button
+                            class="btn btn-warning js-btn-finish-game"
+                            title="{{ 'app.adminpage.buttons.move-finished' | trans }}"
+                            data-question="{{ 'app.adminpage.texts.ask-finish' | trans({ '%uuid%' : game.uuid }) }}"
+                            data-url="{{ url('game_finish', { 'uuid': game.uuid }) }}"
+                            data-refresh="{{ url('admin_view') }}">
+                            <span class="glyphicon glyphicon-ban-circle" aria-hidden="true"></span>
+                            {{ 'app.adminpage.buttons.move-finished' | trans }}
+                        </button>
+                    {% endif %}
                     <button
                         class="btn btn-danger js-btn-remove"
-                        data-url="{{ url('game_remove', { 'uuid': game.uuid }) }}"
-                        data-refresh="{{ url('admin_view') }}"
                         title="{{ 'app.adminpage.buttons.remove' | trans }}"
-                        data-question="{{ 'app.adminpage.texts.ask-remove' | trans({ '%uuid%' : game.uuid }) }}">
+                        data-question="{{ 'app.adminpage.texts.ask-remove' | trans({ '%uuid%' : game.uuid }) }}"
+                        data-url="{{ url('game_remove', { 'uuid': game.uuid }) }}"
+                        data-refresh="{{ url('admin_view') }}">
                         <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
                         {{ 'app.adminpage.buttons.remove' | trans }}
                     </button>
@@ -127,7 +138,13 @@
                             {% else %}
                                 <span class="text-info">Regular</span>
                             {% endif %}
+                            {% if player.statusCount > 0 %}
+                                ({{ player.StatusCount }})
+                            {% endif %}
                         </dd>
+
+                        <dt class="small">Score:</dt>
+                        <dd class="text-info">{{ player.score }} points</dd>
                     </dl>
                 {% endfor %}
             </div>
