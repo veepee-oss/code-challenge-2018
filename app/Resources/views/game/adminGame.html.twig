@@ -36,11 +36,19 @@
             href="{{ url('game_view_panels', { 'uuid': game.uuid }) }}">
             <span class="glyphicon glyphicon-list-alt" aria-hidden="true"></span>
         </a>
+        {% if not game.finished %}
+            <a  class="btn btn-xs btn-warning js-btn-finish-game"
+                title="{{ 'app.adminpage.buttons.move-finished' | trans }}"
+                data-question="{{ 'app.adminpage.texts.ask-finish' | trans({ '%uuid%' : game.uuid }) }}"
+                data-url="{{ url('game_finish', { 'uuid': game.uuid }) }}">
+                <span class="glyphicon glyphicon-ban-circle" aria-hidden="true"></span>
+            </a>
+        {% endif %}
         <button
             class="btn btn-xs btn-danger js-btn-remove"
-            data-url="{{ url('game_remove', { 'uuid': game.uuid }) }}"
             title="{{ 'app.adminpage.buttons.remove' | trans }}"
-            data-question="{{ 'app.adminpage.texts.ask-remove' | trans({ '%uuid%' : game.uuid }) }}">
+            data-question="{{ 'app.adminpage.texts.ask-remove' | trans({ '%uuid%' : game.uuid }) }}"
+            data-url="{{ url('game_remove', { 'uuid': game.uuid }) }}">
             <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
         </button>
     </div>

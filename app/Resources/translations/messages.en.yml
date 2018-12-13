@@ -98,7 +98,8 @@ app:
             height:           "Height: %height%"
             width:            "Width: %width%"
             players:          "{0} No players|{1} One player|]1,Inf[ Players: %players%"
-            ask-remove:       "Remove %uuid%?"
+            ask-remove:       "Remove game %uuid%?"
+            ask-finish:       "Finish game %uuid%?"
             last-updated:     "Last updated:"
             unknown:          "Unknown"
             filters:
@@ -127,6 +128,7 @@ app:
             view-details:   "View game details"
             view-maze:      "View game board"
             view-panels:    "View game panels"
+            move-finished:  "Move to finished"
             remove:         "Remove game"
 
     detailspage:

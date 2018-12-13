@@ -212,7 +212,7 @@
                     </div>
                     <div id="panel-finished"
                          class="panel-body panel-body-scroll panel-list-striped collapse">
-                        {% for game in finishedGames if game.finished %}
+                        {% for game in finishedGames %}
                             {% include ':game:adminGame.html.twig' with { 'game' : game }  %}
                         {% else %}
                             {{ 'app.adminpage.texts.games.none' | trans }}
@@ -225,5 +225,5 @@
 {% endblock %}
 
 {% block more_javascripts %}
-    <script src="{{ asset('js/remove.js') }}"></script>
+    <script src="{{ asset('js/admin-buttons.js') }}"></script>
 {% endblock %}
