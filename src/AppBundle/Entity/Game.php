@@ -10,7 +10,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Ramsey\Uuid\Uuid;
 
 /**
- * Entity Game
+ * Doctrine Entity: Game
  *
  * @package AppBundle\Entity
  * @ORM\Table(name="game")

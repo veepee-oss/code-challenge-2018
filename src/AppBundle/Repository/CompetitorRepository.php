@@ -5,10 +5,10 @@ namespace AppBundle\Repository;
 use Doctrine\ORM\EntityRepository;
 
 /**
- * Doctrine Repository: GameRepository
+ * Doctrine Repository: CompetitorRepository
  *
  * @package AppBundle\Repository
  */
-class GameRepository extends EntityRepository
+class CompetitorRepository extends EntityRepository
 {
 }
