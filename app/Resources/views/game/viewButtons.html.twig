@@ -48,11 +48,11 @@
                 <span class="caret"></span>
             </button>
             <ul class="dropdown-menu">
-                {% for player in game.players %}
+                {% for player in game.classification %}
                     <li>
                         <a href="{{ url('player_download', {'guuid': game.uuid, 'puuid': player.uuid }) }}">
                             <span class="glyphicon glyphicon-user" aria-hidden="true"></span>
-                            {{ player.name }}
+                            {{ player.name }} ({{ player.score }} {{ 'app.mazepage.texts.points' | trans }})
                         </a>
                     </li>
                 {% endfor %}

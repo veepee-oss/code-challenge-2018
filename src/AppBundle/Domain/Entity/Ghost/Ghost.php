@@ -17,13 +17,20 @@ class Ghost extends MazeObject
     const TYPE_KILLING = 2;
 
     /** @var int Default values */
-    const DEFAULT_NEUTRAL_TIME = 5;
+    const DEFAULT_NEUTRAL_TIME = 10;
 
     /** @var int the type of ghost */
     protected $type;
 
     /** @var int the number of moves whiles it's neutral */
     protected $neutralTime;
+
+    /** @var int The display version of the ghost */
+    protected $display;
+
+    /** @var int The next display */
+    private static $nextDisplay = 0;
+    private const MAX_DISPLAY = 4;
 
     /**
      * Ghost constructor.
@@ -32,16 +39,19 @@ class Ghost extends MazeObject
      * @param Position $position
      * @param Position $previous
      * @param int      $neutralTime
+     * @param int      $display
      */
     public function __construct(
         Position $position,
         Position $previous = null,
         int $type = null,
-        int $neutralTime = null
+        int $neutralTime = null,
+        int $display = null
     ) {
         parent::__construct($position, $previous);
         $this->type = $type ?? self::TYPE_RANDOM;
         $this->neutralTime = $neutralTime ?? self::DEFAULT_NEUTRAL_TIME;
+        $this->display = $display ?? (1 + ((self::$nextDisplay++) % self::MAX_DISPLAY));
     }
 
     /**
@@ -62,6 +72,16 @@ class Ghost extends MazeObject
     public function isNeutral()
     {
         return $this->neutralTime > 0;
+    }
+
+    /**
+     * Get the display version of the ghost
+     *
+     * @return int
+     */
+    public function display(): int
+    {
+        return $this->display;
     }
 
     /**
@@ -100,7 +120,8 @@ class Ghost extends MazeObject
             'position' => $this->position()->serialize(),
             'previous' => $this->previous()->serialize(),
             'type' => $this->type(),
-            'neutralTime' => $this->neutralTime
+            'neutralTime' => $this->neutralTime,
+            'display' => $this->display()
         );
     }
 
@@ -118,7 +139,8 @@ class Ghost extends MazeObject
             Position::unserialize($data['position']),
             $previous ? Position::unserialize($previous) : null,
             $data['type'] ?? null,
-            $data['neutralTime'] ?? null
+            $data['neutralTime'] ?? null,
+            $data['display'] ?? null
         );
     }
 }

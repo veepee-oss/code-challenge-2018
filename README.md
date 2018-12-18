@@ -1,16 +1,27 @@
 
 # Privalia Code Challenge 2018
 
-The 2018 event of the **Privalia Code Challenge** is called **Maze Escape**! The goal is easy: You have to create a bot to escape from a labyrinth.
+The 2018 event of the **Privalia Code Challenge** is called **Space Invaders Tribute**!
+The goal is easy: You have to create a REST API to **kill the invaders** (and the other players too).
 
-Your bot will be trapped in a maze and is expected to find its way out competing with the other player bots in a real time challenge. All the bots will start at the same random position and they won't be visible to each other. The first bot to find its way out of the maze wins the game.
+Your API will move a starship competing with the other player APIs in a real time challenge.
+All the starships will start in a different random position.
+The winner will be the starship with the highest score.
 
-## Configuration
+* **+100 points** to kill another player's starship.
+* **+50 points** to kill a space invader.
+* **-25 points** when killed by another player or invader.
+
+[See the full rules](http://code-challenge-2018.privalia.com/rules).
+
+## Development
+
+### Configuration
 
 This repo constains the server used for the **Privalia Code Challenge 2018**.
-It's a [PHP](http://php.net/) project which uses the [Symfony 3](https://symfony.com/) framework and a [MySQL](https://www.mysql.com/) database.
-It has been developed using **PHP7.1** and **MySQL5.7** and [docker](https://www.docker.com/) technologies.
-The `docker` folder constains the particular images used in the development environment and some [bash](https://www.gnu.org/software/bash/) commands with helps configurating the environment.
+It's a [PHP](http://php.net/) project which uses the [Symfony 3.4](https://symfony.com/) framework, a [MySQL](https://www.mysql.com/) database and a [RabbitMQ](https://www.rabbitmq.com/) messaging system.
+It has been developed using **`PHP 7.2`**, **`MySQL 5.7`**, **`RabbitMQ 3.7`** and **[`docker`](https://www.docker.com/)** technologies.
+The `docker` folder contains the particular images used in the development environment and some [bash](https://www.gnu.org/software/bash/) commands with helps configurating the environment.
 
 - `docker/build.sh` - Build the docker images.
 - `docker/start.sh` - Start all the project containers.
@@ -21,7 +32,7 @@ The `docker` folder constains the particular images used in the development envi
 - `docker/bash.sh` - Access bash shell of the API container. The containers must be started before run this script.
 - `docker/su.sh` - Access bash shell of the API container with the `root`user. The containers must be started before run this script.
 
-NOTE: All these scripts asume there is an user `david` in the host. You can change it for your usere name to avoid  permission problems.
+NOTE: All these scripts assume there is an user `david` in the host. You can change it for your user name to avoid  permission problems.
 
 ### Installation
 
@@ -35,25 +46,24 @@ $ docker/console.sh doctrine:database:create
 $ docker/console.sh doctrine:schema:create
 ```
 
-## Documentation
+## License
 
-### Maze generation
+**MIT License**
 
-- [Wikipedia: Maze generation algorithm](https://en.wikipedia.org/wiki/Maze_generation_algorithm)
-- [Maze Generation: Recursive Division](http://weblog.jamisbuck.org/2011/1/12/maze-generation-recursive-division-algorithm)
-- [Stack Overflow: What's a good algorithm to generate a maze?](http://stackoverflow.com/questions/38502/whats-a-good-algorithm-to-generate-a-maze)
+Copyright (c) 2018 Privalia Venta Directa S.A.U.
 
-## Credits
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
-### Icons 
-Icons from [Flaticon](http://www.flaticon.com) with [Creative Commons BY 3.0 License](http://creativecommons.org/licenses/by/3.0/):
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 
-- [Labyrinth icon](http://www.flaticon.com/free-icon/labyrinth_182580) was made by [Zlatko Najdenovski](http://www.flaticon.com/authors/zlatko-najdenovski)
-- [Pacman icon](http://www.flaticon.com/free-icon/pacman_131412) was made by [Baianat](http://www.flaticon.com/authors/baianat)
-- [Ghost icon](http://www.flaticon.com/free-icon/ghost_387112) was made by [Freepik](http://www.flaticon.com/authors/freepik)
-- [Trophy icon](http://www.flaticon.com/free-icon/trophy_321773) was made by [Freepik](http://www.flaticon.com/authors/freepik)
-- [Mansory icon](http://www.flaticon.com/free-icon/mansory_351764) was made by [Freepik](http://www.flaticon.com/authors/freepik)
-- [Tombstone icon](http://www.flaticon.com/free-icon/tombstone-with-cross_78204) was made by [Freepik](http://www.flaticon.com/authors/freepik)
-- [Racing flag icon](http://www.flaticon.com/free-icon/racing-flag_65578) was made by [Vectors Market](http://www.flaticon.com/authors/vectors-market)
-- [Map marker icon](http://www.flaticon.com/free-icon/map-marker-point_34369) was made by [Simpleicon](http://www.flaticon.com/authors/simpleicon)
-- [Creative Commons icon](http://www.flaticon.com/free-icon/creative-commons-circular-logo_78110) was made by [Plainicon](http://www.flaticon.com/authors/plainicon)
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+
+## Contributors
+
+* **[David Amigo](https://github.com/davamigo)** <[davamigo@gmail.com](mailto:davamigo@gmail.com)>
+
+
+## Attributions
+
+[See the credits page](http://code-challenge-2018.privalia.com/credits).

@@ -113,10 +113,12 @@ class GameEngine
      */
     public function move(Game &$game) : bool
     {
+        $this->createGhosts($game);
         $game->resetKilledGhosts();
         $this->resetFire($game);
         $this->movePlayers($game);
         $this->checkPlayersFire($game);
+        $this->checkPlayersPositions($game);
         $this->moveGhosts($game);
 
         $game->incMoves();
@@ -124,7 +126,6 @@ class GameEngine
             return false;
         }
 
-        $this->createGhosts($game);
         return true;
     }
 
@@ -169,6 +170,30 @@ class GameEngine
     }
 
     /**
+     * Checks the players positions searching overlapping
+     *
+     * @param Game $game
+     * @return $this
+     */
+    protected function checkPlayersPositions(Game &$game) : GameEngine
+    {
+        $players = $game->players();
+        $count = count($players);
+
+        for ($i = 0; $i < $count - 1; ++$i) {
+            for ($j = $i + 1; $j < $count; $j++) {
+                if ($players[$i]->position()->equals($players[$j]->position())
+                    && !$players[$i]->isKilled() && !$players[$i]->isRespawned()
+                    && !$players[$j]->isKilled() && !$players[$j]->isRespawned()) {
+                    $players[$i]->killed()->addScore(self::SCORE_DEAD);
+                    $players[$j]->killed()->addScore(self::SCORE_DEAD);
+                }
+            }
+        }
+        return $this;
+    }
+
+    /**
      * Check if a player fired
      *
      * @param Game $game
@@ -201,7 +226,9 @@ class GameEngine
                     // Check if another player killed
                     $others = $game->playersAtPosition($pos);
                     foreach ($others as $other) {
-                        if ($player->uuid() != $other->uuid()) {
+                        if ($player->uuid() != $other->uuid()
+                            && !$other->isKilled()
+                            && !$other->isRespawned()) {
                             $player->addScore(self::SCORE_KILL_PLAYER);
                             $other->killed()->addScore(self::SCORE_DEAD);
 
@@ -269,20 +296,20 @@ class GameEngine
         foreach ($players as $player) {
             if (!$player->isKilled()) {
                 if ($player->position()->equals($ghost->position())) {
-                    if (!$player->isPowered()
-                        && !$ghost->isNeutral()) {
-                        $player->killed()->addScore(self::SCORE_DEAD);
-
-                        $this->logger->debug(
-                            'Game engine - Player ' . $player->uuid() .
-                            ' killed by ghost. Score ' . $player->score()
-                        );
-                    } else {
+                    if ($player->isPowered()
+                        || $ghost->isNeutral()) {
                         $player->addScore(self::SCORE_KILL_GHOST);
 
                         $this->logger->debug(
                             'Game engine - Ghost killed by player ' . $player->uuid() .
                             '. Score ' . $player->score()
+                        );
+                    } elseif (!$player->isRespawned()) {
+                        $player->killed()->addScore(self::SCORE_DEAD);
+
+                        $this->logger->debug(
+                            'Game engine - Player ' . $player->uuid() .
+                            ' killed by ghost. Score ' . $player->score()
                         );
                     }
                     $game->removeGhost($ghost);

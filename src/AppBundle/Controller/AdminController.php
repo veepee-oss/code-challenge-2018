@@ -6,12 +6,15 @@ use AppBundle\Domain\Entity\Game\Game;
 use AppBundle\Domain\Entity\Player\Player;
 use AppBundle\Domain\Service\GameEngine\ConsumerDaemonManagerInterface;
 use AppBundle\Domain\Service\GameEngine\GameDaemonManagerInterface;
+use AppBundle\Domain\Service\MovePlayer\MovePlayerException;
 use AppBundle\Repository\GameRepository;
+use AppBundle\Service\MovePlayer\AskPlayerApiService;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
@@ -27,11 +30,16 @@ class AdminController extends Controller
      * Admin game view
      *
      * @Route("/", name="admin_view")
+     * @param Request $request
      * @return Response
      * @throws \Exception
      */
-    public function adminAction()
+    public function adminAction(Request $request)
     {
+        // Get query params
+        $limit = $request->query->get('limit', 200);
+        $start = $request->query->get('start', 0);
+
         /** @var GameDaemonManagerInterface $gameDaemonManager */
         $gameDaemonManager = $this->getGameDaemonManagerService();
         $processId = $gameDaemonManager->getProcessId();
@@ -41,7 +49,11 @@ class AdminController extends Controller
         $consumerIds = $consumerDaemonManager->getProcessIds();
 
         /** @var \AppBundle\Entity\Game[] $entities */
-        $entities = $this->getGameDoctrineRepository()->findAll();
+        $entities = $this->getGameDoctrineRepository()->findBy([], [
+            'id' => 'desc'
+        ], $limit, $start);
+
+        $total = $this->getGameDoctrineRepository()->count([]);
 
         /** @var Game[] $allGames */
         $allGames = [];
@@ -81,7 +93,11 @@ class AdminController extends Controller
             'playingGames'    => $playingGames,
             'pausedGames'     => $pausedGames,
             'notStartedGames' => $notStartedGames,
-            'finishedGames'   => $finishedGames
+            'finishedGames'   => $finishedGames,
+            'start'           => $start,
+            'limit'           => $limit,
+            'count'           => count($allGames),
+            'total'           => $total
         ));
     }
 
@@ -176,22 +192,88 @@ class AdminController extends Controller
 
                 /** @var Player $player */
                 foreach ($game->players() as $player) {
-                    $found = array_filter($result, function ($item) use ($player) {
+                    $urlsMatching = array_filter($result, function ($item) use ($player) {
                         return $item['url'] == $player->url();
                     });
-                    if (empty($found)) {
+                    if (empty($urlsMatching)) {
                         $result[] = [
                             'url' => $player->url(),
-                            'game' => [
+                            'names' => [[
+                                'name' => $player->name(),
+                                'email' => $player->email()
+                            ]],
+                            'games' => [
                                 $game->uuid()
                             ]
                         ];
                     } else {
-                        foreach ($found as $key => $value) {
+                        foreach ($urlsMatching as $key => $value) {
                             $uuid = $game->uuid();
-                            if (!in_array($uuid, $result[$key]['game'])) {
-                                $result[$key]['game'][] = $uuid;
+                            if (!in_array($uuid, $result[$key]['games'])) {
+                                $result[$key]['games'][] = $uuid;
                             }
+                            $playersMatching = array_filter($result[$key]['names'], function ($item) use ($player) {
+                                return $item['name'] == $player->name()
+                                    && $item['email'] == $player->email();
+                            });
+                            if (empty($playersMatching)) {
+                                $result[$key]['names'][] = [
+                                    'name' => $player->name(),
+                                    'email' => $player->email()
+                                ];
+                            }
+                        }
+                    }
+                }
+            } catch (\Exception $exc) {
+                // Do nothing
+            }
+        }
+
+        return new JsonResponse($result);
+    }
+
+    /**
+     * Get urls data
+     *
+     * @Route("/urls/check", name="admin_check_urls")
+     * @return JsonResponse
+     */
+    public function checkUrlsAction()
+    {
+        /** @var \AppBundle\Entity\Game $entities[] */
+        $entities = $this->getGameDoctrineRepository()->findAll();
+
+        $result = [];
+
+        /** @var AskPlayerApiService $service */
+        $service = $this->get('app.player.move.api');
+
+        /** @var \AppBundle\Entity\Game $entity */
+        foreach ($entities as $entity) {
+            try {
+                /** @var Game $game */
+                $game = $entity->toDomainEntity();
+
+                /** @var Player $player */
+                foreach ($game->players() as $player) {
+                    $found = array_filter($result, function ($item) use ($player) {
+                        return $item['url'] == $player->url();
+                    });
+                    if (empty($found)) {
+                        try {
+                            $response = $service->askPlayerName($player->url(), $player->name());
+                            $result[] = [
+                                'url' => $player->url(),
+                                'name' => $response['name'],
+                                'email' => $response['email'],
+                            ];
+                        } catch (MovePlayerException $exc) {
+                            $result[] = [
+                                'url' => $player->url(),
+                                'name' => $player->name(),
+                                'error' => $exc->getMessage()
+                            ];
                         }
                     }
                 }

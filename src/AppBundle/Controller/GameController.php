@@ -35,6 +35,7 @@ class GameController extends Controller
      * @Route("/create", name="game_create")
      * @param Request $request
      * @return Response
+     * @throws \Exception
      */
     public function createAction(Request $request) : Response
     {
@@ -414,6 +415,40 @@ class GameController extends Controller
         /** @var GameEngine $engine */
         $engine = $this->get('app.game.engine');
         $engine->reset($game);
+
+        $entity->fromDomainEntity($game);
+        $em = $this->getDoctrine()->getManager();
+        $em->persist($entity);
+        $em->flush();
+
+        return new Response();
+    }
+
+    /**
+     * Finishes a game (changes the status)
+     *
+     * @Route("/{uuid}/finish", name="game_finish",
+     *     requirements={"uuid": "[0-9a-f]{8}\-[0-9a-f]{4}\-[0-9a-f]{4}\-[0-9a-f]{4}\-[0-9a-f]{12}"})
+     *
+     * @param string $uuid
+     * @return Response
+     * @throws \Exception
+     */
+    public function finishAction($uuid)
+    {
+        $this->checkDaemon();
+
+        /** @var \AppBundle\Entity\Game $entity */
+        $entity = $this->getGameDoctrineRepository()->findOneBy(array(
+            'uuid' => $uuid
+        ));
+
+        if (!$entity) {
+            throw new NotFoundHttpException();
+        }
+
+        $game = $entity->toDomainEntity();
+        $game->endGame();
 
         $entity->fromDomainEntity($game);
         $em = $this->getDoctrine()->getManager();
