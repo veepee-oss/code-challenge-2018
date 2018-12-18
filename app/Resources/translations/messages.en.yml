@@ -124,6 +124,17 @@ app:
     detailspage:
         title:          "Game Details"
 
+    createcontest:
+        title:          "Create new Context"
+
+        form:
+            name:           "Name of the context"
+            description:    "Description"
+            regex:          "Regular expression to validate emails"
+            start-date:     "Registration start date"
+            end-date:       "Registration end date"
+            contest-date:   "Contest date"
+
     credits:
         title:          "License, Credits and Attributions"
 

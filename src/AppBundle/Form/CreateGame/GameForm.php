@@ -12,7 +12,7 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
- * Class GameForm
+ * Form type: GameForm
  *
  * @package AppBundle\Form\CreateGame
  */
@@ -25,6 +25,7 @@ class GameForm extends AbstractType
      * Configures the options for this type.
      *
      * @param OptionsResolver $resolver The resolver for the options
+     * @return void
      */
     public function configureOptions(OptionsResolver $resolver)
     {

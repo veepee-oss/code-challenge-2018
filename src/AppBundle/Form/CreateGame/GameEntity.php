@@ -7,7 +7,7 @@ use AppBundle\Exception\PlayerOutOfBoundsException;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
- * Class CreateGameEntity
+ * Form entity: GameEntity
  *
  * @package AppBundle\Form\CreateGame
  */

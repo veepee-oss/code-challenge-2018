@@ -8,7 +8,7 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
- * Class PlayerForm
+ * Form type: PlayerForm
  *
  * @package AppBundle\Form\CreateGame
  */
