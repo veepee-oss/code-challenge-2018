@@ -32,6 +32,9 @@ class Contest
     /** @var \DateTime the date & time of the contest */
     protected $contestDate;
 
+    /** @var int */
+    protected $maxCompetitors;
+
     /**
      * Contest constructor
      *
@@ -42,6 +45,7 @@ class Contest
      * @param \DateTime      $starRegistrationDate
      * @param \DateTime      $endRegistrationDate
      * @param \DateTime|null $contestDate
+     * @param int|null       $maxCompetitors
      * @throws \Exception
      */
     public function __construct(
@@ -51,7 +55,8 @@ class Contest
         ?string $emailRestrictionsRegex,
         \DateTime $starRegistrationDate,
         \DateTime $endRegistrationDate,
-        ?\DateTime $contestDate
+        ?\DateTime $contestDate,
+        ?int $maxCompetitors
     ) {
         $this->uuid = $uuid ?: Uuid::uuid4()->toString();
         $this->name = $name;
@@ -60,6 +65,7 @@ class Contest
         $this->starRegistrationDate = $starRegistrationDate;
         $this->endRegistrationDate = $endRegistrationDate;
         $this->contestDate = $contestDate;
+        $this->maxCompetitors = $maxCompetitors;
     }
 
     /**
@@ -116,5 +122,13 @@ class Contest
     public function contestDate(): ?\DateTime
     {
         return $this->contestDate;
+    }
+
+    /**
+     * @return int|null
+     */
+    public function maxCompetitors(): ?int
+    {
+        return $this->maxCompetitors;
     }
 }

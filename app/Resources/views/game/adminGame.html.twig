@@ -21,7 +21,7 @@
         <a  target="_blank"
             class="btn btn-xs btn-info js-btn-view-details"
             title="{{ 'app.adminpage.buttons.view-details' | trans }}"
-            href="{{ url('game_details', { 'uuid': game.uuid }) }}">
+            href="{{ url('admin_game_details', { 'uuid': game.uuid }) }}">
             <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
         </a>
         <a  target="_blank"
@@ -48,7 +48,7 @@
             class="btn btn-xs btn-danger js-btn-remove"
             title="{{ 'app.adminpage.buttons.remove' | trans }}"
             data-question="{{ 'app.adminpage.texts.ask-remove' | trans({ '%uuid%' : game.uuid }) }}"
-            data-url="{{ url('game_remove', { 'uuid': game.uuid }) }}">
+            data-url="{{ url('admin_game_remove', { 'uuid': game.uuid }) }}">
             <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
         </button>
     </div>

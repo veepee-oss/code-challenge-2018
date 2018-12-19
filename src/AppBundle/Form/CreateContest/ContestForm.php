@@ -2,9 +2,11 @@
 
 namespace AppBundle\Form\CreateContest;
 
-use Doctrine\DBAL\Types\StringType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
+use Symfony\Component\Form\Extension\Core\Type\IntegerType;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -16,17 +18,6 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
  */
 class ContestForm extends AbstractType
 {
-    /** @var string Constants */
-    private const OPTION_ACTION = 'action';
-    private const OPTION_DATA_CLASS = 'data_class';
-    private const OPTION_LABEL = 'label';
-    private const OPTION_REQUIRED = 'required';
-    private const OPTION_DATE_FORMAT = 'date_format';
-    private const OPTION_DATE_WIDGET = 'date_widget';
-    private const OPTION_TIME_WIDGET = 'time_widget';
-    private const VALUE_SINGLE_TEXT = 'single_text';
-
-
     /**
      * Configures the options for this type.
      *
@@ -36,14 +27,14 @@ class ContestForm extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setRequired([
-            self::OPTION_ACTION
+            'action'
         ]);
 
-        $resolver->setAllowedTypes(self::OPTION_ACTION, 'string');
+        $resolver->setAllowedTypes('action', 'string');
 
         $resolver->setDefaults([
-            self::OPTION_DATA_CLASS => ContestEntity::class,
-            self::OPTION_ACTION     => null
+            'data_class' => ContestEntity::class,
+            'action'     => null
         ]);
     }
 
@@ -63,43 +54,52 @@ class ContestForm extends AbstractType
     {
         $builder->setAction($options['action']);
 
-        $builder->add('name', StringType::class, [
-            self::OPTION_LABEL          => 'app.createcontest.form.name',
-            self::OPTION_REQUIRED       => true
+        $builder->add('name', TextType::class, [
+            'label'         => 'app.createcontest.form.name',
+            'required'      => true
         ]);
 
-        $builder->add('description', TextType::class, [
-            self::OPTION_LABEL          => 'app.createcontest.form.description',
-            self::OPTION_REQUIRED       => false
+        $builder->add('description', TextareaType::class, [
+            'label'         => 'app.createcontest.form.description',
+            'required'      => false,
+            'attr'          => [
+                'rows'          => 5
+            ]
         ]);
 
         $builder->add('regex', TextType::class, [
-            self::OPTION_LABEL          => 'app.createcontest.form.regex',
-            self::OPTION_REQUIRED       => false
+            'label'         => 'app.createcontest.form.regex',
+            'required'      => false
         ]);
 
         $builder->add('startDate', DateTimeType::class, [
-            self::OPTION_LABEL          => 'app.createcontest.form.start-date',
-            self::OPTION_REQUIRED       => true,
-            self::OPTION_DATE_FORMAT    => \IntlDateFormatter::MEDIUM,
-            self::OPTION_DATE_WIDGET    => self::VALUE_SINGLE_TEXT,
-            self::OPTION_TIME_WIDGET    => self::VALUE_SINGLE_TEXT
+            'label'         => 'app.createcontest.form.start-date',
+            'date_widget'   => 'single_text',
+            'time_widget'   => 'single_text',
+            'required'      => true
         ]);
 
         $builder->add('endDate', DateTimeType::class, [
-            self::OPTION_LABEL          => 'app.createcontest.form.end-date',
-            self::OPTION_REQUIRED       => true,
-            self::OPTION_DATE_FORMAT    => \IntlDateFormatter::MEDIUM,
-            self::OPTION_DATE_WIDGET    => self::VALUE_SINGLE_TEXT,
-            self::OPTION_TIME_WIDGET    => self::VALUE_SINGLE_TEXT
+            'label'         => 'app.createcontest.form.end-date',
+            'date_widget'   => 'single_text',
+            'time_widget'   => 'single_text',
+            'required'      => true
         ]);
 
         $builder->add('contestDate', DateTimeType::class, [
-            self::OPTION_LABEL          => 'app.createcontest.form.contest-date',
-            self::OPTION_REQUIRED       => true,
-            self::OPTION_DATE_FORMAT    => \IntlDateFormatter::MEDIUM,
-            self::OPTION_DATE_WIDGET    => self::VALUE_SINGLE_TEXT,
-            self::OPTION_TIME_WIDGET    => self::VALUE_SINGLE_TEXT
+            'label'         => 'app.createcontest.form.contest-date',
+            'date_widget'   => 'single_text',
+            'time_widget'   => 'single_text',
+            'required'      => false
         ]);
+
+        $builder->add('maxCompetitors', IntegerType::class, [
+            'label'         => 'app.createcontest.form.max-competitors',
+            'required'      => false
+        ]);
+
+        $builder->add('save', SubmitType::class, array(
+            'label'         => 'app.createcontest.form.submit'
+        ));
     }
 }

@@ -2,6 +2,7 @@
 
 namespace AppBundle\Form\CreateContest;
 
+use AppBundle\Domain\Entity\Contest\Contest;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
@@ -50,7 +51,47 @@ class ContestEntity
     private $contestDate = null;
 
     /**
-     * @return string
+     * @var int
+     * @Assert\Length(min=2)
+     */
+    private $maxCompetitors;
+
+    /**
+     * ContestEntity constructor
+     *
+     * @throws \Exception
+     */
+    public function __construct()
+    {
+        $this->startDate = new \DateTime();
+        $this->startDate->setTime(0, 0, 0, 0);
+        $this->endDate = clone $this->startDate;
+        $this->endDate->add(new \DateInterval('P10D'));
+        $this->endDate->setTime(23, 59, 59, 0);
+    }
+
+    /**
+     * Converts the entity to a domain entity
+     *
+     * @return Contest
+     * @throws \Exception
+     */
+    public function toDomainEntity(): Contest
+    {
+        return new Contest(
+            null,
+            $this->name,
+            $this->description,
+            $this->regex,
+            $this->startDate,
+            $this->endDate,
+            $this->contestDate,
+            $this->maxCompetitors
+        );
+    }
+
+    /**
+     * @return string|null
      */
     public function getName(): ?string
     {
@@ -68,7 +109,7 @@ class ContestEntity
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getDescription(): ?string
     {
@@ -86,7 +127,7 @@ class ContestEntity
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getRegex(): ?string
     {
@@ -104,7 +145,7 @@ class ContestEntity
     }
 
     /**
-     * @return \DateTime
+     * @return \DateTime|null
      */
     public function getStartDate(): ?\DateTime
     {
@@ -122,7 +163,7 @@ class ContestEntity
     }
 
     /**
-     * @return \DateTime
+     * @return \DateTime|null
      */
     public function getEndDate(): ?\DateTime
     {
@@ -140,7 +181,7 @@ class ContestEntity
     }
 
     /**
-     * @return \DateTime
+     * @return \DateTime|null
      */
     public function getContestDate(): ?\DateTime
     {
@@ -154,6 +195,24 @@ class ContestEntity
     public function setContestDate(?\DateTime $contestDate): ContestEntity
     {
         $this->contestDate = $contestDate;
+        return $this;
+    }
+
+    /**
+     * @return int|null
+     */
+    public function getMaxCompetitors(): ?int
+    {
+        return $this->maxCompetitors;
+    }
+
+    /**
+     * @param int $maxCompetitors
+     * @return ContestEntity
+     */
+    public function setMaxCompetitors(int $maxCompetitors): ContestEntity
+    {
+        $this->maxCompetitors = $maxCompetitors;
         return $this;
     }
 }

@@ -85,7 +85,7 @@
                         class="btn btn-danger js-btn-remove"
                         title="{{ 'app.adminpage.buttons.remove' | trans }}"
                         data-question="{{ 'app.adminpage.texts.ask-remove' | trans({ '%uuid%' : game.uuid }) }}"
-                        data-url="{{ url('game_remove', { 'uuid': game.uuid }) }}"
+                        data-url="{{ url('admin_game_remove', { 'uuid': game.uuid }) }}"
                         data-refresh="{{ url('admin_view') }}">
                         <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
                         {{ 'app.adminpage.buttons.remove' | trans }}

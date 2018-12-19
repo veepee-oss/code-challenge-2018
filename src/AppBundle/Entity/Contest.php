@@ -88,6 +88,16 @@ class Contest
      */
     private $contestDate;
 
+
+    /**
+     * Max number of competitors (could be null)
+     *
+     * @var int
+     *
+     * @ORM\Column(name="max_competitors", type="integer", nullable=true)
+     */
+    private $maxCompetitors;
+
     /**
      * Contest constructor
      *
@@ -105,6 +115,7 @@ class Contest
             $this->startDate = null;
             $this->endDate = null;
             $this->contestDate = null;
+            $this->maxCompetitors = null;
         } elseif ($source instanceof Contest) {
             $this->id = $source->getId();
             $this->uuid = $source->getUuid();
@@ -114,6 +125,7 @@ class Contest
             $this->startDate = $source->getStartDate();
             $this->endDate = $source->getEndDate();
             $this->contestDate = $source->getContestDate();
+            $this->maxCompetitors = $source->getMaxCompetitors();
         } elseif ($source instanceof DomainContest\Contest) {
             $this->id = null;
             $this->fromDomainEntity($source);
@@ -135,7 +147,8 @@ class Contest
             $this->regex,
             $this->startDate,
             $this->endDate,
-            $this->contestDate
+            $this->contestDate,
+            $this->maxCompetitors
         );
     }
 
@@ -154,6 +167,7 @@ class Contest
         $this->startDate = $contest->starRegistrationDate();
         $this->endDate = $contest->endRegistrationDate();
         $this->contestDate = $contest->contestDate();
+        $this->maxCompetitors = $contest->maxCompetitors();
         return $this;
     }
 
@@ -288,6 +302,24 @@ class Contest
     public function setContestDate(\DateTime $contestDate): Contest
     {
         $this->contestDate = $contestDate;
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getMaxCompetitors(): int
+    {
+        return $this->maxCompetitors;
+    }
+
+    /**
+     * @param int $maxCompetitors
+     * @return Contest
+     */
+    public function setMaxCompetitors(int $maxCompetitors): Contest
+    {
+        $this->maxCompetitors = $maxCompetitors;
         return $this;
     }
 }

@@ -135,15 +135,17 @@ app:
         title:          "Game Details"
 
     createcontest:
-        title:          "Create new Context"
+        title:          "Create new Contest"
 
         form:
-            name:           "Name of the context"
+            name:           "Name of the contest (*)"
             description:    "Description"
             regex:          "Regular expression to validate emails"
-            start-date:     "Registration start date"
-            end-date:       "Registration end date"
+            start-date:     "Registration start date (*)"
+            end-date:       "Registration end date (*)"
             contest-date:   "Contest date"
+            max-competitors: "Max competitors"
+            submit:         "Create"
 
     credits:
         title:          "License, Credits and Attributions"
