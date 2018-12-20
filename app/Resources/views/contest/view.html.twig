@@ -1,0 +1,76 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ contest.name }} - {{ parent() }}{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <div class="page-header">
+            <h1>
+                {{ contest.name }}
+                <small>
+                    {{ 'app.viewcontest.title' | trans }}
+                </small>
+            </h1>
+        </div>
+
+        <div class="row">
+            <div class="col-xs-12">
+                <p class="text-info small">
+                    {{ 'app.viewcontest.texts.description' | trans }}
+                </p>
+                <p class="lead bg-warning padding-xs">
+                    {{ contest.description | default("--") | raw }}
+                </p>
+            </div>
+
+            <div class="col-xs-12">
+                <p class="text-info small">
+                    {{ 'app.viewcontest.texts.restrictions' | trans }}
+                </p>
+                <p class="lead bg-warning padding-xs">
+                    {{ contest.emailRestrictionsRegex | default("--") | raw }}
+                </p>
+            </div>
+
+            <div class="col-sm-3 col-xs-12">
+                <p class="text-info small">
+                    {{ 'app.viewcontest.texts.start-date' | trans }}
+                </p>
+                <p class="lead bg-warning padding-xs">
+                    {{ contest.startRegistrationDate | date('Y-m-d H:i') }}
+                </p>
+            </div>
+
+            <div class="col-sm-3 col-xs-12">
+                <p class="text-info small">
+                    {{ 'app.viewcontest.texts.end-date' | trans }}
+                </p>
+                <p class="lead bg-warning padding-xs">
+                    {{ contest.endRegistrationDate | date('Y-m-d H:i') }}
+                </p>
+            </div>
+
+            <div class="col-sm-3 col-xs-12">
+                <p class="text-info small">
+                    {{ 'app.viewcontest.texts.contest' | trans }}
+                </p>
+                <p class="lead bg-warning padding-xs">
+                    {{ contest.contestDate is empty ? "--" : contest.contestDate | date('Y-m-d H:i') }}
+                </p>
+            </div>
+
+            <div class="col-sm-3 col-xs-12">
+                <p class="text-info small">
+                    {{ 'app.viewcontest.texts.competitors' | trans }}
+                </p>
+                <p class="lead bg-warning padding-xs">
+                    {{ contest.countCompetitors }}
+                    {% if contest.maxCompetitors is not empty %}
+                        {{ 'app.viewcontest.texts.of' | trans }}
+                        {{ contest.maxCompetitors }}
+                    {% endif %}
+                </p>
+            </div>
+        </div>
+    </div>
+{% endblock %}

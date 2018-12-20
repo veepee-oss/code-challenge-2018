@@ -119,8 +119,9 @@ class ContestController extends Controller
             throw new NotFoundHttpException();
         }
 
-        // TODO
-        return $this->redirectToRoute('contest_index');
+        return $this->render('contest/view.html.twig', array(
+            'contest' => $entity->toDomainEntity(),
+        ));
     }
 
     /**

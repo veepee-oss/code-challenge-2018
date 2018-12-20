@@ -63,3 +63,23 @@ textarea {
 }
 
 /**********************************************************************************************************************/
+
+.padding-xs {
+    padding: .25em;
+}
+
+.padding-sm {
+    padding: .5em;
+}
+
+.padding-md {
+    padding: 1em;
+}
+
+.padding-lg {
+    padding: 1.5em;
+}
+
+.padding-xl {
+    padding: 3em;
+}
