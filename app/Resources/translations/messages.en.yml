@@ -130,9 +130,38 @@ app:
             view-panels:    "View game panels"
             move-finished:  "Move to finished"
             remove:         "Remove game"
+            contests:       "View contests"
 
     detailspage:
         title:          "Game Details"
+
+    contestindex:
+        title:          "Contests"
+
+        texts:
+            contests:           "Contests"
+            no-contest:         "No contests found!"
+            actions:            "Actions"
+            registration-dates: "Registration from %start-date% to %end-date%"
+            contest-date:       "Contest date: %contest-date%"
+            competitors:        "Registered %count% competitors"
+            max-competitors:    "of %count%"
+            ask-remove:         "Remove contest %name%?"
+
+            buttons:
+                create:         "Create contest"
+                edit:           "Edit"
+                remove:         "Delete"
+                back:           "Back to Admin"
+
+            filters:
+                total:          "Total contests"
+                count:          "Showing"
+                limit:          "Page limit"
+                start:          "Offset"
+                submit:         "Search"
+                first:          "First"
+                next:           "Next"
 
     createcontest:
         title:          "Create new Contest"

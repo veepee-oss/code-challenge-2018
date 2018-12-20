@@ -14,105 +14,6 @@
         </div>
 
         <div class="row">
-            <div class="col-sm-12 col-md-3">
-                <div class="well">
-                    <p>
-                        <small class="text-primary">{{ 'app.adminpage.texts.process-id' | trans }}:</small>
-                    </p>
-                    <p>
-                        <strong class="lead">{{ processId | default('app.adminpage.texts.not-running' | trans) }}</strong>
-                    </p>
-                    <p>
-                        <small class="text-primary">{{ 'app.adminpage.texts.consumer-ids' | trans }}:</small>
-                    </p>
-                    <p>
-                        {% for consumerId in consumerIds %}
-                            <strong class="lead">{{ consumerId }}</strong><br>
-                        {% else %}
-                            <strong class="lead">{{ 'app.adminpage.texts.not-running' | trans }}</strong>
-                        {% endfor %}
-                    </p>
-                </div>
-
-                <div class="well">
-                    <p>
-                        <small class="text-info">
-                            {{ 'app.adminpage.texts.daemon-actions' | trans }}:
-                        </small>
-                    </p>
-
-                    <p>
-                        <a  {% if processId %}
-                                disabled="disabled"
-                            {% endif %}
-                            class="btn btn-success btn-block js-btn-start"
-                            href="{{ url('admin_daemon_start') }}">
-                            <span class="glyphicon glyphicon-play" aria-hidden="true"></span>
-                            {{ 'app.adminpage.buttons.start' | trans }}
-                        </a>
-
-                        <a  {% if not processId %}
-                                disabled="disabled"
-                            {% endif %}
-                            class="btn btn-danger btn-block js-btn-stop"
-                            href="{{ url('admin_daemon_stop') }}">
-                            <span class="glyphicon glyphicon-stop" aria-hidden="true"></span>
-                            {{ 'app.adminpage.buttons.stop' | trans }}
-                        </a>
-
-                        <a  {% if not processId %}
-                                disabled="disabled"
-                            {% endif %}
-                            class="btn btn-warning btn-block js-btn-restart"
-                            href="{{ url('admin_daemon_restart') }}">
-                            <span class="glyphicon glyphicon-refresh" aria-hidden="true"></span>
-                            {{ 'app.adminpage.buttons.restart' | trans }}
-                        </a>
-                    </p>
-
-                    <br>
-
-                    <p>
-                        <small class="text-info">
-                            {{ 'app.adminpage.texts.consumer-actions' | trans }}:
-                        </small>
-                    </p>
-
-                    <p>
-                        <a  class="btn btn-success btn-block js-btn-start-cons"
-                            href="{{ url('admin_consumer_start') }}">
-                            <span class="glyphicon glyphicon-play" aria-hidden="true"></span>
-                            {{ 'app.adminpage.buttons.start-cons' | trans }}
-                        </a>
-
-                        <a  {% if consumerIds is empty %}
-                            disabled="disabled"
-                        {% endif %}
-                            class="btn btn-danger btn-block js-btn-stop-cons"
-                            href="{{ url('admin_consumer_stop') }}">
-                            <span class="glyphicon glyphicon-stop" aria-hidden="true"></span>
-                            {{ 'app.adminpage.buttons.stop-cons' | trans }}
-                        </a>
-                    </p>
-
-                    <br>
-
-                    <p>
-                        <small class="text-info">
-                            {{ 'app.adminpage.texts.other-actions' | trans }}:
-                        </small>
-                    </p>
-
-                    <p>
-                        <a  class="btn btn-default btn-block"
-                            href="{{ url('game_create') }}">
-                            <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
-                            {{ 'app.adminpage.buttons.create' | trans }}
-                        </a>
-                    </p>
-                </div>
-            </div>
-
             <div class="col-sm-12 col-md-9">
 
                 <div class="panel panel-default">
@@ -218,6 +119,104 @@
                             {{ 'app.adminpage.texts.games.none' | trans }}
                         {% endfor %}
                     </div>
+                </div>
+            </div>
+
+            <div class="col-sm-12 col-md-3">
+                <div class="well">
+                    <p>
+                        <small class="text-primary">{{ 'app.adminpage.texts.process-id' | trans }}:</small>
+                    </p>
+                    <p>
+                        <strong class="lead">{{ processId | default('app.adminpage.texts.not-running' | trans) }}</strong>
+                    </p>
+                    <p>
+                        <small class="text-primary">{{ 'app.adminpage.texts.consumer-ids' | trans }}:</small>
+                    </p>
+                    <p>
+                        {% for consumerId in consumerIds %}
+                            <strong class="lead">{{ consumerId }}</strong><br>
+                        {% else %}
+                            <strong class="lead">{{ 'app.adminpage.texts.not-running' | trans }}</strong>
+                        {% endfor %}
+                    </p>
+                </div>
+
+                <div class="well">
+                    <p>
+                        <small class="text-info">
+                            {{ 'app.adminpage.texts.daemon-actions' | trans }}:
+                        </small>
+                    </p>
+
+                    <p>
+                        <a  {% if processId %}
+                                disabled="disabled"
+                            {% endif %}
+                            class="btn btn-success btn-block js-btn-start"
+                            href="{{ url('admin_daemon_start') }}">
+                            <span class="glyphicon glyphicon-play" aria-hidden="true"></span>
+                            {{ 'app.adminpage.buttons.start' | trans }}
+                        </a>
+
+                        <a  {% if not processId %}disabled="disabled"{% endif %}
+                            class="btn btn-danger btn-block js-btn-stop"
+                            href="{{ url('admin_daemon_stop') }}">
+                            <span class="glyphicon glyphicon-stop" aria-hidden="true"></span>
+                            {{ 'app.adminpage.buttons.stop' | trans }}
+                        </a>
+
+                        <a  {% if not processId %}disabled="disabled"{% endif %}
+                            class="btn btn-warning btn-block js-btn-restart"
+                            href="{{ url('admin_daemon_restart') }}">
+                            <span class="glyphicon glyphicon-refresh" aria-hidden="true"></span>
+                            {{ 'app.adminpage.buttons.restart' | trans }}
+                        </a>
+                    </p>
+
+                    <br>
+
+                    <p>
+                        <small class="text-info">
+                            {{ 'app.adminpage.texts.consumer-actions' | trans }}:
+                        </small>
+                    </p>
+
+                    <p>
+                        <a  class="btn btn-success btn-block js-btn-start-cons"
+                            href="{{ url('admin_consumer_start') }}">
+                            <span class="glyphicon glyphicon-play" aria-hidden="true"></span>
+                            {{ 'app.adminpage.buttons.start-cons' | trans }}
+                        </a>
+
+                        <a  {% if consumerIds is empty %}disabled="disabled"{% endif %}
+                            class="btn btn-danger btn-block js-btn-stop-cons"
+                            href="{{ url('admin_consumer_stop') }}">
+                            <span class="glyphicon glyphicon-stop" aria-hidden="true"></span>
+                            {{ 'app.adminpage.buttons.stop-cons' | trans }}
+                        </a>
+                    </p>
+
+                    <br>
+
+                    <p>
+                        <small class="text-info">
+                            {{ 'app.adminpage.texts.other-actions' | trans }}:
+                        </small>
+                    </p>
+
+                    <p>
+                        <a  class="btn btn-default btn-block"
+                            href="{{ url('game_create') }}">
+                            <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+                            {{ 'app.adminpage.buttons.create' | trans }}
+                        </a>
+                        <a  class="btn btn-default btn-block"
+                            href="{{ url('contest_index') }}">
+                            <span class="glyphicon glyphicon-calendar" aria-hidden="true"></span>
+                            {{ 'app.adminpage.buttons.contests' | trans }}
+                        </a>
+                    </p>
                 </div>
             </div>
         </div>

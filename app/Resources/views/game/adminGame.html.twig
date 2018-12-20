@@ -2,7 +2,7 @@
     <div class="col-sm-5 col-xs-7">
         <a href="{{ url('game_view', { 'uuid' : game.uuid }) }}">{{ game.name }}</a><br>
     </div>
-    <div class="col-sm-4 hidden-xs">
+    <div class="col-sm-5 hidden-xs">
         <p>
             {{ 'app.adminpage.texts.height' | trans({ '%height%': game.height}) }},
             {{ 'app.adminpage.texts.width' | trans({ '%width%': game.width }) }},
@@ -17,40 +17,44 @@
             {% endif %}
         </p>
     </div>
-    <div class="col-sm-3 col-xs-5 text-right">
-        <a  target="_blank"
-            class="btn btn-xs btn-info js-btn-view-details"
-            title="{{ 'app.adminpage.buttons.view-details' | trans }}"
-            href="{{ url('admin_game_details', { 'uuid': game.uuid }) }}">
-            <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
-        </a>
-        <a  target="_blank"
-            class="btn btn-xs btn-info js-btn-view-maze"
-            title="{{ 'app.adminpage.buttons.view-maze' | trans }}"
-            href="{{ url('game_view_maze', { 'uuid': game.uuid }) }}">
-            <span class="glyphicon glyphicon-tower" aria-hidden="true"></span>
-        </a>
-        <a  target="_blank"
-            class="btn btn-xs btn-info js-btn-view-panels"
-            title="{{ 'app.adminpage.buttons.view-panels' | trans }}"
-            href="{{ url('game_view_panels', { 'uuid': game.uuid }) }}">
-            <span class="glyphicon glyphicon-list-alt" aria-hidden="true"></span>
-        </a>
-        {% if not game.finished %}
-            <a  class="btn btn-xs btn-warning js-btn-finish-game"
-                title="{{ 'app.adminpage.buttons.move-finished' | trans }}"
-                data-question="{{ 'app.adminpage.texts.ask-finish' | trans({ '%uuid%' : game.uuid }) }}"
-                data-url="{{ url('game_finish', { 'uuid': game.uuid }) }}">
-                <span class="glyphicon glyphicon-ban-circle" aria-hidden="true"></span>
+    <div class="col-sm-2 col-xs-5 text-right">
+        <div class="btn-group" role="group">
+            <a  target="_blank"
+                class="btn btn-xs btn-info js-btn-view-details"
+                title="{{ 'app.adminpage.buttons.view-details' | trans }}"
+                href="{{ url('admin_game_details', { 'uuid': game.uuid }) }}">
+                <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
             </a>
-        {% endif %}
-        <button
-            class="btn btn-xs btn-danger js-btn-remove"
-            title="{{ 'app.adminpage.buttons.remove' | trans }}"
-            data-question="{{ 'app.adminpage.texts.ask-remove' | trans({ '%uuid%' : game.uuid }) }}"
-            data-url="{{ url('admin_game_remove', { 'uuid': game.uuid }) }}">
-            <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
-        </button>
+            <a  target="_blank"
+                class="btn btn-xs btn-info js-btn-view-maze"
+                title="{{ 'app.adminpage.buttons.view-maze' | trans }}"
+                href="{{ url('game_view_maze', { 'uuid': game.uuid }) }}">
+                <span class="glyphicon glyphicon-tower" aria-hidden="true"></span>
+            </a>
+            <a  target="_blank"
+                class="btn btn-xs btn-info js-btn-view-panels"
+                title="{{ 'app.adminpage.buttons.view-panels' | trans }}"
+                href="{{ url('game_view_panels', { 'uuid': game.uuid }) }}">
+                <span class="glyphicon glyphicon-list-alt" aria-hidden="true"></span>
+            </a>
+        </div>
+        <div class="btn-group" role="group">
+            {% if not game.finished %}
+                <a  class="btn btn-xs btn-warning js-btn-finish-game"
+                    title="{{ 'app.adminpage.buttons.move-finished' | trans }}"
+                    data-question="{{ 'app.adminpage.texts.ask-finish' | trans({ '%uuid%' : game.uuid }) }}"
+                    data-url="{{ url('game_finish', { 'uuid': game.uuid }) }}">
+                    <span class="glyphicon glyphicon-ban-circle" aria-hidden="true"></span>
+                </a>
+            {% endif %}
+            <button
+                class="btn btn-xs btn-danger js-btn-remove"
+                title="{{ 'app.adminpage.buttons.remove' | trans }}"
+                data-question="{{ 'app.adminpage.texts.ask-remove' | trans({ '%uuid%' : game.uuid }) }}"
+                data-url="{{ url('admin_game_remove', { 'uuid': game.uuid }) }}">
+                <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
+            </button>
+        </div>
     </div>
 </div>
 

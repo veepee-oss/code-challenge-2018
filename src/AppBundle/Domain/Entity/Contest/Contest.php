@@ -24,7 +24,7 @@ class Contest
     protected $emailRestrictionsRegex;
 
     /** @var \DateTime the start date & time for registering */
-    protected $starRegistrationDate;
+    protected $startRegistrationDate;
 
     /** @var \DateTime the end date & time for registration */
     protected $endRegistrationDate;
@@ -42,7 +42,7 @@ class Contest
      * @param string         $name
      * @param string|null    $description
      * @param string         $emailRestrictionsRegex
-     * @param \DateTime      $starRegistrationDate
+     * @param \DateTime      $startRegistrationDate
      * @param \DateTime      $endRegistrationDate
      * @param \DateTime|null $contestDate
      * @param int|null       $maxCompetitors
@@ -53,7 +53,7 @@ class Contest
         string $name,
         ?string $description,
         ?string $emailRestrictionsRegex,
-        \DateTime $starRegistrationDate,
+        \DateTime $startRegistrationDate,
         \DateTime $endRegistrationDate,
         ?\DateTime $contestDate,
         ?int $maxCompetitors
@@ -62,7 +62,7 @@ class Contest
         $this->name = $name;
         $this->description = $description;
         $this->emailRestrictionsRegex = $emailRestrictionsRegex;
-        $this->starRegistrationDate = $starRegistrationDate;
+        $this->startRegistrationDate = $startRegistrationDate;
         $this->endRegistrationDate = $endRegistrationDate;
         $this->contestDate = $contestDate;
         $this->maxCompetitors = $maxCompetitors;
@@ -103,9 +103,9 @@ class Contest
     /**
      * @return \DateTime
      */
-    public function starRegistrationDate(): \DateTime
+    public function startRegistrationDate(): \DateTime
     {
-        return $this->starRegistrationDate;
+        return $this->startRegistrationDate;
     }
 
     /**
@@ -122,6 +122,15 @@ class Contest
     public function contestDate(): ?\DateTime
     {
         return $this->contestDate;
+    }
+
+    /**
+     * @return int|null
+     */
+    public function countCompetitors(): ?int
+    {
+        // TODO
+        return 0;
     }
 
     /**

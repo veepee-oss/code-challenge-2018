@@ -164,7 +164,7 @@ class Contest
         $this->name = $contest->name();
         $this->description = $contest->description();
         $this->regex = $contest->emailRestrictionsRegex();
-        $this->startDate = $contest->starRegistrationDate();
+        $this->startDate = $contest->startRegistrationDate();
         $this->endDate = $contest->endRegistrationDate();
         $this->contestDate = $contest->contestDate();
         $this->maxCompetitors = $contest->maxCompetitors();
