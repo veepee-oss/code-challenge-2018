@@ -2,6 +2,7 @@
 
 namespace AppBundle\Controller;
 
+use AppBundle\Repository\ContestRepository;
 use Psr\Log\LoggerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -17,11 +18,19 @@ class DefaultController extends Controller
     /**
      * @Route("/", name="homepage")
      * @return Response
+     * @throws \Exception
      */
     public function indexAction() : Response
     {
         $this->getLogger()->info('DefaultController::indexAction()');
-        return $this->render('default/index.html.twig');
+
+        /** @var ContestRepository $repo */
+        $repo = $this->getDoctrine()->getRepository('AppBundle:Contest');
+        $contests = $repo->findActiveContests();
+
+        return $this->render('default/index.html.twig', [
+            'activeContests' => count($contests) > 0
+        ]);
     }
 
     /**
@@ -42,6 +51,18 @@ class DefaultController extends Controller
     {
         $this->getLogger()->info('DefaultController::creditsAction()');
         return $this->render('default/credits.html.twig');
+    }
+
+    /**
+     * @Route("/register", name="register")
+     * @return Response
+     */
+    public function registerAction()
+    {
+        $this->getLogger()->info('DefaultController::registerAction()');
+
+        // TODO register
+        return new Response();
     }
 
     /**

@@ -35,6 +35,15 @@
                         {{ 'app.homepage.create' | trans }}
                         <span class="glyphicon glyphicon-expand"></span>
                     </a>
+
+                    {% if activeContests %}
+                        <br>
+
+                        <a class="btn btn-warning btn-block btn-lg" href="{{ url('register') }}" role="button">
+                            {{ 'app.homepage.register' | trans }}
+                            <span class="glyphicon glyphicon-log-in"></span>
+                        </a>
+                    {% endif %}
                 </div>
                 <div class="col-md-9">
                     <p>
@@ -48,13 +57,13 @@
                     </p>
                     <ul class="lead">
                         <li class="text-success">
-                            {{ 'app.homepage.score.1' | trans | raw }}
+                            {{ 'app.homepage.score.1' | trans({ '%score%': constant('AppBundle\\Domain\\Service\\GameEngine\\GameEngine::SCORE_KILL_GHOST') }) | raw }}
                         </li>
                         <li class="text-success">
-                            {{ 'app.homepage.score.2' | trans | raw }}
+                            {{ 'app.homepage.score.2' | trans({ '%score%': constant('AppBundle\\Domain\\Service\\GameEngine\\GameEngine::SCORE_KILL_PLAYER') }) | raw }}
                         </li>
                         <li class="text-danger">
-                            {{ 'app.homepage.score.3' | trans | raw }}
+                            {{ 'app.homepage.score.3' | trans({ '%score%': constant('AppBundle\\Domain\\Service\\GameEngine\\GameEngine::SCORE_DEAD') }) | raw }}
                         </li>
                     </ul>
                 </div>

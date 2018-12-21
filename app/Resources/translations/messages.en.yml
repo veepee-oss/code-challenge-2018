@@ -22,12 +22,13 @@ app:
             4:              "The scoring system is:"
 
         score:
-            1:              "<strong>100 points</strong> to kill another player's starship."
-            2:              "<strong>50 points</strong> to kill a space invader."
-            3:              "<strong>-25 points</strong> when killed by another player or invader."
+            1:              "<strong>%score% points</strong> to kill a space invader."
+            2:              "<strong>%score% points</strong> to kill another player's starship."
+            3:              "<strong>%score% points</strong> when killed by another player or invader."
 
         rules:          "See the rules"
         create:         "Create game"
+        register:       "Register"
 
     rulespage:
         title:          "Rules"

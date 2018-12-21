@@ -32,9 +32,9 @@ class GameEngine
     protected $logger;
 
     /** @var int Score constants  */
-    const SCORE_KILL_PLAYER = 100;
-    const SCORE_KILL_GHOST = 50;
-    const SCORE_DEAD = -25;
+    const SCORE_KILL_PLAYER = 50;
+    const SCORE_KILL_GHOST = 25;
+    const SCORE_DEAD = -100;
 
     /**
      * GameEngine constructor.
