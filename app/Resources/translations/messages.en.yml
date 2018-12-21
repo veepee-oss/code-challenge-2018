@@ -187,6 +187,9 @@ app:
             contest:        "Contest date:"
             competitors:    "Competitors:"
             of:             "of"
+            edit:           "Edit"
+            remove:         "Delete"
+            go-back:        "Go back"
 
     credits:
         title:          "License, Credits and Attributions"

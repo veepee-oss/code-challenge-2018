@@ -71,6 +71,36 @@
                     {% endif %}
                 </p>
             </div>
+
+            <div class="col-xs-12 text-center">
+                <hr>
+                <a  role="button"
+                    class="btn btn-warning"
+                    href="{{ url('contest_edit', { 'uuid': contest.uuid }) }}">
+                    <span class="glyphicon glyphicon glyphicon-edit"></span>
+                    {{ 'app.viewcontest.texts.edit' | trans }}
+                </a>
+
+                <button
+                    class="btn btn-danger js-btn-remove"
+                    data-question="{{ 'app.contestindex.texts.ask-remove' | trans({ '%name%' : contest.name }) }}"
+                    data-url="{{ url('contest_remove', { 'uuid': contest.uuid }) }}"
+                    data-refresh="{{ url('contest_index') }}">
+                    <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
+                    {{ 'app.contestindex.texts.buttons.remove' | trans }}
+                </button>
+
+                <a  role="button"
+                    class="btn btn-default"
+                    href="{{ url('contest_index') }}">
+                    <span class="glyphicon glyphicon-chevron-left"></span>
+                    {{ 'app.viewcontest.texts.go-back' | trans }}
+                </a>
+            </div>
         </div>
     </div>
+{% endblock %}
+
+{% block more_javascripts %}
+    <script src="{{ asset('js/admin-buttons.js') }}"></script>
 {% endblock %}
