@@ -27,7 +27,7 @@ app:
             3:              "<strong>%score% points</strong> when killed by another player or invader."
 
         rules:          "See the rules"
-        create:         "Create game"
+        create:         "Create test game"
         register:       "Register"
 
     rulespage:
@@ -77,14 +77,33 @@ app:
 
     gameover:
         title:          "Game over"
+
         texts:
             1:              "The <strong>Code Challenge 2018</strong> hasn't started."
             2:              "You can't start creating games until <strong>%date%</strong>."
             3:              "The <strong>Code Challenge 2018</strong> is over."
             4:              "You can't create more games since <strong>%date%</strong>."
             5:              "If you have any question you can email to: <strong>%email%</strong>."
+
         buttons:
             back:           "Go Back"
+
+    registercompetitor:
+        title:           "Register Competitor"
+
+        texts:
+            info:
+                1:              "After registering for the contest <strong>you will receive an email</strong> in your email address to enable your API."
+                2:              "You will <strong>not be fully registered</strong> until you enable your API."
+                3:              "Also the URL you provide during the registration <strong>must be valid</strong>. "
+                4:              "The endpoints of the API must respond with valid data."
+                5:              "Also the email returned by the <code>/name</code> endpoint must be the same provided in he form."
+
+        form:
+            contest:        "Contest (*)"
+            email:          "Your email (*)"
+            url:            "The URL of your API (*)"
+            submit:         "Register"
 
     adminpage:
         title:          "Game administration"

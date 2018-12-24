@@ -3,6 +3,7 @@
 namespace AppBundle\Repository;
 
 use Doctrine\ORM\EntityRepository;
+use Doctrine\ORM\QueryBuilder;
 
 /**
  * Doctrine Repository: ContestRepository
@@ -20,15 +21,24 @@ class ContestRepository extends EntityRepository
     public function findActiveContests()
     {
         return $this
-            ->getEntityManager()
-            ->createQuery("
-                SELECT c
-                FROM AppBundle:Contest c
-                WHERE c.startDate <= :date
-                AND c.endDate >= :date
-                ORDER BY c.startDate ASC
-                ")
-            ->setParameter('date', new \DateTime())
+            ->getFindActiveContestsQueryBuilder()
+            ->getQuery()
             ->getResult();
+    }
+
+    /**
+     * Creates a query builder to get the active contests
+     *
+     * @return QueryBuilder
+     * @throws \Exception
+     */
+    public function getFindActiveContestsQueryBuilder() : QueryBuilder
+    {
+        return $this
+            ->createQueryBuilder('c')
+            ->where('c.startDate <= :date')
+            ->andWhere('c.endDate >= :date')
+            ->orderBy('c.startDate', 'asc')
+            ->setParameter('date', new \DateTime());
     }
 }

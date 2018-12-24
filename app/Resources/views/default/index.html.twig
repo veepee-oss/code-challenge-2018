@@ -29,13 +29,6 @@
                         <span class="glyphicon glyphicon-info-sign"></span>
                     </a>
 
-                    <br>
-
-                    <a class="btn btn-success btn-block btn-lg" href="{{ url('game_create') }}" role="button">
-                        {{ 'app.homepage.create' | trans }}
-                        <span class="glyphicon glyphicon-expand"></span>
-                    </a>
-
                     {% if activeContests %}
                         <br>
 
@@ -44,6 +37,13 @@
                             <span class="glyphicon glyphicon-log-in"></span>
                         </a>
                     {% endif %}
+
+                    <br>
+
+                    <a class="btn btn-success btn-block btn-lg" href="{{ url('game_create') }}" role="button">
+                        {{ 'app.homepage.create' | trans }}
+                        <span class="glyphicon glyphicon-expand"></span>
+                    </a>
                 </div>
                 <div class="col-md-9">
                     <p>

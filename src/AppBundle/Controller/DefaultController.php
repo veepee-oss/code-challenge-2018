@@ -2,10 +2,17 @@
 
 namespace AppBundle\Controller;
 
+use AppBundle\Domain\Service\Register\ValidateCompetitorInterface;
+use AppBundle\Domain\Service\Register\ValidationResults;
+use AppBundle\Entity\Competitor as Entity;
+use AppBundle\Form\RegisterCompetitor\CompetitorEntity;
+use AppBundle\Form\RegisterCompetitor\CompetitorForm;
 use AppBundle\Repository\ContestRepository;
 use Psr\Log\LoggerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\Form\FormError;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
@@ -55,14 +62,58 @@ class DefaultController extends Controller
 
     /**
      * @Route("/register", name="register")
+     * @param Request $request
      * @return Response
+     * @throws \Exception
      */
-    public function registerAction()
+    public function registerAction(Request $request) : Response
     {
         $this->getLogger()->info('DefaultController::registerAction()');
 
-        // TODO register
-        return new Response();
+        // Create competitor data entity
+        $formEntity = new CompetitorEntity();
+
+        // Create the competitor data form
+        $form = $this->createForm(CompetitorForm::class, $formEntity, [
+            'action' => $this->generateUrl('register')
+        ]);
+
+        // Handle the request & if the data is valid...
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            $competitor = $formEntity->toDomainEntity();
+            $contest = $formEntity->getContest()->toDomainEntity();
+
+            /** @var ValidateCompetitorInterface $validator */
+            $validator = $this->get('app.contest.validate_competitor_ex');
+
+            // Validate the data entered
+            $result = $validator->validate($competitor, $contest);
+            if (ValidationResults::STATUS_ERROR == $result->status()) {
+                foreach ($result->result() as $field => $messages) {
+                    try {
+                        $control = $form->get($field);
+                    } catch (\OutOfBoundsException $exc) {
+                        $control = $form;
+                    }
+                    foreach ($messages as $message) {
+                        $error = new FormError($message);
+                        $control->addError($error);
+                    }
+                }
+            } else {
+                $entity = new Entity($competitor);
+                $em = $this->getDoctrine()->getManager();
+                $em->persist($entity);
+                $em->flush();
+
+                return $this->redirectToRoute('homepage');
+            }
+        }
+
+        return $this->render('default/register.html.twig', array(
+            'form' => $form->createView(),
+        ));
     }
 
     /**
@@ -71,6 +122,7 @@ class DefaultController extends Controller
      */
     public function loginAction() : Response
     {
+        $this->getLogger()->info('DefaultController::loginAction()');
         return $this->redirectToRoute('homepage');
     }
 

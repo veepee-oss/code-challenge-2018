@@ -118,3 +118,14 @@ services:
             - "%rabbitmq_user%"
             - "%rabbitmq_pass%"
             - "%rabbitmq_vhost%"
+
+    app.contest.validate_competitor:
+        class: AppBundle\Domain\Service\Register\ValidateCompetitor
+        arguments:
+            - "@app.player.validate.service"
+
+    app.contest.validate_competitor_ex:
+        class: AppBundle\Service\Register\ValidateCompetitorEx
+        arguments:
+            - "@app.player.validate.service"
+            - "@=service('doctrine.orm.entity_manager').getRepository('AppBundle:Competitor')"
