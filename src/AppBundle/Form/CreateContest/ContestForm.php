@@ -55,12 +55,12 @@ class ContestForm extends AbstractType
         $builder->setAction($options['action']);
 
         $builder->add('name', TextType::class, [
-            'label'         => 'app.createcontest.form.name',
+            'label'         => 'app.contest-create.form.name',
             'required'      => true
         ]);
 
         $builder->add('description', TextareaType::class, [
-            'label'         => 'app.createcontest.form.description',
+            'label'         => 'app.contest-create.form.description',
             'required'      => false,
             'attr'          => [
                 'rows'          => 5
@@ -68,38 +68,38 @@ class ContestForm extends AbstractType
         ]);
 
         $builder->add('regex', TextType::class, [
-            'label'         => 'app.createcontest.form.regex',
+            'label'         => 'app.contest-create.form.regex',
             'required'      => false
         ]);
 
         $builder->add('startDate', DateTimeType::class, [
-            'label'         => 'app.createcontest.form.start-date',
+            'label'         => 'app.contest-create.form.start-date',
             'date_widget'   => 'single_text',
             'time_widget'   => 'single_text',
             'required'      => true
         ]);
 
         $builder->add('endDate', DateTimeType::class, [
-            'label'         => 'app.createcontest.form.end-date',
+            'label'         => 'app.contest-create.form.end-date',
             'date_widget'   => 'single_text',
             'time_widget'   => 'single_text',
             'required'      => true
         ]);
 
         $builder->add('contestDate', DateTimeType::class, [
-            'label'         => 'app.createcontest.form.contest-date',
+            'label'         => 'app.contest-create.form.contest-date',
             'date_widget'   => 'single_text',
             'time_widget'   => 'single_text',
             'required'      => false
         ]);
 
         $builder->add('maxCompetitors', IntegerType::class, [
-            'label'         => 'app.createcontest.form.max-competitors',
+            'label'         => 'app.contest-create.form.max-competitors',
             'required'      => false
         ]);
 
         $builder->add('save', SubmitType::class, array(
-            'label'         => 'app.createcontest.form.submit'
+            'label'         => 'app.contest-create.form.submit'
         ));
     }
 }

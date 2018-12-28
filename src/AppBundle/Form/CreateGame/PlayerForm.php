@@ -41,7 +41,7 @@ class PlayerForm extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder->add('url', UrlType::class, array(
-            'label' => 'app.createpage.form.url'
+            'label' => 'app.create-page.form.url'
         ));
     }
 }

@@ -2,25 +2,25 @@
 
 {% form_theme form 'bootstrap_3_horizontal_layout.html.twig' %}
 
-{% block title %}{{ 'app.registercompetitor.title' | trans }} - {{ parent() }}{% endblock %}
+{% block title %}{{ 'app.register-competitor.title' | trans }} - {{ parent() }}{% endblock %}
 
 {% block content %}
     <div class="container">
         <div class="page-header">
             <h1>
-                {{ 'app.registercompetitor.title' | trans }}
+                {{ 'app.register-competitor.title' | trans }}
                 <small>
                     {{ 'app.global.title' | trans }}
                 </small>
             </h1>
         </div>
 
-        <div class="lead">
-            {{ 'app.registercompetitor.texts.info.1' | trans | raw }}
-            {{ 'app.registercompetitor.texts.info.2' | trans | raw }}
-            {{ 'app.registercompetitor.texts.info.3' | trans | raw }}
-            {{ 'app.registercompetitor.texts.info.4' | trans | raw }}
-            {{ 'app.registercompetitor.texts.info.5' | trans | raw }}
+        <div class="lead text-justify">
+            {{ 'app.register-competitor.texts.info.1' | trans | raw }}
+            {{ 'app.register-competitor.texts.info.2' | trans | raw }}
+            {{ 'app.register-competitor.texts.info.3' | trans | raw }}
+            {{ 'app.register-competitor.texts.info.4' | trans | raw }}
+            {{ 'app.register-competitor.texts.info.5' | trans | raw }}
         </div>
 
         {{ form_start(form) }}

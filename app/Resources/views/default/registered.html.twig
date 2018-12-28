@@ -1,0 +1,21 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'app.registered-competitor.title' | trans }} - {{ parent() }}{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <div class="page-header">
+            <h1>
+                {{ 'app.registered-competitor.title' | trans }}
+                <small>
+                    {{ 'app.global.title' | trans }}
+                </small>
+            </h1>
+        </div>
+
+        <div class="lead text-justify">
+            {{ 'app.registered-competitor.texts.info.1' | trans | raw }}
+            {{ 'app.registered-competitor.texts.info.2' | trans | raw }}
+        </div>
+    </div>
+{% endblock %}

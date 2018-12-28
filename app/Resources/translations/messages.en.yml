@@ -30,10 +30,10 @@ app:
         create:         "Create test game"
         register:       "Register"
 
-    rulespage:
+    rules-page:
         title:          "Rules"
 
-    createpage:
+    create-page:
         title:          "Create new game"
 
         form:
@@ -48,14 +48,14 @@ app:
             next:           "Next step"
             create:         "Create game"
 
-    gamepage:
+    game-page:
         buttons:
             start:          "Start game"
             stop:           "Stop game"
             reset:          "Reset game"
             download:       "Download log"
 
-    mazepage:
+    maze-page:
         texts:
             game:           "Game"
             status:         "Status"
@@ -75,7 +75,7 @@ app:
             score:          "Score"
             points:         "points"
 
-    gameover:
+    game-over:
         title:          "Game over"
 
         texts:
@@ -88,16 +88,16 @@ app:
         buttons:
             back:           "Go Back"
 
-    registercompetitor:
+    register-competitor:
         title:           "Register Competitor"
 
         texts:
             info:
-                1:              "After registering for the contest <strong>you will receive an email</strong> in your email address to enable your API."
-                2:              "You will <strong>not be fully registered</strong> until you enable your API."
-                3:              "Also the URL you provide during the registration <strong>must be valid</strong>. "
+                1:              "After registering for the contest <strong>you will receive an email</strong> in the address provided to <strong>enable your API</strong>."
+                2:              "Keep in mind that you will <strong>not be fully registered</strong> until you enable your API."
+                3:              "The URL you provide during the registration <strong>must be valid</strong>. "
                 4:              "The endpoints of the API must respond with valid data."
-                5:              "Also the email returned by the <code>/name</code> endpoint must be the same provided in he form."
+                5:              "Also the email returned by the <code>/name</code> endpoint must be the same provided in the form."
 
         form:
             contest:        "Contest (*)"
@@ -105,7 +105,15 @@ app:
             url:            "The URL of your API (*)"
             submit:         "Register"
 
-    adminpage:
+    registered-competitor:
+        title:          "Competitor registered"
+
+        texts:
+            info:
+                1:              "Your email and URL <strong>have been registered!</strong>"
+                2:              "You will receive an email in the address provided to <strong>enable your API</strong>."
+
+    admin-page:
         title:          "Game administration"
 
         texts:
@@ -152,10 +160,10 @@ app:
             remove:         "Remove game"
             contests:       "View contests"
 
-    detailspage:
+    details-page:
         title:          "Game Details"
 
-    contestindex:
+    contest-index:
         title:          "Contests"
 
         texts:
@@ -183,7 +191,7 @@ app:
                 first:          "First"
                 next:           "Next"
 
-    createcontest:
+    contest-create:
         title:          "Create new Contest"
 
         form:
@@ -196,7 +204,7 @@ app:
             max-competitors: "Max competitors"
             submit:         "Create"
 
-    viewcontest:
+    contest-view:
         title:          "Contest"
 
         texts:

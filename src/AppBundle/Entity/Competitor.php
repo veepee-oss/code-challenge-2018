@@ -140,7 +140,7 @@ class Competitor
         $this->email = $competitor->email();
         $this->url = $competitor->url();
         $this->validated = $competitor->validated();
-        $this->token = $competitor->getValidateToken();
+        $this->token = $competitor->validateToken();
         return $this;
     }
 

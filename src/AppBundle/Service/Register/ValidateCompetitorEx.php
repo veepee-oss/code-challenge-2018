@@ -43,7 +43,7 @@ class ValidateCompetitorEx extends ValidateCompetitor implements ValidateCompeti
     public function validate(Competitor $competitor, Contest $contest): ValidationResults
     {
         $results = parent::validate($competitor, $contest);
-        $this->validateDuplicates($competitor->contest(), $competitor->email(), $competitor->url(), $results);
+        $this->validateDuplicateUrl($competitor->contest(), $competitor->email(), $competitor->url(), $results);
         return $results;
     }
 
@@ -56,7 +56,7 @@ class ValidateCompetitorEx extends ValidateCompetitor implements ValidateCompeti
      * @param ValidationResults $results
      * @return void
      */
-    protected function validateDuplicates(string $contest, string $email, string $url, ValidationResults $results)
+    protected function validateDuplicateUrl(string $contest, string $email, string $url, ValidationResults $results)
     {
         try {
             $count = $this->repository->searchForDuplicateUrl($contest, $email, $url);

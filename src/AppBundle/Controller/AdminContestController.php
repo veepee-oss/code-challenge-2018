@@ -19,12 +19,12 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
  * @package AppBundle\Controller
  * @Route("/admin/contest")
  */
-class ContestController extends Controller
+class AdminContestController extends Controller
 {
     /**
      * Create new contest
      *
-     * @Route("/", name="contest_index")
+     * @Route("/", name="admin_contest_index")
      * @param Request $request
      * @return Response
      * @throws \Exception
@@ -51,7 +51,7 @@ class ContestController extends Controller
             $contests[] = $entity->toDomainEntity();
         }
 
-        return $this->render('contest/index.html.twig', array(
+        return $this->render('admin/contest/index.html.twig', array(
             'contests'  => $contests,
             'start'     => $start,
             'limit'     => $limit,
@@ -63,7 +63,7 @@ class ContestController extends Controller
     /**
      * Create new contest
      *
-     * @Route("/create", name="contest_create")
+     * @Route("/create", name="admin_contest_create")
      * @param Request $request
      * @return Response
      * @throws \Exception
@@ -75,7 +75,7 @@ class ContestController extends Controller
 
         // Create the contest data form
         $form = $this->createForm(ContestForm::class, $contestEntity, [
-            'action' => $this->generateUrl('contest_create')
+            'action' => $this->generateUrl('admin_contest_create')
         ]);
 
         // Handle the request & if the data is valid...
@@ -87,10 +87,10 @@ class ContestController extends Controller
             $em->persist($entity);
             $em->flush();
 
-            return $this->redirectToRoute('contest_view', ['uuid' => $entity->getUuid()]);
+            return $this->redirectToRoute('admin_contest_view', ['uuid' => $entity->getUuid()]);
         }
 
-        return $this->render('contest/create.html.twig', array(
+        return $this->render('admin/contest/create.html.twig', array(
             'form' => $form->createView(),
         ));
     }
@@ -98,7 +98,7 @@ class ContestController extends Controller
     /**
      * View contest
      *
-     * @Route("/{uuid}", name="contest_view",
+     * @Route("/{uuid}", name="admin_contest_view",
      *     requirements={"uuid": "[0-9a-f]{8}\-[0-9a-f]{4}\-[0-9a-f]{4}\-[0-9a-f]{4}\-[0-9a-f]{12}"})
      *
      * @param string $uuid
@@ -119,7 +119,7 @@ class ContestController extends Controller
             throw new NotFoundHttpException();
         }
 
-        return $this->render('contest/view.html.twig', array(
+        return $this->render('admin/contest/view.html.twig', array(
             'contest' => $entity->toDomainEntity(),
         ));
     }
@@ -127,7 +127,7 @@ class ContestController extends Controller
     /**
      * Edit contest
      *
-     * @Route("/{uuid}/edit", name="contest_edit",
+     * @Route("/{uuid}/edit", name="admin_contest_edit",
      *     requirements={"uuid": "[0-9a-f]{8}\-[0-9a-f]{4}\-[0-9a-f]{4}\-[0-9a-f]{4}\-[0-9a-f]{12}"})
      *
      * @param string $uuid
@@ -148,14 +148,14 @@ class ContestController extends Controller
             throw new NotFoundHttpException();
         }
 
-        // TODO
-        return $this->redirectToRoute('contest_index');
+        // TODO - edit contest
+        return $this->redirectToRoute('admin_contest_index');
     }
 
     /**
      * Remove contest
      *
-     * @Route("/{uuid}/remove", name="contest_remove",
+     * @Route("/{uuid}/remove", name="admin_contest_remove",
      *     requirements={"uuid": "[0-9a-f]{8}\-[0-9a-f]{4}\-[0-9a-f]{4}\-[0-9a-f]{4}\-[0-9a-f]{12}"})
      *
      * @param string $uuid

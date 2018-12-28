@@ -2,13 +2,13 @@
 
 namespace AppBundle\Controller;
 
+use AppBundle\Domain\Service\Register\GenerateTokenInterface;
 use AppBundle\Domain\Service\Register\ValidateCompetitorInterface;
 use AppBundle\Domain\Service\Register\ValidationResults;
 use AppBundle\Entity\Competitor as Entity;
 use AppBundle\Form\RegisterCompetitor\CompetitorEntity;
 use AppBundle\Form\RegisterCompetitor\CompetitorForm;
 use AppBundle\Repository\ContestRepository;
-use Psr\Log\LoggerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\Form\FormError;
@@ -23,14 +23,14 @@ use Symfony\Component\HttpFoundation\Response;
 class DefaultController extends Controller
 {
     /**
+     * Default page
+     *
      * @Route("/", name="homepage")
      * @return Response
      * @throws \Exception
      */
     public function indexAction() : Response
     {
-        $this->getLogger()->info('DefaultController::indexAction()');
-
         /** @var ContestRepository $repo */
         $repo = $this->getDoctrine()->getRepository('AppBundle:Contest');
         $contests = $repo->findActiveContests();
@@ -41,26 +41,30 @@ class DefaultController extends Controller
     }
 
     /**
+     * Rules static page
+     *
      * @Route("/rules", name="rules")
      * @return Response
      */
     public function rulesAction() : Response
     {
-        $this->getLogger()->info('DefaultController::rulesAction()');
         return $this->render('default/rules.html.twig');
     }
 
     /**
+     * Credits static page
+     *
      * @Route("/credits", name="credits")
      * @return Response
      */
     public function creditsAction() : Response
     {
-        $this->getLogger()->info('DefaultController::creditsAction()');
         return $this->render('default/credits.html.twig');
     }
 
     /**
+     * Page to register to a contest
+     *
      * @Route("/register", name="register")
      * @param Request $request
      * @return Response
@@ -68,8 +72,6 @@ class DefaultController extends Controller
      */
     public function registerAction(Request $request) : Response
     {
-        $this->getLogger()->info('DefaultController::registerAction()');
-
         // Create competitor data entity
         $formEntity = new CompetitorEntity();
 
@@ -84,8 +86,12 @@ class DefaultController extends Controller
             $competitor = $formEntity->toDomainEntity();
             $contest = $formEntity->getContest()->toDomainEntity();
 
+            /** @var GenerateTokenInterface $generator */
+            $generator = $this->get('app.contest.register.generate_token');
+            $generator->addToken($competitor);
+
             /** @var ValidateCompetitorInterface $validator */
-            $validator = $this->get('app.contest.validate_competitor_ex');
+            $validator = $this->get('app.contest.register.validate_competitor_ex');
 
             // Validate the data entered
             $result = $validator->validate($competitor, $contest);
@@ -102,12 +108,26 @@ class DefaultController extends Controller
                     }
                 }
             } else {
-                $entity = new Entity($competitor);
                 $em = $this->getDoctrine()->getManager();
+                $entities = $em
+                    ->getRepository('AppBundle:Competitor')
+                    ->findBy([
+                        'contestUuid' => $competitor->contest(),
+                        'email'       => $competitor->email()
+                    ]);
+
+                /** @var Entity $entity */
+                foreach ($entities as $entity) {
+                    $em->remove($entity);
+                }
+
+                $entity = new Entity($competitor);
                 $em->persist($entity);
                 $em->flush();
 
-                return $this->redirectToRoute('homepage');
+                // TODO: Send email to the user
+
+                return $this->redirectToRoute('registered');
             }
         }
 
@@ -117,22 +137,25 @@ class DefaultController extends Controller
     }
 
     /**
+     * Registered to a contest page
+     *
+     * @Route("/registered", name="registered")
+     * @return Response
+     * @throws \Exception
+     */
+    public function registeredAction() : Response
+    {
+        return $this->render('default/registered.html.twig');
+    }
+
+    /**
+     * Login page
+     *
      * @Route("/login", name="login")
      * @return Response
      */
     public function loginAction() : Response
     {
-        $this->getLogger()->info('DefaultController::loginAction()');
         return $this->redirectToRoute('homepage');
-    }
-
-    /**
-     * Get the logger
-     *
-     * @return LoggerInterface
-     */
-    private function getLogger() : LoggerInterface
-    {
-        return $this->get('logger');
     }
 }

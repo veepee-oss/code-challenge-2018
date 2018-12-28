@@ -89,36 +89,36 @@ class GameForm extends AbstractType
     protected function buildGameDataForm(FormBuilderInterface $builder, array $options)
     {
         $builder->add('height', IntegerType::class, array(
-            'label' => 'app.createpage.form.height'
+            'label' => 'app.create-page.form.height'
         ));
 
         $builder->add('width', IntegerType::class, array(
-            'label' => 'app.createpage.form.width'
+            'label' => 'app.create-page.form.width'
         ));
 
         $builder->add('playerNum', IntegerType::class, array(
-            'label' => 'app.createpage.form.player-num'
+            'label' => 'app.create-page.form.player-num'
         ));
 
         $builder->add('minGhosts', IntegerType::class, array(
-            'label' => 'app.createpage.form.min-ghosts'
+            'label' => 'app.create-page.form.min-ghosts'
         ));
 
         $builder->add('ghostRate', IntegerType::class, array(
-            'label' => 'app.createpage.form.ghost-rate'
+            'label' => 'app.create-page.form.ghost-rate'
         ));
 
         $builder->add('limit', IntegerType::class, array(
-            'label' => 'app.createpage.form.limit'
+            'label' => 'app.create-page.form.limit'
         ));
 
         $builder->add('name', TextType::class, array(
-            'label' => 'app.createpage.form.name-optional',
+            'label' => 'app.create-page.form.name-optional',
             'required' => false
         ));
 
         $builder->add('save', SubmitType::class, array(
-            'label' => 'app.createpage.form.next'
+            'label' => 'app.create-page.form.next'
         ));
     }
 
@@ -145,7 +145,7 @@ class GameForm extends AbstractType
         ));
 
         $builder->add('save', SubmitType::class, array(
-            'label' => 'app.createpage.form.create'
+            'label' => 'app.create-page.form.create'
         ));
     }
 }

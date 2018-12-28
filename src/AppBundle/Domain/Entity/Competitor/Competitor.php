@@ -99,8 +99,19 @@ class Competitor
     /**
      * @return string|null
      */
-    public function getValidateToken(): ?string
+    public function validateToken(): ?string
     {
         return $this->validateToken;
+    }
+
+    /**
+     * @param string $validateToken
+     * @return $this
+     */
+    public function setValidation(string $validateToken): Competitor
+    {
+        $this->validateToken = $validateToken;
+        $this->validated = false;
+        return $this;
     }
 }

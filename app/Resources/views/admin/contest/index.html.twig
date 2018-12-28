@@ -1,12 +1,12 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}{{ 'app.contestindex.title' | trans }} - {{ parent() }}{% endblock %}
+{% block title %}{{ 'app.contest-index.title' | trans }} - {{ parent() }}{% endblock %}
 
 {% block content %}
     <div class="container">
         <div class="page-header">
             <h1>
-                {{ 'app.contestindex.title' | trans }}
+                {{ 'app.contest-index.title' | trans }}
                 <small>
                     {{ 'app.global.title' | trans }}
                 </small>
@@ -18,35 +18,35 @@
 
                 <div class="panel panel-default">
                     <div class="panel-body">
-                        <form class="row" action="{{ url('contest_index') }}" method="get">
+                        <form class="row" action="{{ url('admin_contest_index') }}" method="get">
                             <div class="form-group col-md-2">
-                                <label class="control-label" for="filter-total">{{ 'app.contestindex.texts.filters.total' | trans }}</label>
+                                <label class="control-label" for="filter-total">{{ 'app.contest-index.texts.filters.total' | trans }}</label>
                                 <input class="form-control input-sm" type="number" id="filter-total" name="total" disabled="disabled" value="{{ total }}">
                             </div>
                             <div class="form-group col-md-2">
-                                <label class="control-label" for="filter-count">{{ 'app.contestindex.texts.filters.count' | trans }}</label>
+                                <label class="control-label" for="filter-count">{{ 'app.contest-index.texts.filters.count' | trans }}</label>
                                 <input class="form-control input-sm" type="number" id="filter-count" name="count" disabled="disabled" value="{{ count }}">
                             </div>
                             <div class="form-group col-md-2">
-                                <label class="control-label" for="filter-limit">{{ 'app.contestindex.texts.filters.limit' | trans }}</label>
+                                <label class="control-label" for="filter-limit">{{ 'app.contest-index.texts.filters.limit' | trans }}</label>
                                 <input class="form-control input-sm" type="number" id="filter-limit" name="limit" value="{{ limit }}">
                             </div>
                             <div class="form-group col-md-2">
-                                <label class="control-label" for="filter-start">{{ 'app.contestindex.texts.filters.start' | trans }}</label>
+                                <label class="control-label" for="filter-start">{{ 'app.contest-index.texts.filters.start' | trans }}</label>
                                 <input class="form-control input-sm" type="number" id="filter-start" name="start" value="{{ start }}">
                             </div>
                             <div class="form-group col-md-4 text-right">
                                 <br>
-                                <button class="btn btn-primary" type="submit">{{ 'app.contestindex.texts.filters.submit' | trans }}</button>
+                                <button class="btn btn-primary" type="submit">{{ 'app.contest-index.texts.filters.submit' | trans }}</button>
                                 {% if start > 0 %}
                                     <a class="btn btn-default"
-                                       title="{{ 'app.contestindex.texts.filters.first' | trans }}"
-                                       href="{{ url('contest_index', { 'start': 0, 'limit': limit }) }}"><span class="glyphicon glyphicon-fast-backward"></span></a>
+                                       title="{{ 'app.contest-index.texts.filters.first' | trans }}"
+                                       href="{{ url('admin_contest_index', { 'start': 0, 'limit': limit }) }}"><span class="glyphicon glyphicon-fast-backward"></span></a>
                                 {% endif %}
                                 {% if start + count < total %}
                                     <a class="btn btn-default"
-                                       title="{{ 'app.contestindex.texts.filters.next' | trans }}"
-                                       href="{{ url('contest_index', { 'start': start + limit, 'limit': limit }) }}"><span class="glyphicon glyphicon-forward"></span></a>
+                                       title="{{ 'app.contest-index.texts.filters.next' | trans }}"
+                                       href="{{ url('admin_contest_index', { 'start': start + limit, 'limit': limit }) }}"><span class="glyphicon glyphicon-forward"></span></a>
                                 {% endif %}
                             </div>
                         </form>
@@ -55,7 +55,7 @@
 
                 <div class="panel panel-success">
                     <div class="panel-heading">
-                        {{ 'app.contestindex.texts.contests' | trans }}
+                        {{ 'app.contest-index.texts.contests' | trans }}
                         <a href="#panel-playing" data-toggle="collapse" class="badge pull-right">
                             {{ contests | length }}
                         </a>
@@ -65,12 +65,12 @@
                         {% for contest in contests %}
                             <div class="row">
                                 <div class="col-sm-4 col-xs-7">
-                                    <a href="{{ url('contest_view', { 'uuid' : contest.uuid }) }}">{{ contest.name }}</a><br>
+                                    <a href="{{ url('admin_contest_view', { 'uuid' : contest.uuid }) }}">{{ contest.name }}</a><br>
                                 </div>
                                 <div class="col-sm-6 hidden-xs">
                                     <p>
                                         {{
-                                            'app.contestindex.texts.registration-dates' | trans({
+                                            'app.contest-index.texts.registration-dates' | trans({
                                                 '%start-date%': contest.startRegistrationDate | date("Y-m-d"),
                                                 '%end-date%': contest.endRegistrationDate | date("Y-m-d")
                                             })
@@ -78,20 +78,20 @@
                                         {% if contest.contestDate is not empty %}
                                             <br>
                                             {{
-                                                'app.contestindex.texts.contest-date' | trans({
+                                                'app.contest-index.texts.contest-date' | trans({
                                                     '%contest-date%': contest.contestDate | date("Y-m-d H:i")
                                                 })
                                             }}
                                         {% endif %}
                                         <br>
                                         {{
-                                            'app.contestindex.texts.competitors' | trans({
+                                            'app.contest-index.texts.competitors' | trans({
                                                 '%count%': contest.countCompetitors
                                             })
                                         }}
                                         {% if contest.maxCompetitors is not empty %}
                                             {{
-                                                'app.contestindex.texts.max-competitors' | trans({
+                                                'app.contest-index.texts.max-competitors' | trans({
                                                     '%count%': contest.maxCompetitors
                                                 })
                                             }}
@@ -101,15 +101,15 @@
                                 <div class="col-sm-2 col-xs-5 text-right">
                                     <div class="btn-group" role="group">
                                         <a  class="btn btn-xs btn-warning"
-                                            title="{{ 'app.contestindex.texts.buttons.edit' | trans }}"
-                                            href="{{ url('contest_edit', { 'uuid': contest.uuid }) }}">
+                                            title="{{ 'app.contest-index.texts.buttons.edit' | trans }}"
+                                            href="{{ url('admin_contest_edit', { 'uuid': contest.uuid }) }}">
                                             <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
                                         </a>
                                         <button
                                             class="btn btn-xs btn-danger js-btn-remove"
-                                            title="{{ 'app.contestindex.texts.buttons.remove' | trans }}"
-                                            data-question="{{ 'app.contestindex.texts.ask-remove' | trans({ '%name%' : contest.name }) }}"
-                                            data-url="{{ url('contest_remove', { 'uuid': contest.uuid }) }}">
+                                            title="{{ 'app.contest-index.texts.buttons.remove' | trans }}"
+                                            data-question="{{ 'app.contest-index.texts.ask-remove' | trans({ '%name%' : contest.name }) }}"
+                                            data-url="{{ url('admin_contest_remove', { 'uuid': contest.uuid }) }}">
                                             <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
                                         </button>
                                     </div>
@@ -118,7 +118,7 @@
 
 
                         {% else %}
-                            {{ 'app.contestindex.texts.no-contest' | trans }}
+                            {{ 'app.contest-index.texts.no-contest' | trans }}
                         {% endfor %}
                     </div>
                 </div>
@@ -128,21 +128,21 @@
                 <div class="well">
                     <p>
                         <small class="text-info">
-                            {{ 'app.contestindex.texts.actions' | trans }}:
+                            {{ 'app.contest-index.texts.actions' | trans }}:
                         </small>
                     </p>
 
                     <p>
                         <a  class="btn btn-default btn-block"
-                            href="{{ url('contest_create') }}">
+                            href="{{ url('admin_contest_create') }}">
                             <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
-                            {{ 'app.contestindex.texts.buttons.create' | trans }}
+                            {{ 'app.contest-index.texts.buttons.create' | trans }}
                         </a>
 
                         <a  class="btn btn-default btn-block"
-                            href="{{ url('admin_view') }}">
+                            href="{{ url('admin_index') }}">
                             <span class="glyphicon glyphicon-wrench" aria-hidden="true"></span>
-                            {{ 'app.contestindex.texts.buttons.back' | trans }}
+                            {{ 'app.contest-index.texts.buttons.back' | trans }}
                         </a>
                     </p>
                 </div>

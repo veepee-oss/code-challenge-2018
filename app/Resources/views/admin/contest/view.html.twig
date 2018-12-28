@@ -8,7 +8,7 @@
             <h1>
                 {{ contest.name }}
                 <small>
-                    {{ 'app.viewcontest.title' | trans }}
+                    {{ 'app.contest-view.title' | trans }}
                 </small>
             </h1>
         </div>
@@ -16,7 +16,7 @@
         <div class="row">
             <div class="col-xs-12">
                 <p class="text-info small">
-                    {{ 'app.viewcontest.texts.description' | trans }}
+                    {{ 'app.contest-view.texts.description' | trans }}
                 </p>
                 <p class="lead bg-warning padding-xs">
                     {{ contest.description | default("--") | raw }}
@@ -25,7 +25,7 @@
 
             <div class="col-xs-12">
                 <p class="text-info small">
-                    {{ 'app.viewcontest.texts.restrictions' | trans }}
+                    {{ 'app.contest-view.texts.restrictions' | trans }}
                 </p>
                 <p class="lead bg-warning padding-xs">
                     {{ contest.emailRestrictionsRegex | default("--") | raw }}
@@ -34,7 +34,7 @@
 
             <div class="col-sm-3 col-xs-12">
                 <p class="text-info small">
-                    {{ 'app.viewcontest.texts.start-date' | trans }}
+                    {{ 'app.contest-view.texts.start-date' | trans }}
                 </p>
                 <p class="lead bg-warning padding-xs">
                     {{ contest.startRegistrationDate | date('Y-m-d H:i') }}
@@ -43,7 +43,7 @@
 
             <div class="col-sm-3 col-xs-12">
                 <p class="text-info small">
-                    {{ 'app.viewcontest.texts.end-date' | trans }}
+                    {{ 'app.contest-view.texts.end-date' | trans }}
                 </p>
                 <p class="lead bg-warning padding-xs">
                     {{ contest.endRegistrationDate | date('Y-m-d H:i') }}
@@ -52,7 +52,7 @@
 
             <div class="col-sm-3 col-xs-12">
                 <p class="text-info small">
-                    {{ 'app.viewcontest.texts.contest' | trans }}
+                    {{ 'app.contest-view.texts.contest' | trans }}
                 </p>
                 <p class="lead bg-warning padding-xs">
                     {{ contest.contestDate is empty ? "--" : contest.contestDate | date('Y-m-d H:i') }}
@@ -61,12 +61,12 @@
 
             <div class="col-sm-3 col-xs-12">
                 <p class="text-info small">
-                    {{ 'app.viewcontest.texts.competitors' | trans }}
+                    {{ 'app.contest-view.texts.competitors' | trans }}
                 </p>
                 <p class="lead bg-warning padding-xs">
                     {{ contest.countCompetitors }}
                     {% if contest.maxCompetitors is not empty %}
-                        {{ 'app.viewcontest.texts.of' | trans }}
+                        {{ 'app.contest-view.texts.of' | trans }}
                         {{ contest.maxCompetitors }}
                     {% endif %}
                 </p>
@@ -76,25 +76,25 @@
                 <hr>
                 <a  role="button"
                     class="btn btn-warning"
-                    href="{{ url('contest_edit', { 'uuid': contest.uuid }) }}">
+                    href="{{ url('admin_contest_edit', { 'uuid': contest.uuid }) }}">
                     <span class="glyphicon glyphicon glyphicon-edit"></span>
-                    {{ 'app.viewcontest.texts.edit' | trans }}
+                    {{ 'app.contest-view.texts.edit' | trans }}
                 </a>
 
                 <button
                     class="btn btn-danger js-btn-remove"
-                    data-question="{{ 'app.contestindex.texts.ask-remove' | trans({ '%name%' : contest.name }) }}"
-                    data-url="{{ url('contest_remove', { 'uuid': contest.uuid }) }}"
-                    data-refresh="{{ url('contest_index') }}">
+                    data-question="{{ 'app.contest-index.texts.ask-remove' | trans({ '%name%' : contest.name }) }}"
+                    data-url="{{ url('admin_contest_remove', { 'uuid': contest.uuid }) }}"
+                    data-refresh="{{ url('admin_contest_index') }}">
                     <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
-                    {{ 'app.contestindex.texts.buttons.remove' | trans }}
+                    {{ 'app.contest-index.texts.buttons.remove' | trans }}
                 </button>
 
                 <a  role="button"
                     class="btn btn-default"
-                    href="{{ url('contest_index') }}">
+                    href="{{ url('admin_contest_index') }}">
                     <span class="glyphicon glyphicon-chevron-left"></span>
-                    {{ 'app.viewcontest.texts.go-back' | trans }}
+                    {{ 'app.contest-view.texts.go-back' | trans }}
                 </a>
             </div>
         </div>

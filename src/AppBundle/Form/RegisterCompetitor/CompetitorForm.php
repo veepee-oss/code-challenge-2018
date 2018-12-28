@@ -57,7 +57,7 @@ class CompetitorForm extends AbstractType
         $builder->setAction($options['action']);
 
         $builder->add('contest', EntityType::class, [
-            'label'         => 'app.registercompetitor.form.contest',
+            'label'         => 'app.register-competitor.form.contest',
             'class'         => 'AppBundle:Contest',
             'choice_label'  => 'name',
             'query_builder' => function (ContestRepository $repo) {
@@ -67,17 +67,17 @@ class CompetitorForm extends AbstractType
         ]);
 
         $builder->add('email', EmailType::class, [
-            'label'         => 'app.registercompetitor.form.email',
+            'label'         => 'app.register-competitor.form.email',
             'required'      => true
         ]);
 
         $builder->add('url', UrlType::class, [
-            'label'         => 'app.registercompetitor.form.url',
+            'label'         => 'app.register-competitor.form.url',
             'required'      => true
         ]);
 
         $builder->add('submit', SubmitType::class, array(
-            'label'         => 'app.registercompetitor.form.submit'
+            'label'         => 'app.register-competitor.form.submit'
         ));
     }
 }

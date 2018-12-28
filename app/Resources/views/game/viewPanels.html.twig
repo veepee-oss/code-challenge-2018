@@ -5,36 +5,36 @@
                 <div class="panel-body">
                     {% if game.name is not empty and game.name != game.uuid %}
                         <p>
-                            {{ 'app.mazepage.texts.game' | trans }}:
+                            {{ 'app.maze-page.texts.game' | trans }}:
                             <strong class="text-info">{{ game.name }}</strong>
                         </p>
                     {% endif %}
                     <p>
-                        {{ 'app.mazepage.texts.status' | trans }}:
-                        <strong class="text-info">{{ 'app.mazepage.texts.status-text' | transchoice(game.status) }}</strong>
+                        {{ 'app.maze-page.texts.status' | trans }}:
+                        <strong class="text-info">{{ 'app.maze-page.texts.status-text' | transchoice(game.status) }}</strong>
                     </p>
                     <p>
-                        {{ 'app.mazepage.texts.moves' | trans }}:
+                        {{ 'app.maze-page.texts.moves' | trans }}:
                         <strong class="text-info">{{ game.moves }}</strong>
                         {% if game.limit > 0 %}
-                            {{ 'app.mazepage.texts.of' | trans }}
+                            {{ 'app.maze-page.texts.of' | trans }}
                             <strong class="text-info">{{ game.limit }}</strong>
                         {% endif %}
                     </p>
                     <p>
-                        {{ 'app.mazepage.texts.players' | trans }}:
+                        {{ 'app.maze-page.texts.players' | trans }}:
                         <strong class="text-info">{{ game.players | length }}</strong>
                     </p>
                     <p>
-                        {{ 'app.mazepage.texts.ghosts' | trans }}:
+                        {{ 'app.maze-page.texts.ghosts' | trans }}:
                         <strong class="text-info">{{ game.ghosts | length }}</strong>
                     </p>
                     <p>
-                        {{ 'app.mazepage.texts.min-ghosts' | trans }}:
+                        {{ 'app.maze-page.texts.min-ghosts' | trans }}:
                         <strong class="text-info">{{ game.minGhosts }}</strong>
                     </p>
                     <p>
-                        {{ 'app.mazepage.texts.ghosts-rate' | trans }}:
+                        {{ 'app.maze-page.texts.ghosts-rate' | trans }}:
                         <strong class="text-info">{{ game.ghostRate }}</strong>
                     </p>
                 </div>
@@ -45,7 +45,7 @@
             <div class="panel panel-info">
                 <div class="panel-heading">
                     <h3 class="panel-title">
-                        {{ 'app.mazepage.texts.score' | trans }}
+                        {{ 'app.maze-page.texts.score' | trans }}
                     </h3>
                 </div>
                 <div class="panel-body">
@@ -69,13 +69,13 @@
                                     <br>
                                     <span class="lead">
                                         <strong>{{ player.score }}</strong>
-                                        {{ 'app.mazepage.texts.points' | trans }}
+                                        {{ 'app.maze-page.texts.points' | trans }}
                                     </span>
                                 </p>
                             </div>
                         {% else %}
                             <div class="col-sm-12">
-                                {{ 'app.mazepage.texts.no-players' | trans }}
+                                {{ 'app.maze-page.texts.no-players' | trans }}
                             </div>
                         {% endfor %}
                     </div>

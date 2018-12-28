@@ -20,17 +20,17 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
  * @package AppBundle\Controller
  * @Route("/admin/game")
  */
-class AdminController extends Controller
+class AdminGameController extends Controller
 {
     /**
      * Admin game view
      *
-     * @Route("/", name="admin_view")
+     * @Route("/", name="admin_index")
      * @param Request $request
      * @return Response
      * @throws \Exception
      */
-    public function adminAction(Request $request)
+    public function indexAction(Request $request)
     {
         // Get query params
         $limit = $request->query->get('limit', 200);
@@ -83,7 +83,7 @@ class AdminController extends Controller
             }
         }
 
-        return $this->render('game/admin.html.twig', array(
+        return $this->render('admin/game/index.html.twig', array(
             'processId'       => $processId,
             'consumerIds'     => $consumerIds,
             'playingGames'    => $playingGames,
@@ -120,7 +120,7 @@ class AdminController extends Controller
 
         $game = $entity->toDomainEntity();
 
-        return $this->render(':game:details.html.twig', array(
+        return $this->render('admin/game/details.html.twig', array(
             'game' => $game
         ));
     }
@@ -269,6 +269,6 @@ class AdminController extends Controller
      */
     private function redirectToAdminView() : RedirectResponse
     {
-        return $this->redirectToRoute('admin_view');
+        return $this->redirectToRoute('admin_index');
     }
 }
