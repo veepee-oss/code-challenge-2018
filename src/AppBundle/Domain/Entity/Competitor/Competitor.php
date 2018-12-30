@@ -27,7 +27,7 @@ class Competitor
     protected $validated;
 
     /** @var string the token to validate the competitor's email */
-    protected $validateToken;
+    protected $validationToken;
 
     /**
      * Competitor constructor
@@ -37,7 +37,7 @@ class Competitor
      * @param string      $email
      * @param string      $url
      * @param bool|null   $validated
-     * @param string|null $validateToken
+     * @param string|null $validationToken
      * @throws \Exception
      */
     public function __construct(
@@ -46,14 +46,14 @@ class Competitor
         string $email,
         string $url,
         ?bool $validated,
-        ?string $validateToken
+        ?string $validationToken
     ) {
         $this->uuid = $uuid ?: Uuid::uuid4()->toString();
         $this->contest = $contest;
         $this->email = $email;
         $this->url = $url;
         $this->validated = $validated ?? false;
-        $this->validateToken = $validateToken;
+        $this->validationToken = $validationToken;
     }
 
     /**
@@ -99,19 +99,33 @@ class Competitor
     /**
      * @return string|null
      */
-    public function validateToken(): ?string
+    public function validationToken(): ?string
     {
-        return $this->validateToken;
+        return $this->validationToken;
     }
 
     /**
-     * @param string $validateToken
+     * Set validation token. Also sets the competitor is not validated.
+     *
+     * @param string $validationToken
      * @return $this
      */
-    public function setValidation(string $validateToken): Competitor
+    public function setValidationToken(string $validationToken): Competitor
     {
-        $this->validateToken = $validateToken;
+        $this->validationToken = $validationToken;
         $this->validated = false;
+        return $this;
+    }
+
+    /**
+     * Set competitor validated. Also removes the validation token.
+     *
+     * @return Competitor
+     */
+    public function setValidated(): Competitor
+    {
+        $this->validationToken = null;
+        $this->validated = true;
         return $this;
     }
 }

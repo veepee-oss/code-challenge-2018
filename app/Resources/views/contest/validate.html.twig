@@ -1,0 +1,51 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'app.validate-competitor.title' | trans }} - {{ parent() }}{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <div class="page-header">
+            <h1>
+                {{ 'app.validate-competitor.title' | trans }}
+                <small>
+                    {{ contest.name }}
+                </small>
+            </h1>
+        </div>
+
+        <div class="text-justify">
+            {% if validated %}
+                <p class="lead">
+                    {{ 'app.validate-competitor.texts.validated' | trans({ "%email%": competitor.email }) | raw }}
+                </p>
+
+                <p class="lead">
+                    {{ 'app.validate-competitor.texts.participate' | trans({ "%contest%": contest.name }) | raw }}
+                </p>
+            {% else %}
+                <p class="lead">
+                    {{ 'app.validate-competitor.texts.out-of-time' | trans | raw }}
+                </p>
+
+                <p class="lead">
+                    {{ 'app.validate-competitor.texts.not-validated' | trans({ "%email%": competitor.email }) | raw }}
+                </p>
+
+                <p class="lead">
+                    {{ 'app.validate-competitor.texts.period-ended' | trans({ "%contest%": contest.name }) | raw }}
+                </p>
+
+                <p class="lead">
+                    {{ 'app.validate-competitor.texts.reg-period' | trans({ "%start-date%": contest.startRegistrationDate | date('Y-m-d H:i e'), "%end-date%": contest.endRegistrationDate | date('Y-m-d H:i e') }) | raw }}
+                </p>
+            {% endif %}
+
+            <p>
+                <a class="btn btn-default" href="{{ url('homepage') }}">
+                    <span class="glyphicon glyphicon-chevron-left"></span>
+                    {{ 'app.validate-competitor.buttons.back' | trans }}
+                </a>
+            </p>
+        </div>
+    </div>
+{% endblock %}

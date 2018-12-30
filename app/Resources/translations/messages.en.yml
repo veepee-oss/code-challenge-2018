@@ -98,7 +98,7 @@ app:
                 3:              "The URL you provide during the registration <strong>must be valid</strong>. "
                 4:              "The endpoints of the API must respond with valid data."
                 5:              "Also the email returned by the <code>/name</code> endpoint must be the same provided in the form."
-                6:              "You can register only one API per email address."
+                6:              "You can register <strong>only one API per email address</strong>."
                 7:              "If you use the same email to register another API, the first one will be deleted without notice."
 
         form:
@@ -116,7 +116,21 @@ app:
             warning:        "Don't forget to enable your API before the competition starts!"
 
         buttons:
-          back:           "Go Back"
+            back:           "Go Back"
+
+    validate-competitor:
+        title:          "Competitor validation"
+
+        texts:
+            validated:      "Your email address <strong class='text-success'>%email%</strong> has been validated!"
+            participate:    "You will participate in the contest <strong class='text-success'>%contest%</strong>!"
+            out-of-time:    "<strong class='text-danger'>Unfortunately you are out of time!</strong>"
+            not-validated:  "Your email address <strong class='text-danger'>%email%</strong> can't be validated!"
+            period-ended:   "The registration period for the contest <strong class='text-danger'>%contest%</strong> has ended."
+            reg-period:     "Was from <strong class='text-danger'>%start-date%</strong> to <strong class='text-danger'>%end-date%</strong>."
+
+        buttons:
+            back:           "Go Back"
 
     admin-page:
         title:          "Game administration"

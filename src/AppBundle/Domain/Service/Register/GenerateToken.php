@@ -34,6 +34,6 @@ class GenerateToken implements GenerateTokenInterface
     {
         $data = $this->secret . $competitor->uuid() . $competitor->email();
         $token = hash('sha256', $data);
-        $competitor->setValidation($token);
+        $competitor->setValidationToken($token);
     }
 }
