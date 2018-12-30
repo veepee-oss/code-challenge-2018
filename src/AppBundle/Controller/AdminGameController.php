@@ -30,7 +30,7 @@ class AdminGameController extends Controller
      * @return Response
      * @throws \Exception
      */
-    public function indexAction(Request $request)
+    public function indexAction(Request $request) : Response
     {
         // Get query params
         $limit = $request->query->get('limit', 200);
@@ -107,7 +107,7 @@ class AdminGameController extends Controller
      * @return Response
      * @throws \Exception
      */
-    public function viewDetailsAction($uuid)
+    public function viewDetailsAction($uuid) : Response
     {
         /** @var \AppBundle\Entity\Game $entity */
         $entity = $this->getGameDoctrineRepository()->findOneBy(array(
@@ -136,7 +136,7 @@ class AdminGameController extends Controller
      * @return Response
      * @throws \Exception
      */
-    public function removeAction($uuid)
+    public function removeAction($uuid) : Response
     {
         /** @var \AppBundle\Entity\Game $entity */
         $entity = $this->getGameDoctrineRepository()->findOneBy(array(
@@ -163,7 +163,7 @@ class AdminGameController extends Controller
      * @Route("/daemon/start", name="admin_daemon_start")
      * @return Response
      */
-    public function startDaemonAction()
+    public function startDaemonAction() : Response
     {
         /** @var GameDaemonManagerInterface $gameDaemonManager */
         $gameDaemonManager = $this->getGameDaemonManagerService();
@@ -178,7 +178,7 @@ class AdminGameController extends Controller
      * @Route("/daemon/stop", name="admin_daemon_stop")
      * @return Response
      */
-    public function stopDaemonAction()
+    public function stopDaemonAction() : Response
     {
         /** @var GameDaemonManagerInterface $gameDaemonManager */
         $gameDaemonManager = $this->getGameDaemonManagerService();
@@ -193,7 +193,7 @@ class AdminGameController extends Controller
      * @Route("/daemon/restart", name="admin_daemon_restart")
      * @return Response
      */
-    public function restartDaemonAction()
+    public function restartDaemonAction() : Response
     {
         /** @var GameDaemonManagerInterface $gameDaemonManager */
         $gameDaemonManager = $this->getGameDaemonManagerService();
@@ -208,7 +208,7 @@ class AdminGameController extends Controller
      * @Route("/consumer/start", name="admin_consumer_start")
      * @return Response
      */
-    public function startConsumerAction()
+    public function startConsumerAction() : Response
     {
         /** @var ConsumerDaemonManagerInterface $consumerDaemonManager */
         $consumerDaemonManager = $this->getConsumerDaemonManager();
@@ -223,7 +223,7 @@ class AdminGameController extends Controller
      * @Route("/consumer/stop", name="admin_consumer_stop")
      * @return Response
      */
-    public function stopConsumerAction()
+    public function stopConsumerAction() : Response
     {
         /** @var ConsumerDaemonManagerInterface $consumerDaemonManager */
         $consumerDaemonManager = $this->getConsumerDaemonManager();

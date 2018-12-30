@@ -14,7 +14,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
- * Contest controller
+ * Contest admin controller
  *
  * @package AppBundle\Controller
  * @Route("/admin/contest")

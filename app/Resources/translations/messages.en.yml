@@ -98,6 +98,8 @@ app:
                 3:              "The URL you provide during the registration <strong>must be valid</strong>. "
                 4:              "The endpoints of the API must respond with valid data."
                 5:              "Also the email returned by the <code>/name</code> endpoint must be the same provided in the form."
+                6:              "You can register only one API per email address."
+                7:              "If you use the same email to register another API, the first one will be deleted without notice."
 
         form:
             contest:        "Contest (*)"
@@ -109,9 +111,12 @@ app:
         title:          "Competitor registered"
 
         texts:
-            info:
-                1:              "Your email and URL <strong>have been registered!</strong>"
-                2:              "You will receive an email in the address provided to <strong>enable your API</strong>."
+            registered:     "Your email and URL <strong>have been registered</strong> to the contest <strong class='text-success'>%contest%</strong>!"
+            email:          "You will receive an email in the address provided to <strong>enable your API</strong>."
+            warning:        "Don't forget to enable your API before the competition starts!"
+
+        buttons:
+          back:           "Go Back"
 
     admin-page:
         title:          "Game administration"

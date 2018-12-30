@@ -34,7 +34,10 @@
         </p>
 
         <p>
-            <a class="btn btn-default" href="{{ url('homepage') }}">{{ 'app.game-over.buttons.back' | trans }}</a>
+            <a class="btn btn-default" href="{{ url('homepage') }}">
+                <span class="glyphicon glyphicon-chevron-left"></span>
+                {{ 'app.game-over.buttons.back' | trans }}
+            </a>
         </p>
     </div>
 {% endblock %}
