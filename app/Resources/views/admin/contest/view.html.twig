@@ -32,34 +32,34 @@
                 </p>
             </div>
 
-            <div class="col-sm-3 col-xs-12">
+            <div class="col-md-3 col-sm-6 col-xs-12">
                 <p class="text-info small">
                     {{ 'app.contest-view.texts.start-date' | trans }}
                 </p>
                 <p class="lead bg-warning padding-xs">
-                    {{ contest.startRegistrationDate | date('Y-m-d H:i') }}
+                    {{ contest.startRegistrationDate | date('Y-m-d H:i:s e') }}
                 </p>
             </div>
 
-            <div class="col-sm-3 col-xs-12">
+            <div class="col-md-3 col-sm-6 col-xs-12">
                 <p class="text-info small">
                     {{ 'app.contest-view.texts.end-date' | trans }}
                 </p>
                 <p class="lead bg-warning padding-xs">
-                    {{ contest.endRegistrationDate | date('Y-m-d H:i') }}
+                    {{ contest.endRegistrationDate | date('Y-m-d H:i:s e') }}
                 </p>
             </div>
 
-            <div class="col-sm-3 col-xs-12">
+            <div class="col-md-3 col-sm-6 col-xs-12">
                 <p class="text-info small">
                     {{ 'app.contest-view.texts.contest' | trans }}
                 </p>
                 <p class="lead bg-warning padding-xs">
-                    {{ contest.contestDate is empty ? "--" : contest.contestDate | date('Y-m-d H:i') }}
+                    {{ contest.contestDate is empty ? "--" : contest.contestDate | date('Y-m-d H:i:s e') }}
                 </p>
             </div>
 
-            <div class="col-sm-3 col-xs-12">
+            <div class="col-md-3 col-sm-6 col-xs-12">
                 <p class="text-info small">
                     {{ 'app.contest-view.texts.competitors' | trans }}
                 </p>

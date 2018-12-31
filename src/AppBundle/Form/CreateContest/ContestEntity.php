@@ -14,41 +14,46 @@ class ContestEntity
 {
     /**
      * @var string
+     */
+    private $uuid;
+
+    /**
+     * @var string
      * @Assert\NotBlank()
      * @Assert\Length(min=0, max=48)
      */
-    private $name = null;
+    private $name;
 
     /**
      * @var string
      */
-    private $description = null;
+    private $description;
 
     /**
      * @var string
      * @Assert\Length(min=0, max=256)
      */
-    private $regex = null;
+    private $regex;
 
     /**
      * @var \DateTime
      * @Assert\NotBlank()
      * @Assert\DateTime()
      */
-    private $startDate = null;
+    private $startDate;
 
     /**
      * @var \DateTime
      * @Assert\NotBlank()
      * @Assert\DateTime()
      */
-    private $endDate = null;
+    private $endDate;
 
     /**
      * @var \DateTime
      * @Assert\DateTime()
      */
-    private $contestDate = null;
+    private $contestDate;
 
     /**
      * @var int
@@ -59,15 +64,33 @@ class ContestEntity
     /**
      * ContestEntity constructor
      *
+     * @param Contest $contest
      * @throws \Exception
      */
-    public function __construct()
+    public function __construct(Contest $contest = null)
     {
-        $this->startDate = new \DateTime();
-        $this->startDate->setTime(0, 0, 0, 0);
-        $this->endDate = clone $this->startDate;
-        $this->endDate->add(new \DateInterval('P10D'));
-        $this->endDate->setTime(23, 59, 59, 0);
+        if (null === $contest) {
+            $this->uuid = null;
+            $this->name = null;
+            $this->description = null;
+            $this->regex = null;
+            $this->startDate = new \DateTime();
+            $this->startDate->setTime(0, 0, 0, 0);
+            $this->endDate = clone $this->startDate;
+            $this->endDate->add(new \DateInterval('P10D'));
+            $this->endDate->setTime(23, 59, 59, 0);
+            $this->contestDate = null;
+            $this->maxCompetitors = null;
+        } else {
+            $this->uuid = $contest->uuid();
+            $this->name = $contest->name();
+            $this->description = $contest->description();
+            $this->regex = $contest->emailRestrictionsRegex();
+            $this->startDate = $contest->startRegistrationDate();
+            $this->endDate = $contest->endRegistrationDate();
+            $this->contestDate = $contest->contestDate();
+            $this->maxCompetitors = $contest->maxCompetitors();
+        }
     }
 
     /**
@@ -79,7 +102,7 @@ class ContestEntity
     public function toDomainEntity(): Contest
     {
         return new Contest(
-            null,
+            $this->uuid,
             $this->name,
             $this->description,
             $this->regex,
@@ -88,6 +111,24 @@ class ContestEntity
             $this->contestDate,
             $this->maxCompetitors
         );
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getUuid(): ?string
+    {
+        return $this->uuid;
+    }
+
+    /**
+     * @param string|null $uuid
+     * @return ContestEntity
+     */
+    public function setUuid(?string $uuid): ContestEntity
+    {
+        $this->uuid = $uuid;
+        return $this;
     }
 
     /**

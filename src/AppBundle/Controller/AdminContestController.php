@@ -3,8 +3,8 @@
 namespace AppBundle\Controller;
 
 use AppBundle\Domain\Entity\Contest\Contest;
-use AppBundle\Entity\Contest as Entity;
-use AppBundle\Form\CreateContest\ContestEntity;
+use AppBundle\Entity\Contest as ContestEntity;
+use AppBundle\Form\CreateContest\ContestEntity as ContestFormEntity;
 use AppBundle\Form\CreateContest\ContestForm;
 use AppBundle\Repository\ContestRepository;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -38,8 +38,8 @@ class AdminContestController extends Controller
         /** @var ContestRepository $repo */
         $repo = $this->getContestDoctrineRepository();
 
-        /** @var Entity[] $entities */
-        $entities = $repo->findBy([], [
+        /** @var ContestEntity[] $contestEntities */
+        $contestEntities = $repo->findBy([], [
             'id' => 'desc'
         ], $limit, $start);
 
@@ -47,8 +47,8 @@ class AdminContestController extends Controller
 
         /** @var Contest[] $contests */
         $contests = [];
-        foreach ($entities as $entity) {
-            $contests[] = $entity->toDomainEntity();
+        foreach ($contestEntities as $contestEntity) {
+            $contests[] = $contestEntity->toDomainEntity();
         }
 
         return $this->render('admin/contest/index.html.twig', array(
@@ -71,23 +71,24 @@ class AdminContestController extends Controller
     public function createAction(Request $request) : Response
     {
         // Create contest data entity
-        $contestEntity = new ContestEntity();
+        $contestFormEntity = new ContestFormEntity();
 
         // Create the contest data form
-        $form = $this->createForm(ContestForm::class, $contestEntity, [
-            'action' => $this->generateUrl('admin_contest_create')
+        $form = $this->createForm(ContestForm::class, $contestFormEntity, [
+            'action' => $this->generateUrl('admin_contest_create'),
+            'mode'   => ContestForm::MODE_CREATE
         ]);
 
         // Handle the request & if the data is valid...
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-            $entity = new Entity($contestEntity->toDomainEntity());
+            $contestEntity = new ContestEntity($contestFormEntity->toDomainEntity());
 
             $em = $this->getDoctrine()->getManager();
-            $em->persist($entity);
+            $em->persist($contestEntity);
             $em->flush();
 
-            return $this->redirectToRoute('admin_contest_view', ['uuid' => $entity->getUuid()]);
+            return $this->redirectToRoute('admin_contest_view', ['uuid' => $contestEntity->getUuid()]);
         }
 
         return $this->render('admin/contest/create.html.twig', array(
@@ -110,17 +111,17 @@ class AdminContestController extends Controller
         /** @var ContestRepository $repo */
         $repo = $this->getContestDoctrineRepository();
 
-        /** @var Entity $entity */
-        $entity = $repo->findOneBy(array(
+        /** @var ContestEntity $contestEntity */
+        $contestEntity = $repo->findOneBy(array(
             'uuid' => $uuid
         ));
 
-        if (!$entity) {
+        if (!$contestEntity) {
             throw new NotFoundHttpException();
         }
 
         return $this->render('admin/contest/view.html.twig', array(
-            'contest' => $entity->toDomainEntity(),
+            'contest' => $contestEntity->toDomainEntity(),
         ));
     }
 
@@ -130,26 +131,49 @@ class AdminContestController extends Controller
      * @Route("/{uuid}/edit", name="admin_contest_edit",
      *     requirements={"uuid": "[0-9a-f]{8}\-[0-9a-f]{4}\-[0-9a-f]{4}\-[0-9a-f]{4}\-[0-9a-f]{12}"})
      *
+     * @param Request $request
      * @param string $uuid
      * @return Response
      * @throws \Exception
      */
-    public function editAction(string $uuid) : Response
+    public function editAction(Request $request, string $uuid) : Response
     {
         /** @var ContestRepository $repo */
         $repo = $this->getContestDoctrineRepository();
 
-        /** @var Entity $entity */
-        $entity = $repo->findOneBy(array(
+        /** @var ContestEntity $contestEntity */
+        $contestEntity = $repo->findOneBy(array(
             'uuid' => $uuid
         ));
 
-        if (!$entity) {
+        if (!$contestEntity) {
             throw new NotFoundHttpException();
         }
 
-        // TODO - edit contest
-        return $this->redirectToRoute('admin_contest_index');
+        // Create contest data entity
+        $contestFormEntity = new ContestFormEntity($contestEntity->toDomainEntity());
+
+        // Create the contest data form
+        $form = $this->createForm(ContestForm::class, $contestFormEntity, [
+            'action' => $this->generateUrl('admin_contest_edit', [ 'uuid' => $uuid ]),
+            'mode'   => ContestForm::MODE_EDIT
+        ]);
+
+        // Handle the request & if the data is valid...
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            $contestEntity->fromDomainEntity($contestFormEntity->toDomainEntity());
+
+            $em = $this->getDoctrine()->getManager();
+            $em->persist($contestEntity);
+            $em->flush();
+
+            return $this->redirectToRoute('admin_contest_view', ['uuid' => $contestEntity->getUuid()]);
+        }
+
+        return $this->render('admin/contest/create.html.twig', array(
+            'form' => $form->createView(),
+        ));
     }
 
     /**
@@ -167,17 +191,17 @@ class AdminContestController extends Controller
         /** @var ContestRepository $repo */
         $repo = $this->getContestDoctrineRepository();
 
-        /** @var Entity $entity */
-        $entity = $repo->findOneBy(array(
+        /** @var ContestEntity $contestEntity */
+        $contestEntity = $repo->findOneBy(array(
             'uuid' => $uuid
         ));
 
-        if (!$entity) {
+        if (!$contestEntity) {
             throw new NotFoundHttpException();
         }
 
         $em = $this->getDoctrine()->getManager();
-        $em->remove($entity);
+        $em->remove($contestEntity);
         $em->flush();
 
         return new Response('', 204);

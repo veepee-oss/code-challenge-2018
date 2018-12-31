@@ -69,32 +69,21 @@
                                 </div>
                                 <div class="col-sm-6 hidden-xs">
                                     <p>
-                                        {{
-                                            'app.contest-index.texts.registration-dates' | trans({
-                                                '%start-date%': contest.startRegistrationDate | date("Y-m-d"),
-                                                '%end-date%': contest.endRegistrationDate | date("Y-m-d")
-                                            })
-                                        }}
-                                        {% if contest.contestDate is not empty %}
-                                            <br>
-                                            {{
-                                                'app.contest-index.texts.contest-date' | trans({
-                                                    '%contest-date%': contest.contestDate | date("Y-m-d H:i")
-                                                })
-                                            }}
-                                        {% endif %}
+                                        {{ 'app.contest-index.texts.registration-dates' | trans }}
                                         <br>
-                                        {{
-                                            'app.contest-index.texts.competitors' | trans({
-                                                '%count%': contest.countCompetitors
-                                            })
-                                        }}
+                                        &bullet;
+                                        {{ 'app.contest-index.texts.registration-from' | trans({ '%start-date%': contest.startRegistrationDate | date("Y-m-d H:i e") }) | raw }}
+                                        <br>
+                                        &bullet;
+                                        {{ 'app.contest-index.texts.registration-to' | trans({ '%end-date%': contest.endRegistrationDate | date("Y-m-d H:i e") }) | raw }}
+                                        <br>
+                                        {% if contest.contestDate is not empty %}
+                                            {{ 'app.contest-index.texts.contest-date' | trans({ '%contest-date%': contest.contestDate | date("Y-m-d H:i e") }) | raw }}
+                                            <br>
+                                        {% endif %}
+                                        {{ 'app.contest-index.texts.competitors' | trans({ '%count%': contest.countCompetitors }) | raw }}
                                         {% if contest.maxCompetitors is not empty %}
-                                            {{
-                                                'app.contest-index.texts.max-competitors' | trans({
-                                                    '%count%': contest.maxCompetitors
-                                                })
-                                            }}
+                                            {{ 'app.contest-index.texts.max-competitors' | trans({ '%count%': contest.maxCompetitors}) | raw }}
                                         {% endif %}
                                     </p>
                                 </div>

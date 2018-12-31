@@ -18,6 +18,9 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
  */
 class ContestForm extends AbstractType
 {
+    const MODE_CREATE = 0;
+    const MODE_EDIT = 1;
+
     /**
      * Configures the options for this type.
      *
@@ -27,10 +30,14 @@ class ContestForm extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setRequired([
-            'action'
+            'action',
+            'mode'
         ]);
 
         $resolver->setAllowedTypes('action', 'string');
+        $resolver->setAllowedTypes('mode', 'int');
+
+        $resolver->setAllowedValues('mode', [ self::MODE_CREATE, self::MODE_EDIT ]);
 
         $resolver->setDefaults([
             'data_class' => ContestEntity::class,
@@ -54,10 +61,17 @@ class ContestForm extends AbstractType
     {
         $builder->setAction($options['action']);
 
-        $builder->add('name', TextType::class, [
-            'label'         => 'app.contest-create.form.name',
-            'required'      => true
-        ]);
+        if ($options['mode'] == self::MODE_CREATE) {
+            $builder->add('name', TextType::class, [
+                'label'         => 'app.contest-create.form.name',
+                'required'      => true
+            ]);
+        } else {
+            $builder->add('name', TextType::class, [
+                'label'         => 'app.contest-create.form.name',
+                'disabled'      => true
+            ]);
+        }
 
         $builder->add('description', TextareaType::class, [
             'label'         => 'app.contest-create.form.description',
@@ -98,8 +112,14 @@ class ContestForm extends AbstractType
             'required'      => false
         ]);
 
+        if ($options['mode'] == self::MODE_CREATE) {
+            $builder->add('save', SubmitType::class, array(
+                'label' => 'app.contest-create.form.create'
+            ));
+        }
+
         $builder->add('save', SubmitType::class, array(
-            'label'         => 'app.contest-create.form.submit'
+            'label' => 'app.contest-create.form.save'
         ));
     }
 }
