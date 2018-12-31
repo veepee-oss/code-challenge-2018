@@ -3,9 +3,11 @@
 namespace AppBundle\Controller;
 
 use AppBundle\Domain\Entity\Contest\Contest;
+use AppBundle\Entity\Competitor as CompetitorEntity;
 use AppBundle\Entity\Contest as ContestEntity;
 use AppBundle\Form\CreateContest\ContestEntity as ContestFormEntity;
 use AppBundle\Form\CreateContest\ContestForm;
+use AppBundle\Repository\CompetitorRepository;
 use AppBundle\Repository\ContestRepository;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -43,7 +45,7 @@ class AdminContestController extends Controller
             'id' => 'desc'
         ], $limit, $start);
 
-        $total = $this->getContestDoctrineRepository()->count([]);
+        $total = $repo->count([]);
 
         /** @var Contest[] $contests */
         $contests = [];
@@ -91,7 +93,7 @@ class AdminContestController extends Controller
             return $this->redirectToRoute('admin_contest_view', ['uuid' => $contestEntity->getUuid()]);
         }
 
-        return $this->render('admin/contest/create.html.twig', array(
+        return $this->render('admin/contest/edit.html.twig', array(
             'form' => $form->createView(),
         ));
     }
@@ -171,13 +173,13 @@ class AdminContestController extends Controller
             return $this->redirectToRoute('admin_contest_view', ['uuid' => $contestEntity->getUuid()]);
         }
 
-        return $this->render('admin/contest/create.html.twig', array(
+        return $this->render('admin/contest/edit.html.twig', array(
             'form' => $form->createView(),
         ));
     }
 
     /**
-     * Remove contest
+     * Remove contest and all its competitors
      *
      * @Route("/{uuid}/remove", name="admin_contest_remove",
      *     requirements={"uuid": "[0-9a-f]{8}\-[0-9a-f]{4}\-[0-9a-f]{4}\-[0-9a-f]{4}\-[0-9a-f]{12}"})
@@ -188,11 +190,8 @@ class AdminContestController extends Controller
      */
     public function removeAction(string $uuid) : Response
     {
-        /** @var ContestRepository $repo */
-        $repo = $this->getContestDoctrineRepository();
-
         /** @var ContestEntity $contestEntity */
-        $contestEntity = $repo->findOneBy(array(
+        $contestEntity = $this->getContestDoctrineRepository()->findOneBy(array(
             'uuid' => $uuid
         ));
 
@@ -200,7 +199,15 @@ class AdminContestController extends Controller
             throw new NotFoundHttpException();
         }
 
+        /** @var CompetitorEntity $competitorEntities */
+        $competitorEntities = $this->getCompetitorDoctrineRepository()->findBy([
+            'contestUuid' => $uuid
+        ]);
+
         $em = $this->getDoctrine()->getManager();
+        foreach ($competitorEntities as $competitorEntity) {
+            $em->remove($competitorEntity);
+        }
         $em->remove($contestEntity);
         $em->flush();
 
@@ -215,5 +222,15 @@ class AdminContestController extends Controller
     private function getContestDoctrineRepository() : ContestRepository
     {
         return $this->getDoctrine()->getRepository('AppBundle:Contest');
+    }
+
+    /**
+     * Return the repository object to Competitor entity
+     *
+     * @return CompetitorRepository
+     */
+    private function getCompetitorDoctrineRepository() : CompetitorRepository
+    {
+        return $this->getDoctrine()->getRepository('AppBundle:Competitor');
     }
 }

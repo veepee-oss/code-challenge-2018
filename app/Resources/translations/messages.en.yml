@@ -212,8 +212,10 @@ app:
                 first:          "First"
                 next:           "Next"
 
-    contest-create:
-        title:          "Create new Contest"
+    contest-edit:
+        title:
+            create:         "Create new Contest"
+            edit:           "Edit contest data"
 
         form:
             name:           "Name of the contest (*)"

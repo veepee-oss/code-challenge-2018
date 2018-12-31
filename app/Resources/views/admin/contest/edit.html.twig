@@ -1,0 +1,33 @@
+{% extends 'base.html.twig' %}
+
+{% form_theme form 'bootstrap_3_horizontal_layout.html.twig' %}
+
+{% block title %}
+    {% if form.vars.mode == constant('AppBundle\\Form\\CreateContest\\ContestForm::MODE_CREATE') %}
+        {{ 'app.contest-edit.title.create' | trans }} - {{ parent() }}
+    {% else %}
+        {{ 'app.contest-edit.title.edit' | trans }} - {{ parent() }}
+    {% endif %}
+{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <div class="page-header">
+            <h1>
+                {% if form.vars.mode == constant('AppBundle\\Form\\CreateContest\\ContestForm::MODE_CREATE') %}
+                    {{ 'app.contest-edit.title.create' | trans }}
+                {% else %}
+                    {{ 'app.contest-edit.title.edit' | trans }}
+                {% endif %}
+                <small>
+                    {{ 'app.global.title' | trans }}
+                </small>
+            </h1>
+        </div>
+
+        {{ form_start(form) }}
+        {{ form_widget(form) }}
+        {{ form_end(form) }}
+
+    </div>
+{% endblock %}
