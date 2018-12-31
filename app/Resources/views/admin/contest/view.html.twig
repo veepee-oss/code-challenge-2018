@@ -78,24 +78,64 @@
                     class="btn btn-warning"
                     href="{{ url('admin_contest_edit', { 'uuid': contest.uuid }) }}">
                     <span class="glyphicon glyphicon glyphicon-edit"></span>
-                    {{ 'app.contest-view.texts.edit' | trans }}
+                    {{ 'app.contest-view.buttons.edit' | trans }}
                 </a>
 
                 <button
                     class="btn btn-danger js-btn-remove"
-                    data-question="{{ 'app.contest-index.texts.ask-remove' | trans({ '%name%' : contest.name }) }}"
+                    data-question="{{ 'app.contest-view.texts.ask-remove.contest' | trans({ '%name%' : contest.name }) }}"
                     data-url="{{ url('admin_contest_remove', { 'uuid': contest.uuid }) }}"
                     data-refresh="{{ url('admin_contest_index') }}">
                     <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
-                    {{ 'app.contest-index.texts.buttons.remove' | trans }}
+                    {{ 'app.contest-view.buttons.remove' | trans }}
                 </button>
 
                 <a  role="button"
                     class="btn btn-default"
                     href="{{ url('admin_contest_index') }}">
                     <span class="glyphicon glyphicon-chevron-left"></span>
-                    {{ 'app.contest-view.texts.go-back' | trans }}
+                    {{ 'app.contest-view.buttons.go-back' | trans }}
                 </a>
+            </div>
+
+            <div class="col-xs-12">
+                <hr>
+                <h2>{{ 'app.contest-view.texts.competitors' | trans }}</h2>
+
+                <div class="row">
+                    {% for competitor in competitors %}
+                        <div class="col-sm-4 col-xs-8 lead bg-warning padding-xs">
+                            {{ competitor.email }}
+                        </div>
+
+                        <div class="col-sm-5 hidden-xs lead bg-warning padding-xs">
+                            {{ competitor.url }}
+                        </div>
+
+                        <div class="col-sm-3 col-xs-4 lead bg-warning padding-xs text-right">
+                            <div class="btn-group" role="group">
+                                {% if not competitor.validated and competitor.validationToken is not empty %}
+                                    <button
+                                        class="btn btn-xs btn-success js-btn-remove"
+                                        title="{{ 'app.contest-view.buttons.validate' | trans }}"
+                                        data-question="{{ 'app.contest-view.texts.ask-validate' | trans({ '%email%' : competitor.email }) }}"
+                                        data-url="{{ url('admin_competitor_validate', { 'uuid': competitor.uuid }) }}"
+                                        data-refresh="{{ url('admin_contest_view', { 'uuid': contest.uuid }) }}">
+                                        <span class="glyphicon glyphicon-ok" aria-hidden="true"></span>
+                                    </button>
+                                {% endif %}
+                                <button
+                                    class="btn btn-xs btn-danger js-btn-remove"
+                                    title="{{ 'app.contest-view.buttons.remove' | trans }}"
+                                    data-question="{{ 'app.contest-view.texts.ask-remove.competitor' | trans({ '%email%' : competitor.email }) }}"
+                                    data-url="{{ url('admin_competitor_remove', { 'uuid': competitor.uuid }) }}"
+                                    data-refresh="{{ url('admin_contest_view', { 'uuid': contest.uuid }) }}">
+                                    <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
+                                </button>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
             </div>
         </div>
     </div>

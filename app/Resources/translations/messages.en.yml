@@ -239,9 +239,16 @@ app:
             contest:        "Contest date:"
             competitors:    "Competitors:"
             of:             "of"
+            ask-remove:
+                contest:        "Remove contest %name%?"
+                competitor:     "Remove competitor %email%?"
+            ask-validate:   "Validate competitor %email%?"
+
+        buttons:
             edit:           "Edit"
             remove:         "Delete"
             go-back:        "Go back"
+            validate:       "Validate"
 
     credits:
         title:          "License, Credits and Attributions"

@@ -2,6 +2,7 @@
 
 namespace AppBundle\Controller;
 
+use AppBundle\Domain\Entity\Competitor\Competitor;
 use AppBundle\Domain\Entity\Contest\Contest;
 use AppBundle\Entity\Competitor as CompetitorEntity;
 use AppBundle\Entity\Contest as ContestEntity;
@@ -110,11 +111,8 @@ class AdminContestController extends Controller
      */
     public function viewAction(string $uuid) : Response
     {
-        /** @var ContestRepository $repo */
-        $repo = $this->getContestDoctrineRepository();
-
         /** @var ContestEntity $contestEntity */
-        $contestEntity = $repo->findOneBy(array(
+        $contestEntity = $this->getContestDoctrineRepository()->findOneBy(array(
             'uuid' => $uuid
         ));
 
@@ -122,8 +120,23 @@ class AdminContestController extends Controller
             throw new NotFoundHttpException();
         }
 
+        /** @var CompetitorEntity[] $competitorEntities */
+        $competitorEntities = $this->getCompetitorDoctrineRepository()->findBy([
+            'contestUuid' => $uuid
+        ]);
+
+        /** @var Contest $contest */
+        $contest = $contestEntity->toDomainEntity();
+
+        /** @var Competitor[] $competitors */
+        $competitors = [];
+        foreach ($competitorEntities as $competitorEntity) {
+            $competitors[] = $competitorEntity->toDomainEntity();
+        }
+
         return $this->render('admin/contest/view.html.twig', array(
-            'contest' => $contestEntity->toDomainEntity(),
+            'contest'     => $contest,
+            'competitors' => $competitors
         ));
     }
 
@@ -209,6 +222,67 @@ class AdminContestController extends Controller
             $em->remove($competitorEntity);
         }
         $em->remove($contestEntity);
+        $em->flush();
+
+        return new Response('', 204);
+    }
+
+    /**
+     * Remove a single competitor from a contest
+     *
+     * @Route("/competitor/{uuid}/remove", name="admin_competitor_remove",
+     *     requirements={"uuid": "[0-9a-f]{8}\-[0-9a-f]{4}\-[0-9a-f]{4}\-[0-9a-f]{4}\-[0-9a-f]{12}"})
+     *
+     * @param string $uuid
+     * @return Response
+     * @throws \Exception
+     */
+    public function competitorRemove(string $uuid) : Response
+    {
+        /** @var CompetitorEntity $competitorEntity */
+        $competitorEntity = $this->getCompetitorDoctrineRepository()->findOneBy(array(
+            'uuid' => $uuid
+        ));
+
+        if (!$competitorEntity) {
+            throw new NotFoundHttpException();
+        }
+
+        $em = $this->getDoctrine()->getManager();
+        $em->remove($competitorEntity);
+        $em->flush();
+
+        return new Response('', 204);
+    }
+
+    /**
+     * Validate a competitor to participate to a contest
+     *
+     * @Route("/competitor/{uuid}/validate", name="admin_competitor_validate",
+     *     requirements={"uuid": "[0-9a-f]{8}\-[0-9a-f]{4}\-[0-9a-f]{4}\-[0-9a-f]{4}\-[0-9a-f]{12}"})
+     *
+     * @param string $uuid
+     * @return Response
+     * @throws \Exception
+     */
+    public function competitorValidate(string $uuid) : Response
+    {
+        /** @var CompetitorEntity $competitorEntity */
+        $competitorEntity = $this->getCompetitorDoctrineRepository()->findOneBy(array(
+            'uuid' => $uuid
+        ));
+
+        if (!$competitorEntity) {
+            throw new NotFoundHttpException();
+        }
+
+        /** @var Competitor $competitor */
+        $competitor = $competitorEntity->toDomainEntity();
+        $competitor->setValidated();
+        $competitorEntity->fromDomainEntity($competitor);
+
+        $em = $this->getDoctrine()->getManager();
+        $em->persist($competitorEntity);
         $em->flush();
 
         return new Response('', 204);
