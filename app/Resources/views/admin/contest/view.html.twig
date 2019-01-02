@@ -91,6 +91,13 @@
                 </button>
 
                 <a  role="button"
+                    class="btn btn-success"
+                    href="{{ url('admin_competitor_register', { 'uuid': contest.uuid }) }}">
+                    <span class="glyphicon glyphicon-plus"></span>
+                    {{ 'app.contest-view.buttons.add-competitor' | trans }}
+                </a>
+
+                <a  role="button"
                     class="btn btn-default"
                     href="{{ url('admin_contest_index') }}">
                     <span class="glyphicon glyphicon-chevron-left"></span>

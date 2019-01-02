@@ -248,6 +248,7 @@ app:
             edit:           "Edit"
             remove:         "Delete"
             go-back:        "Go back"
+            add-competitor: "Add competitor"
             validate:       "Validate"
 
     credits:

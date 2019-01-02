@@ -8,6 +8,8 @@ use AppBundle\Entity\Competitor as CompetitorEntity;
 use AppBundle\Entity\Contest as ContestEntity;
 use AppBundle\Form\CreateContest\ContestEntity as ContestFormEntity;
 use AppBundle\Form\CreateContest\ContestForm;
+use AppBundle\Form\RegisterCompetitor\CompetitorEntity as CompetitorFormEntity;
+use AppBundle\Form\RegisterCompetitor\CompetitorForm;
 use AppBundle\Repository\CompetitorRepository;
 use AppBundle\Repository\ContestRepository;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -153,11 +155,8 @@ class AdminContestController extends Controller
      */
     public function editAction(Request $request, string $uuid) : Response
     {
-        /** @var ContestRepository $repo */
-        $repo = $this->getContestDoctrineRepository();
-
         /** @var ContestEntity $contestEntity */
-        $contestEntity = $repo->findOneBy(array(
+        $contestEntity = $this->getContestDoctrineRepository()->findOneBy(array(
             'uuid' => $uuid
         ));
 
@@ -225,6 +224,61 @@ class AdminContestController extends Controller
         $em->flush();
 
         return new Response('', 204);
+    }
+
+    /**
+     * Create competitor for a contest without validations
+     *
+     * @Route("/{uuid}/competitor/register", name="admin_competitor_register",
+     *     requirements={"uuid": "[0-9a-f]{8}\-[0-9a-f]{4}\-[0-9a-f]{4}\-[0-9a-f]{4}\-[0-9a-f]{12}"})
+     *
+     * @param Request $request
+     * @param string $uuid
+     * @return Response
+     * @throws \Exception
+     */
+    public function competitorRegister(Request $request, string $uuid)
+    {
+        /** @var ContestEntity $contestEntity */
+        $contestEntity = $this->getContestDoctrineRepository()->findOneBy(array(
+            'uuid' => $uuid
+        ));
+
+        if (!$contestEntity) {
+            throw new NotFoundHttpException();
+        }
+
+        // Create competitor data entity
+        $formEntity = new CompetitorFormEntity();
+        $formEntity->setContest($contestEntity);
+
+        // Create the competitor data form
+        $form = $this->createForm(CompetitorForm::class, $formEntity, [
+            'action' => $this->generateUrl('admin_competitor_register', [ 'uuid' => $uuid ]),
+            'admin'  => true
+        ]);
+
+        // Handle the request & if the data is valid...
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            /** @var Competitor $competitor */
+            $competitor = $formEntity->toDomainEntity();
+            $competitor->setValidated();
+
+            $em = $this->getDoctrine()->getManager();
+            $entity = new CompetitorEntity($competitor);
+            $em->persist($entity);
+            $em->flush();
+
+            return $this->redirectToRoute('admin_contest_view', [
+                'uuid' => $uuid
+            ]);
+        }
+
+
+        return $this->render('admin/contest/register.html.twig', array(
+            'form' => $form->createView(),
+        ));
     }
 
     /**

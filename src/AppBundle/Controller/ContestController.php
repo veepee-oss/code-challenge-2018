@@ -58,9 +58,8 @@ class ContestController extends Controller
 
             /** @var ValidateCompetitorInterface $validator */
             $validator = $this->get('app.contest.register.validate_competitor_ex');
-
-            // Validate the data entered
             $result = $validator->validate($competitor, $contest);
+
             if (ValidationResults::STATUS_ERROR == $result->status()) {
                 foreach ($result->result() as $field => $messages) {
                     try {
