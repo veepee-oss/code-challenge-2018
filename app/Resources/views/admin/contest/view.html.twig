@@ -64,7 +64,7 @@
                     {{ 'app.contest-view.texts.competitors' | trans }}
                 </p>
                 <p class="lead bg-warning padding-xs">
-                    {{ contest.countCompetitors }}
+                    {{ competitors | length }}
                     {% if contest.maxCompetitors is not empty %}
                         {{ 'app.contest-view.texts.of' | trans }}
                         {{ contest.maxCompetitors }}

@@ -2,6 +2,8 @@
 
 namespace AppBundle\Repository;
 
+use AppBundle\Domain\Entity\Contest\Contest;
+use AppBundle\Entity\Contest as ContestEntity;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\NonUniqueResultException;
 
@@ -34,5 +36,38 @@ class CompetitorRepository extends EntityRepository
             ->setParameter('url', $url)
             ->getQuery()
             ->getSingleScalarResult();
+    }
+
+    /**
+     * Find the count of competitors per contest
+     *
+     * @param array $contests
+     * @return array [ 'contestUuid' => string, 'competitorCount' => int]
+     */
+    public function countPerContest(array $contests = [])
+    {
+        $qb = $this
+            ->createQueryBuilder('c')
+            ->select(['c.contestUuid', 'COUNT(c) as competitorCount'])
+            ->groupBy('c.contestUuid');
+
+        if (!empty($contests)) {
+            $contestUuids = [];
+            foreach ($contests as $contest) {
+                if ($contest instanceof Contest) {
+                    $contestUuids[] = $contest->uuid();
+                } elseif ($contest instanceof ContestEntity) {
+                    $contestUuids[] = $contest->getUuid();
+                } elseif (is_string($contest)) {
+                    $contestUuids[] = $contest;
+                }
+            }
+            $qb->where('c.contestUuid IN (:uuids)')
+                ->setParameter('uuids', $contestUuids);
+        }
+
+        return $qb
+            ->getQuery()
+            ->getArrayResult();
     }
 }

@@ -81,7 +81,7 @@
                                             {{ 'app.contest-index.texts.contest-date' | trans({ '%contest-date%': contest.contestDate | date("Y-m-d H:i e") }) | raw }}
                                             <br>
                                         {% endif %}
-                                        {{ 'app.contest-index.texts.competitors' | trans({ '%count%': contest.countCompetitors }) | raw }}
+                                        {{ 'app.contest-index.texts.competitors' | trans({ '%count%': contest.countCompetitors | default('&ndash;') }) | raw }}
                                         {% if contest.maxCompetitors is not empty %}
                                             {{ 'app.contest-index.texts.max-competitors' | trans({ '%count%': contest.maxCompetitors}) | raw }}
                                         {% endif %}

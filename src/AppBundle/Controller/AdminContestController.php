@@ -36,7 +36,6 @@ class AdminContestController extends Controller
      */
     public function indexAction(Request $request) : Response
     {
-        // Get query params
         $limit = $request->query->get('limit', 200);
         $start = $request->query->get('start', 0);
 
@@ -50,10 +49,25 @@ class AdminContestController extends Controller
 
         $total = $repo->count([]);
 
+        // Get array [ 'contestUuid' => string, 'competitorCount' => int]
+        $competitorCounts = $this
+            ->getCompetitorDoctrineRepository()
+            ->countPerContest($contestEntities);
+
         /** @var Contest[] $contests */
         $contests = [];
+
+        // Build contest domain entities adding the competitors count
         foreach ($contestEntities as $contestEntity) {
-            $contests[] = $contestEntity->toDomainEntity();
+            /** @var Contest $contest */
+            $contest = $contestEntity->toDomainEntity();
+            $contest->setCountCompetitors(0);
+            foreach ($competitorCounts as $competitorCount) {
+                if ($competitorCount['contestUuid'] == $contest->uuid()) {
+                    $contest->setCountCompetitors($competitorCount['competitorCount']);
+                }
+            }
+            $contests[] = $contest;
         }
 
         return $this->render('admin/contest/index.html.twig', array(

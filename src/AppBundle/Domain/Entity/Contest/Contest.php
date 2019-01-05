@@ -32,8 +32,11 @@ class Contest
     /** @var \DateTime the date & time of the contest */
     protected $contestDate;
 
-    /** @var int */
+    /** @var int|null the max competitors */
     protected $maxCompetitors;
+
+    /** @var int|null the current competitors count */
+    protected $countCompetitors;
 
     /**
      * Contest constructor
@@ -66,6 +69,7 @@ class Contest
         $this->endRegistrationDate = $endRegistrationDate;
         $this->contestDate = $contestDate;
         $this->maxCompetitors = $maxCompetitors;
+        $this->countCompetitors = null;
     }
 
     /**
@@ -127,17 +131,26 @@ class Contest
     /**
      * @return int|null
      */
-    public function countCompetitors(): ?int
+    public function maxCompetitors(): ?int
     {
-        // TODO
-        return 0;
+        return $this->maxCompetitors;
     }
 
     /**
      * @return int|null
      */
-    public function maxCompetitors(): ?int
+    public function countCompetitors(): ?int
     {
-        return $this->maxCompetitors;
+        return $this->countCompetitors;
+    }
+
+    /**
+     * @param int $countCompetitors
+     * @return $this
+     */
+    public function setCountCompetitors(int $countCompetitors): Contest
+    {
+        $this->countCompetitors = $countCompetitors;
+        return $this;
     }
 }
