@@ -30,7 +30,7 @@ class GameEntity
     /**
      * @var int
      * @Assert\NotBlank()
-     * @Assert\Range(min=1, max=8)
+     * @Assert\Range(min=1, max=9)
      */
     private $playerNum = 1;
 

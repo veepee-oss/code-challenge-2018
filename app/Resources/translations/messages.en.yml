@@ -39,7 +39,7 @@ app:
         form:
             height:         "Height of the board (10 to 25)"
             width:          "Width of the board (10 to 50)"
-            player-num:     "Number of players (1 to 8)"
+            player-num:     "Number of players (1 to 9)"
             min-ghosts:     "Minimum number of enemies (0 to 50)"
             ghost-rate:     "Movements to create a new enemy (0 for no enemies at all)"
             limit:          "Movements to end the game (100 to 5000)"
