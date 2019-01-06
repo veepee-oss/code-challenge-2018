@@ -2,7 +2,7 @@
 
 namespace AppBundle\Controller;
 
-use AppBundle\Domain\Entity\Competitor\Competitor;
+use AppBundle\Domain\Entity\Contest\Competitor;
 use AppBundle\Domain\Entity\Contest\Contest;
 use AppBundle\Domain\Service\Register\GenerateTokenInterface;
 use AppBundle\Domain\Service\Register\ValidateCompetitorInterface;

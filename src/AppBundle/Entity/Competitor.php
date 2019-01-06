@@ -2,7 +2,7 @@
 
 namespace AppBundle\Entity;
 
-use AppBundle\Domain\Entity\Competitor as DomainCompetitor;
+use AppBundle\Domain\Entity\Contest as DomainCompetitor;
 use Doctrine\ORM\Mapping as ORM;
 
 /**

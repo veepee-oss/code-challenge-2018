@@ -2,7 +2,7 @@
 
 namespace AppBundle\Form\RegisterCompetitor;
 
-use AppBundle\Domain\Entity\Competitor\Competitor;
+use AppBundle\Domain\Entity\Contest\Competitor;
 use AppBundle\Entity\Contest;
 use Symfony\Component\Validator\Constraints as Assert;
 

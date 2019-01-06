@@ -15,7 +15,7 @@ use Ramsey\Uuid\Uuid;
  */
 class Game
 {
-    /** @var int Game statuses */
+    /** @var int the constants form the game statuses */
     const STATUS_NOT_STARTED = 0;
     const STATUS_RUNNING = 1;
     const STATUS_PAUSED = 8;

@@ -2,7 +2,7 @@
 
 namespace AppBundle\Domain\Service\Register;
 
-use AppBundle\Domain\Entity\Competitor\Competitor;
+use AppBundle\Domain\Entity\Contest\Competitor;
 use AppBundle\Domain\Entity\Contest\Contest;
 use AppBundle\Domain\Entity\Player\Player;
 use AppBundle\Domain\Entity\Position\Position;

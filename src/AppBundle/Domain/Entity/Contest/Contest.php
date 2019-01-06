@@ -7,6 +7,8 @@ use Ramsey\Uuid\Uuid;
 /**
  * Domain entity: Contest
  *
+ * A contest is a competition event. It has competitors and rounds.
+ *
  * @package AppBundle\Domain\Entity\Contest
  */
 class Contest

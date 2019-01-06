@@ -2,7 +2,7 @@
 
 namespace AppBundle\Domain\Service\Register;
 
-use AppBundle\Domain\Entity\Competitor\Competitor;
+use AppBundle\Domain\Entity\Contest\Competitor;
 
 /**
  * Interface to a service to generate an unique token to validate the user

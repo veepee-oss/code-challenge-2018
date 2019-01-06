@@ -1,13 +1,15 @@
 <?php
 
-namespace AppBundle\Domain\Entity\Competitor;
+namespace AppBundle\Domain\Entity\Contest;
 
 use Ramsey\Uuid\Uuid;
 
 /**
  * Domain entity: Competitor
  *
- * @package AppBundle\Domain\Entity\Competitor
+ * A competitor is always associated to a contest.
+ *
+ * @package AppBundle\Domain\Entity\Contest
  */
 class Competitor
 {
