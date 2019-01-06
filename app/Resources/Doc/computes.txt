@@ -1,0 +1,44 @@
+1 - 9 -> final
+
+9 - 27 -> semis + final
+
+	[10] => 2 groups => 5+5 => 6 winners
+
+	[11] => 2 groups => 6+5 => 6 winners
+
+	[18] => 2 groups => 9+9 => 6 winners
+
+	[19] => 3 groups => 7+6+6 => 9 winners
+
+28 - 81 -> quarter + semis + final
+
+	[36] => 4 groups => 9+9+9+9 => 12 winners
+	[12] => 2 groups => 6+6 => 6 winners
+
+82 - 243 -> round 1 + quarter + semis + final
+
+	[200] => 23 groups => 9+9+9+9+9+9+9+9+9+9+9+9+9+9+9+9+8+8+8+8+8+8+8 => 69 winners
+	[69]  =>  8 groups => 9+9+9+9+9+8+8+8 => 24 winners
+	[24]  =>  3 groups => 8+8+8 => 9 winners
+	[9]   =>  1 group
+
+244 - 729 -> round 1 + round 2 + quarter + semis + final
+
+	[512] => 57 groups => 56 x 9 players + 1 x 8 players => 171 winners
+	[171] => 19 groups => 19 x 9 players =================>  57 winners
+	[ 57] =>  7 groups =>  1 x 9 players + 6 x 8 players =>  21 winners
+	[ 21] =>  3 groups =>  3 * 7 players =================>   9 winners
+	[  9] =>  1 group  =>  1 * 9 players
+
+
+-----------+---------------------------------------+-----+-----+-----+-----+-----+
+players    |                                       | 512 | 171 |  57 |  21 |   9 |
+-----------+---------------------------------------+-----+-----+-----+-----+-----+
+groups     | ceil(players / 9)                     |  57 |  19 |   7 |   3 |   1 |
+maxPlayers | ceil(players / groups)                |   9 |   9 |   9 |   7 |   9 |
+maxGroups  | players % groups                      |  56 |   0 |   1 |   0 |   0 |
+minPlayers | maxPlayers - (maxGroups > 0 ?  1 : 0) |   8 |   9 |   8 |   7 |   9 |
+minGroups  | groups - maxGroups                    |   1 |  19 |   6 |   3 |   1 |
+winners    | groups * 3                            | 171 |  57 |  21 |   9 |   3 |
+
+
