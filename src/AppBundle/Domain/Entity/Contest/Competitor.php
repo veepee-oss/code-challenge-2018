@@ -7,7 +7,7 @@ use Ramsey\Uuid\Uuid;
 /**
  * Domain entity: Competitor
  *
- * A competitor is always associated to a contest.
+ * A competitor of a contest.
  *
  * @package AppBundle\Domain\Entity\Contest
  */

@@ -21,7 +21,7 @@ class Match
     private $uuid;
 
     /** @var string the UUID of the round */
-    private $contest;
+    private $round;
 
     /** @var string the UUID of the game */
     private $game;
@@ -36,15 +36,15 @@ class Match
      * Match constructor
      *
      * @param string $uuid
-     * @param string $contest
+     * @param string $round
      * @param string $game
      * @param int $status
      * @param Result[] $results
      */
-    public function __construct(string $uuid, string $contest, string $game, int $status, array $results)
+    public function __construct(string $uuid, string $round, string $game, int $status, array $results)
     {
         $this->uuid = $uuid;
-        $this->contest = $contest;
+        $this->round = $round;
         $this->game = $game;
         $this->status = $status;
         $this->results = $results;
@@ -61,9 +61,9 @@ class Match
     /**
      * @return string
      */
-    public function contest(): string
+    public function round(): string
     {
-        return $this->contest;
+        return $this->round;
     }
 
     /**

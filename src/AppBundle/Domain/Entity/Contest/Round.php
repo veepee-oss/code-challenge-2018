@@ -6,7 +6,7 @@ namespace AppBundle\Domain\Entity\Contest;
  * Domain entity: Round
  *
  * A round of a contest: quarters, semis, final, ...
- * It has competitors and matches.
+ * It has participants and matches.
  *
  * @package AppBundle\Domain\Entity\Contest
  */
@@ -36,11 +36,8 @@ class Round
     /** @var int the limit of movements to do */
     private $limit;
 
-    /** @var Competitor[] the competitors of the round */
-    private $competitors;
-
-    /** @var Match[] the matches of the round */
-    private $matches;
+    /** @var Participant[] the participants of the round */
+    private $participants;
 
     /**
      * Round constructor
@@ -53,8 +50,7 @@ class Round
      * @param int    $minGhosts
      * @param int    $ghostRate
      * @param int    $limit
-     * @param array  $competitors
-     * @param array  $matches
+     * @param array  $participants
      */
     public function __construct(
         string $uuid,
@@ -65,8 +61,7 @@ class Round
         int $minGhosts,
         int $ghostRate,
         int $limit,
-        array $competitors,
-        array $matches
+        array $participants
     ) {
         $this->uuid = $uuid;
         $this->contest = $contest;
@@ -77,14 +72,9 @@ class Round
         $this->ghostRate = $ghostRate;
         $this->limit = $limit;
 
-        $this->competitors = [];
-        foreach ($competitors as $competitor) {
-            $this->competitors[] = clone $competitor;
-        }
-
-        $this->matches = [];
-        foreach ($matches as $match) {
-            $this->matches[] = clone $match;
+        $this->participants = [];
+        foreach ($participants as $participant) {
+            $this->participants[] = clone $participant;
         }
     }
 
@@ -153,18 +143,10 @@ class Round
     }
 
     /**
-     * @return Competitor[]
+     * @return Participant[]
      */
-    public function competitors(): array
+    public function participants(): array
     {
-        return $this->competitors;
-    }
-
-    /**
-     * @return Match[]
-     */
-    public function matches(): array
-    {
-        return $this->matches;
+        return $this->participants;
     }
 }
