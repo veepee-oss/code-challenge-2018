@@ -4,14 +4,17 @@ namespace AppBundle\Controller;
 
 use AppBundle\Domain\Entity\Contest\Competitor;
 use AppBundle\Domain\Entity\Contest\Contest;
+use AppBundle\Domain\Entity\Contest\Round;
 use AppBundle\Entity\Competitor as CompetitorEntity;
 use AppBundle\Entity\Contest as ContestEntity;
+use AppBundle\Entity\Round as RoundEntity;
 use AppBundle\Form\CreateContest\ContestEntity as ContestFormEntity;
 use AppBundle\Form\CreateContest\ContestForm;
 use AppBundle\Form\RegisterCompetitor\CompetitorEntity as CompetitorFormEntity;
 use AppBundle\Form\RegisterCompetitor\CompetitorForm;
 use AppBundle\Repository\CompetitorRepository;
 use AppBundle\Repository\ContestRepository;
+use AppBundle\Repository\RoundRepository;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
@@ -128,9 +131,9 @@ class AdminContestController extends Controller
     public function viewAction(string $uuid) : Response
     {
         /** @var ContestEntity $contestEntity */
-        $contestEntity = $this->getContestDoctrineRepository()->findOneBy(array(
+        $contestEntity = $this->getContestDoctrineRepository()->findOneBy([
             'uuid' => $uuid
-        ));
+        ]);
 
         if (!$contestEntity) {
             throw new NotFoundHttpException();
@@ -138,6 +141,11 @@ class AdminContestController extends Controller
 
         /** @var CompetitorEntity[] $competitorEntities */
         $competitorEntities = $this->getCompetitorDoctrineRepository()->findBy([
+            'contestUuid' => $uuid
+        ]);
+
+        /** @var RoundEntity[] $roundEntities */
+        $roundEntities = $this->getRoundDoctrineRepository()->findBy([
             'contestUuid' => $uuid
         ]);
 
@@ -150,10 +158,17 @@ class AdminContestController extends Controller
             $competitors[] = $competitorEntity->toDomainEntity();
         }
 
-        return $this->render('admin/contest/view.html.twig', array(
+        /** @var Round[] $rounds */
+        $rounds = [];
+        foreach ($roundEntities as $roundEntity) {
+            $rounds[] = $roundEntity->toDomainEntity();
+        }
+
+        return $this->render('admin/contest/view.html.twig', [
             'contest'     => $contest,
-            'competitors' => $competitors
-        ));
+            'competitors' => $competitors,
+            'rounds'      => $rounds
+        ]);
     }
 
     /**
@@ -251,7 +266,7 @@ class AdminContestController extends Controller
      * @return Response
      * @throws \Exception
      */
-    public function competitorRegister(Request $request, string $uuid)
+    public function competitorRegisterAction(Request $request, string $uuid)
     {
         /** @var ContestEntity $contestEntity */
         $contestEntity = $this->getContestDoctrineRepository()->findOneBy(array(
@@ -305,7 +320,7 @@ class AdminContestController extends Controller
      * @return Response
      * @throws \Exception
      */
-    public function competitorRemove(string $uuid) : Response
+    public function competitorRemoveAction(string $uuid) : Response
     {
         /** @var CompetitorEntity $competitorEntity */
         $competitorEntity = $this->getCompetitorDoctrineRepository()->findOneBy(array(
@@ -333,7 +348,7 @@ class AdminContestController extends Controller
      * @return Response
      * @throws \Exception
      */
-    public function competitorValidate(string $uuid) : Response
+    public function competitorValidateAction(string $uuid) : Response
     {
         /** @var CompetitorEntity $competitorEntity */
         $competitorEntity = $this->getCompetitorDoctrineRepository()->findOneBy(array(
@@ -357,6 +372,23 @@ class AdminContestController extends Controller
     }
 
     /**
+     * Create round for a contest
+     *
+     * @Route("/{uuid}/round/create", name="admin_round_create",
+     *     requirements={"uuid": "[0-9a-f]{8}\-[0-9a-f]{4}\-[0-9a-f]{4}\-[0-9a-f]{4}\-[0-9a-f]{12}"})
+     *
+     * @param Request $request
+     * @param string $uuid
+     * @return Response
+     * @throws \Exception
+     */
+    public function roundCreateAxtion(Request $request, string $uuid)
+    {
+        // TODO
+        return new Response(200);
+    }
+
+    /**
      * Return the repository object to Contest entity
      *
      * @return ContestRepository
@@ -374,5 +406,15 @@ class AdminContestController extends Controller
     private function getCompetitorDoctrineRepository() : CompetitorRepository
     {
         return $this->getDoctrine()->getRepository('AppBundle:Competitor');
+    }
+
+    /**
+     * Return the repository object to Round entity
+     *
+     * @return RoundRepository
+     */
+    private function getRoundDoctrineRepository() : RoundRepository
+    {
+        return $this->getDoctrine()->getRepository('AppBundle:Round');
     }
 }

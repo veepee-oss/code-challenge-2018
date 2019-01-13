@@ -40,7 +40,7 @@
         </div>
         <div class="btn-group" role="group">
             {% if not game.finished %}
-                <a  class="btn btn-xs btn-warning js-btn-finish-game"
+                <a  class="btn btn-xs btn-warning js-btn-action"
                     title="{{ 'app.admin-page.buttons.move-finished' | trans }}"
                     data-question="{{ 'app.admin-page.texts.ask-finish' | trans({ '%uuid%' : game.uuid }) }}"
                     data-url="{{ url('game_finish', { 'uuid': game.uuid }) }}">

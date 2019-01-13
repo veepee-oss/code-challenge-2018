@@ -72,7 +72,7 @@
                     </a>
                     {% if not game.finished %}
                         <button
-                            class="btn btn-warning js-btn-finish-game"
+                            class="btn btn-warning js-btn-action"
                             title="{{ 'app.admin-page.buttons.move-finished' | trans }}"
                             data-question="{{ 'app.admin-page.texts.ask-finish' | trans({ '%uuid%' : game.uuid }) }}"
                             data-url="{{ url('game_finish', { 'uuid': game.uuid }) }}"

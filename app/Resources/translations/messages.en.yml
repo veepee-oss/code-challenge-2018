@@ -232,12 +232,13 @@ app:
         title:          "Contest"
 
         texts:
-            description:    "Description:"
-            restrictions:   "Email restrictions:"
-            start-date:     "Registration start date:"
-            end-date:       "Registration end date:"
-            contest:        "Contest date:"
-            competitors:    "Competitors:"
+            data:           "Contest data"
+            description:    "Description"
+            restrictions:   "Email restrictions"
+            start-date:     "Registration start date"
+            end-date:       "Registration end date"
+            contest-date:   "Contest date"
+            competitors:    "Competitors"
             of:             "of"
             ask-remove:
                 contest:        "Remove contest %name%?"
@@ -250,6 +251,7 @@ app:
             go-back:        "Go back"
             add-competitor: "Add competitor"
             validate:       "Validate"
+            add-round:      "Add round"
 
     round-create:
         title:          "Create round"

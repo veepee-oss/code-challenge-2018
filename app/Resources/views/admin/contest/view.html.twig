@@ -13,67 +13,74 @@
             </h1>
         </div>
 
-        <div class="row">
-            <div class="col-xs-12">
-                <p class="text-info small">
-                    {{ 'app.contest-view.texts.description' | trans }}
-                </p>
-                <p class="lead bg-warning padding-xs">
-                    {{ contest.description | default("--") | raw }}
-                </p>
+        <div class="panel panel-success">
+            <div class="panel-heading">
+                {{ 'app.contest-view.texts.data' | trans }}
             </div>
 
-            <div class="col-xs-12">
-                <p class="text-info small">
-                    {{ 'app.contest-view.texts.restrictions' | trans }}
-                </p>
-                <p class="lead bg-warning padding-xs">
-                    {{ contest.emailRestrictionsRegex | default("--") | raw }}
-                </p>
+            <div class="panel-body">
+                <div class="row">
+                    <div class="col-xs-12">
+                        <p class="text-info small">
+                            {{ 'app.contest-view.texts.description' | trans }}:
+                        </p>
+                        <p class="bg-warning padding-xs">
+                            {{ contest.description | default("--") | raw }}
+                        </p>
+                    </div>
+
+                    <div class="col-xs-12">
+                        <p class="text-info small">
+                            {{ 'app.contest-view.texts.restrictions' | trans }}:
+                        </p>
+                        <p class="bg-warning padding-xs">
+                            {{ contest.emailRestrictionsRegex | default("--") | raw }}
+                        </p>
+                    </div>
+
+                    <div class="col-md-3 col-sm-6 col-xs-12">
+                        <p class="text-info small">
+                            {{ 'app.contest-view.texts.start-date' | trans }}:
+                        </p>
+                        <p class="bg-warning padding-xs">
+                            {{ contest.startRegistrationDate | date('Y-m-d H:i:s e') }}
+                        </p>
+                    </div>
+
+                    <div class="col-md-3 col-sm-6 col-xs-12">
+                        <p class="text-info small">
+                            {{ 'app.contest-view.texts.end-date' | trans }}:
+                        </p>
+                        <p class="bg-warning padding-xs">
+                            {{ contest.endRegistrationDate | date('Y-m-d H:i:s e') }}
+                        </p>
+                    </div>
+
+                    <div class="col-md-3 col-sm-6 col-xs-12">
+                        <p class="text-info small">
+                            {{ 'app.contest-view.texts.contest-date' | trans }}:
+                        </p>
+                        <p class="bg-warning padding-xs">
+                            {{ contest.contestDate is empty ? "--" : contest.contestDate | date('Y-m-d H:i:s e') }}
+                        </p>
+                    </div>
+
+                    <div class="col-md-3 col-sm-6 col-xs-12">
+                        <p class="text-info small">
+                            {{ 'app.contest-view.texts.competitors' | trans }}:
+                        </p>
+                        <p class="bg-warning padding-xs">
+                            {{ competitors | length }}
+                            {% if contest.maxCompetitors is not empty %}
+                                {{ 'app.contest-view.texts.of' | trans }}
+                                {{ contest.maxCompetitors }}
+                            {% endif %}
+                        </p>
+                    </div>
+                </div>
             </div>
 
-            <div class="col-md-3 col-sm-6 col-xs-12">
-                <p class="text-info small">
-                    {{ 'app.contest-view.texts.start-date' | trans }}
-                </p>
-                <p class="lead bg-warning padding-xs">
-                    {{ contest.startRegistrationDate | date('Y-m-d H:i:s e') }}
-                </p>
-            </div>
-
-            <div class="col-md-3 col-sm-6 col-xs-12">
-                <p class="text-info small">
-                    {{ 'app.contest-view.texts.end-date' | trans }}
-                </p>
-                <p class="lead bg-warning padding-xs">
-                    {{ contest.endRegistrationDate | date('Y-m-d H:i:s e') }}
-                </p>
-            </div>
-
-            <div class="col-md-3 col-sm-6 col-xs-12">
-                <p class="text-info small">
-                    {{ 'app.contest-view.texts.contest' | trans }}
-                </p>
-                <p class="lead bg-warning padding-xs">
-                    {{ contest.contestDate is empty ? "--" : contest.contestDate | date('Y-m-d H:i:s e') }}
-                </p>
-            </div>
-
-            <div class="col-md-3 col-sm-6 col-xs-12">
-                <p class="text-info small">
-                    {{ 'app.contest-view.texts.competitors' | trans }}
-                </p>
-                <p class="lead bg-warning padding-xs">
-                    {{ competitors | length }}
-                    {% if contest.maxCompetitors is not empty %}
-                        {{ 'app.contest-view.texts.of' | trans }}
-                        {{ contest.maxCompetitors }}
-                    {% endif %}
-                </p>
-            </div>
-
-            <div class="col-xs-12 text-center">
-                <hr>
+            <div class="panel-footer text-center">
                 <a  role="button"
                     class="btn btn-warning"
                     href="{{ url('admin_contest_edit', { 'uuid': contest.uuid }) }}">
@@ -82,10 +89,10 @@
                 </a>
 
                 <button
-                    class="btn btn-danger js-btn-remove"
-                    data-question="{{ 'app.contest-view.texts.ask-remove.contest' | trans({ '%name%' : contest.name }) }}"
-                    data-url="{{ url('admin_contest_remove', { 'uuid': contest.uuid }) }}"
-                    data-refresh="{{ url('admin_contest_index') }}">
+                        class="btn btn-danger js-btn-remove"
+                        data-question="{{ 'app.contest-view.texts.ask-remove.contest' | trans({ '%name%' : contest.name }) }}"
+                        data-url="{{ url('admin_contest_remove', { 'uuid': contest.uuid }) }}"
+                        data-refresh="{{ url('admin_contest_index') }}">
                     <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
                     {{ 'app.contest-view.buttons.remove' | trans }}
                 </button>
@@ -104,26 +111,48 @@
                     {{ 'app.contest-view.buttons.go-back' | trans }}
                 </a>
             </div>
+        </div>
 
-            <div class="col-xs-12">
-                <hr>
-                <h2>{{ 'app.contest-view.texts.competitors' | trans }}</h2>
+        <div class="panel panel-info">
+            <div class="panel-heading">
+                <ul class="nav nav-pills">
+                    <li role="presentation" class="active">
+                        <a href="#tab-competitors" class="js-nav-tab-default">
+                            {{ 'app.contest-view.texts.competitors' | trans }}
+                        </a>
+                    </li>
+                    {% for round in rounds %}
+                        <li role="presentation">
+                            <a href="#{{ round.uuid }}" class="js-nav-tab-default">
+                                {{ round.name }}
+                            </a>
+                        </li>
+                    {% endfor %}
+                    <li role="presentation">
+                        <a href="{{ url('admin_round_create', { 'uuid': contest.uuid }) }}"
+                            title="{{ 'app.contest-view.buttons.add-round' | trans }}">
+                            <span class="glyphicon glyphicon-plus"></span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
 
-                <div class="row">
+            <div class="panel-body tab-content">
+                <div class="tab-pane active" role="tabpanel" id="tab-competitors">
                     {% for competitor in competitors %}
-                        <div class="col-sm-4 col-xs-8 lead bg-warning padding-xs">
+                        <div class="col-sm-4 col-xs-8 padding-xs">
                             {{ competitor.email }}
                         </div>
 
-                        <div class="col-sm-5 hidden-xs lead bg-warning padding-xs">
+                        <div class="col-sm-5 hidden-xs padding-xs">
                             {{ competitor.url }}
                         </div>
 
-                        <div class="col-sm-3 col-xs-4 lead bg-warning padding-xs text-right">
+                        <div class="col-sm-3 col-xs-4 padding-xs text-right">
                             <div class="btn-group" role="group">
                                 {% if not competitor.validated and competitor.validationToken is not empty %}
                                     <button
-                                        class="btn btn-xs btn-success js-btn-remove"
+                                        class="btn btn-xs btn-success js-btn-action"
                                         title="{{ 'app.contest-view.buttons.validate' | trans }}"
                                         data-question="{{ 'app.contest-view.texts.ask-validate' | trans({ '%email%' : competitor.email }) }}"
                                         data-url="{{ url('admin_competitor_validate', { 'uuid': competitor.uuid }) }}"
@@ -143,6 +172,11 @@
                         </div>
                     {% endfor %}
                 </div>
+                {% for round in rounds %}
+                    <div class="tab-pane" role="tabpanel" id="{{ round.uuid }}">
+                        {# TODO round data panel #}
+                    </div>
+                {% endfor %}
             </div>
         </div>
     </div>

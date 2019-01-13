@@ -6,7 +6,7 @@
      * init()
      */
     var init = function () {
-        $('.js-btn-remove, .js-btn-finish-game').each(function () {
+        $('.js-btn-action, .js-btn-remove').each(function () {
             var $this = $(this),
                 url = $this.data('url'),
                 refresh = $this.data('refresh'),
@@ -24,6 +24,14 @@
                             }
                         });
                 }
+            });
+        });
+
+        $('.js-nav-tab-default').each(function () {
+            var $this = $(this);
+            $this.click(function (ev) {
+                ev.preventDefault();
+                $(this).tab('show');
             });
         });
     };
