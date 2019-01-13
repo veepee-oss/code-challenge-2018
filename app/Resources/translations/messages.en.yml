@@ -251,6 +251,13 @@ app:
             add-competitor: "Add competitor"
             validate:       "Validate"
 
+    round-create:
+        title:          "Create round"
+
+        form:
+            name:           "Name of the round"
+            submit:         "Create"
+
     credits:
         title:          "License, Credits and Attributions"
 

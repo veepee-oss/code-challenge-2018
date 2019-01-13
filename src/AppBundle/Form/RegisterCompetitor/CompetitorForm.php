@@ -2,9 +2,7 @@
 
 namespace AppBundle\Form\RegisterCompetitor;
 
-use AppBundle\Entity\Contest;
 use AppBundle\Repository\ContestRepository;
-use Doctrine\ORM\EntityRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;

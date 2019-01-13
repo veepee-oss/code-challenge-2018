@@ -18,14 +18,14 @@ class GameEntity
      * @Assert\NotBlank()
      * @Assert\Range(min=10, max=25)
      */
-    private $height = 15;
+    private $height = Game::DEFAULT_MAZE_HEIGHT;
 
     /**
      * @var int
      * @Assert\NotBlank()
      * @Assert\Range(min=10, max=50)
      */
-    private $width = 30;
+    private $width = Game::DEFAULT_MAZE_WIDTH;
 
     /**
      * @var int
@@ -39,14 +39,14 @@ class GameEntity
      * @Assert\NotBlank()
      * @Assert\Range(min=0, max=50)
      */
-    private $minGhosts = 10;
+    private $minGhosts = Game::DEFAULT_MIN_GHOSTS;
 
     /**
      * @var int
      * @Assert\NotBlank()
      * @Assert\Range(min=0, max=100)
      */
-    private $ghostRate = 10;
+    private $ghostRate = Game::DEFAULT_GHOST_RATE;
 
     /**
      * @var int

@@ -21,7 +21,11 @@ class Game
     const STATUS_PAUSED = 8;
     const STATUS_FINISHED = 16;
 
-    /** @var int the default limit of moves */
+    /** @var int the default values for a game */
+    const DEFAULT_MAZE_HEIGHT = 15;
+    const DEFAULT_MAZE_WIDTH  = 30;
+    const DEFAULT_MIN_GHOSTS  = 10;
+    const DEFAULT_GHOST_RATE  = 10;
     const DEFAULT_MOVES_LIMIT = 100;
 
     /** @var int The default view range and fire range */

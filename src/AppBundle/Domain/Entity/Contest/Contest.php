@@ -63,7 +63,7 @@ class Contest
         ?\DateTime $contestDate,
         ?int $maxCompetitors
     ) {
-        $this->uuid = $uuid ?: Uuid::uuid4()->toString();
+        $this->uuid = $uuid ?? Uuid::uuid4()->toString();
         $this->name = $name;
         $this->description = $description;
         $this->emailRestrictionsRegex = $emailRestrictionsRegex;

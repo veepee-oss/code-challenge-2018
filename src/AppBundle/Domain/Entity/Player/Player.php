@@ -345,6 +345,7 @@ class Player extends MazeObject
      *
      * @param int $score
      * @return $this
+     * @throws \Exception
      */
     public function addScore(int $score) : Player
     {
@@ -430,6 +431,7 @@ class Player extends MazeObject
      * Reset the score of the player
      *
      * @return $this
+     * @throws \Exception
      */
     public function resetScore()
     {
@@ -443,6 +445,7 @@ class Player extends MazeObject
      *
      * @param Position $pos
      * @return $this
+     * @throws \Exception
      */
     public function resetAll(Position $pos)
     {

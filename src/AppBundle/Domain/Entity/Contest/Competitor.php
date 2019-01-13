@@ -50,7 +50,7 @@ class Competitor
         ?bool $validated,
         ?string $validationToken
     ) {
-        $this->uuid = $uuid ?: Uuid::uuid4()->toString();
+        $this->uuid = $uuid ?? Uuid::uuid4()->toString();
         $this->contest = $contest;
         $this->email = $email;
         $this->url = $url;

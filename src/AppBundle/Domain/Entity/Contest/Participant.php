@@ -57,4 +57,53 @@ class Participant
     {
         return $this->classified;
     }
+
+    /**
+     * Serialize the object into an array
+     *
+     * @return array
+     */
+    public function serialize()
+    {
+        return array(
+            'competitorUuid'  => $this->competitor()->uuid(),
+            'contestUuid'     => $this->competitor()->contest(),
+            'competitorEmail' => $this->competitor()->email(),
+            'competitorUrl'   => $this->competitor()->url(),
+            'score'           => $this->score(),
+            'classified'      => $this->classified()
+        );
+    }
+
+    /**
+     * Unserialize from an array and create the object
+     *
+     * @param array $data
+     * @return Participant
+     * @throws \Exception
+     */
+    public static function unserialize(array $data)
+    {
+        $competitorUuid  = $data['competitorUuid']  ?? null;
+        $contestUuid     = $data['contestUuid']     ?? null;
+        $competitorEmail = $data['competitorEmail'] ?? null;
+        $competitorUrl   = $data['competitorUrl']   ?? null;
+        $score           = $data['score']           ?? null;
+        $classified      = $data['classified']      ?? null;
+
+        $competitor = new Competitor(
+            $competitorUuid,
+            $contestUuid,
+            $competitorEmail,
+            $competitorUrl,
+            true,
+            null
+        );
+
+        return new static(
+            $competitor,
+            $score,
+            $classified
+        );
+    }
 }

@@ -2,6 +2,8 @@
 
 namespace AppBundle\Domain\Entity\Contest;
 
+use Ramsey\Uuid\Uuid;
+
 /**
  * Domain entity: Round
  *
@@ -21,6 +23,9 @@ class Round
     /** @var string the name of the round */
     private $name;
 
+    /** @var int the status of the round */
+    private $status;
+
     /** @var int the height of th maze  */
     private $height;
 
@@ -39,33 +44,41 @@ class Round
     /** @var Participant[] the participants of the round */
     private $participants;
 
+    /** @var int the constants for the match statuses */
+    const STATUS_NOT_STARTED = 0;
+    const STATUS_FINISHED = 16;
+
     /**
      * Round constructor
      *
-     * @param string $uuid
+     * @param string|null $uuid
      * @param string $contest
      * @param string $name
-     * @param int    $height
-     * @param int    $width
-     * @param int    $minGhosts
-     * @param int    $ghostRate
-     * @param int    $limit
-     * @param array  $participants
+     * @param int|null $status
+     * @param int $height
+     * @param int $width
+     * @param int $minGhosts
+     * @param int $ghostRate
+     * @param int $limit
+     * @param array|null $participants
+     * @throws \Exception
      */
     public function __construct(
-        string $uuid,
+        ?string $uuid,
         string $contest,
         string $name,
+        ?int $status,
         int $height,
         int $width,
         int $minGhosts,
         int $ghostRate,
         int $limit,
-        array $participants
+        ?array $participants
     ) {
-        $this->uuid = $uuid;
+        $this->uuid = $uuid ?? Uuid::uuid4()->toString();
         $this->contest = $contest;
         $this->name = $name;
+        $this->status = $status ?? self::STATUS_NOT_STARTED;
         $this->height = $height;
         $this->width = $width;
         $this->minGhosts = $minGhosts;
@@ -73,8 +86,10 @@ class Round
         $this->limit = $limit;
 
         $this->participants = [];
-        foreach ($participants as $participant) {
-            $this->participants[] = clone $participant;
+        if (null !== $participants) {
+            foreach ($participants as $participant) {
+                $this->participants[] = clone $participant;
+            }
         }
     }
 
@@ -100,6 +115,14 @@ class Round
     public function name(): string
     {
         return $this->name;
+    }
+
+    /**
+     * @return int
+     */
+    public function status(): int
+    {
+        return $this->status;
     }
 
     /**

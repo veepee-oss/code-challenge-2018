@@ -12,11 +12,6 @@ namespace AppBundle\Domain\Entity\Contest;
  */
 class Match
 {
-    /** @var int the constants for the match statuses */
-    const STATUS_NOT_STARTED = 0;
-    const STATUS_FINISHED = 16;
-    const STATUS_VALIDATED = 32;
-
     /** @var string the UUID of the match */
     private $uuid;
 
@@ -32,6 +27,10 @@ class Match
     /** @var Result[] the results of the match */
     private $results;
 
+    /** @var int the constants for the match statuses */
+    const STATUS_NOT_STARTED = 0;
+    const STATUS_FINISHED = 16;
+    const STATUS_VALIDATED = 32;
     /**
      * Match constructor
      *

@@ -251,7 +251,7 @@ class Game
         $this->setKilledGhosts($game->killedGhosts());
         $this->setGhostRate($game->ghostRate());
         $this->setMinGhosts($game->minGhosts());
-        $this->SetLimit($game->limit());
+        $this->setLimit($game->limit());
         $this->setMoves($game->moves());
         return $this;
     }
