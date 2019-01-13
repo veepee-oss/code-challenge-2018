@@ -119,6 +119,17 @@
                     <li role="presentation" class="active">
                         <a href="#tab-competitors" class="js-nav-tab-default">
                             {{ 'app.contest-view.texts.competitors' | trans }}
+                            <span class="badge">
+                                {{ competitors | length }}
+                            </span>
+                        </a>
+                    </li>
+                    <li role="presentation">
+                        <a href="#tab-rounds" class="js-nav-tab-default">
+                            {{ 'app.contest-view.texts.rounds' | trans }}
+                            <span class="badge">
+                                {{ rounds | length }}
+                            </span>
                         </a>
                     </li>
                     {% for round in rounds %}
@@ -138,40 +149,54 @@
             </div>
 
             <div class="panel-body tab-content">
-                <div class="tab-pane active" role="tabpanel" id="tab-competitors">
+                <div class="tab-pane panel-list-striped active" role="tabpanel" id="tab-competitors">
                     {% for competitor in competitors %}
-                        <div class="col-sm-4 col-xs-8 padding-xs">
-                            {{ competitor.email }}
-                        </div>
+                        <div class="row">
+                            <div class="col-sm-4 col-xs-8 padding-xs">
+                                {{ competitor.email }}
+                            </div>
 
-                        <div class="col-sm-5 hidden-xs padding-xs">
-                            {{ competitor.url }}
-                        </div>
+                            <div class="col-sm-5 hidden-xs padding-xs">
+                                {{ competitor.url }}
+                            </div>
 
-                        <div class="col-sm-3 col-xs-4 padding-xs text-right">
-                            <div class="btn-group" role="group">
-                                {% if not competitor.validated and competitor.validationToken is not empty %}
+                            <div class="col-sm-3 col-xs-4 padding-xs text-right">
+                                <div class="btn-group" role="group">
+                                    {% if not competitor.validated and competitor.validationToken is not empty %}
+                                        <button
+                                            class="btn btn-xs btn-success js-btn-action"
+                                            title="{{ 'app.contest-view.buttons.validate' | trans }}"
+                                            data-question="{{ 'app.contest-view.texts.ask-validate' | trans({ '%email%' : competitor.email }) }}"
+                                            data-url="{{ url('admin_competitor_validate', { 'uuid': competitor.uuid }) }}"
+                                            data-refresh="{{ url('admin_contest_view', { 'uuid': contest.uuid }) }}">
+                                            <span class="glyphicon glyphicon-ok" aria-hidden="true"></span>
+                                        </button>
+                                    {% endif %}
                                     <button
-                                        class="btn btn-xs btn-success js-btn-action"
-                                        title="{{ 'app.contest-view.buttons.validate' | trans }}"
-                                        data-question="{{ 'app.contest-view.texts.ask-validate' | trans({ '%email%' : competitor.email }) }}"
-                                        data-url="{{ url('admin_competitor_validate', { 'uuid': competitor.uuid }) }}"
+                                        class="btn btn-xs btn-danger js-btn-remove"
+                                        title="{{ 'app.contest-view.buttons.remove' | trans }}"
+                                        data-question="{{ 'app.contest-view.texts.ask-remove.competitor' | trans({ '%email%' : competitor.email }) }}"
+                                        data-url="{{ url('admin_competitor_remove', { 'uuid': competitor.uuid }) }}"
                                         data-refresh="{{ url('admin_contest_view', { 'uuid': contest.uuid }) }}">
-                                        <span class="glyphicon glyphicon-ok" aria-hidden="true"></span>
+                                        <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
                                     </button>
-                                {% endif %}
-                                <button
-                                    class="btn btn-xs btn-danger js-btn-remove"
-                                    title="{{ 'app.contest-view.buttons.remove' | trans }}"
-                                    data-question="{{ 'app.contest-view.texts.ask-remove.competitor' | trans({ '%email%' : competitor.email }) }}"
-                                    data-url="{{ url('admin_competitor_remove', { 'uuid': competitor.uuid }) }}"
-                                    data-refresh="{{ url('admin_contest_view', { 'uuid': contest.uuid }) }}">
-                                    <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
-                                </button>
+                                </div>
                             </div>
                         </div>
                     {% endfor %}
                 </div>
+
+
+                <div class="tab-pane panel-list-striped active" role="tabpanel" id="tab-rounds">
+                    {% for round in rounds %}
+                        <div class="row">
+                            <div class="col-xs-12 padding-xs">
+                                {{ round.name }}
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+
                 {% for round in rounds %}
                     <div class="tab-pane" role="tabpanel" id="{{ round.uuid }}">
                         {# TODO round data panel #}

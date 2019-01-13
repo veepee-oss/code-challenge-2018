@@ -56,11 +56,11 @@
                 <div class="panel panel-success">
                     <div class="panel-heading">
                         {{ 'app.contest-index.texts.contests' | trans }}
-                        <a href="#panel-playing" data-toggle="collapse" class="badge pull-right">
+                        <a href="#panel-contests" data-toggle="collapse" class="badge pull-right">
                             {{ contests | length }}
                         </a>
                     </div>
-                    <div id="panel-playing"
+                    <div id="panel-contests"
                          class="panel-body panel-list-striped collapse in">
                         {% for contest in contests %}
                             <div class="row">

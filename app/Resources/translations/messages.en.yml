@@ -240,6 +240,7 @@ app:
             contest-date:   "Contest date"
             competitors:    "Competitors"
             of:             "of"
+            rounds:         "Rounds"
             ask-remove:
                 contest:        "Remove contest %name%?"
                 competitor:     "Remove competitor %email%?"
