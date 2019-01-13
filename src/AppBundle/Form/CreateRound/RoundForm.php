@@ -2,7 +2,10 @@
 
 namespace AppBundle\Form\CreateRound;
 
+use AppBundle\Domain\Entity\Contest\Round;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Exception\InvalidConfigurationException;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
@@ -26,7 +29,8 @@ class RoundForm extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setRequired([
-            'action'
+            'action',
+            'rounds'
         ]);
 
         $resolver->setDefaults([
@@ -35,6 +39,7 @@ class RoundForm extends AbstractType
         ]);
 
         $resolver->setAllowedTypes('action', 'string');
+        $resolver->setAllowedTypes('rounds', 'array');
     }
 
     /**
@@ -53,6 +58,17 @@ class RoundForm extends AbstractType
     {
         $builder->setAction($options['action']);
 
+        /** @var Round $rounds */
+        $rounds = $options['rounds'];
+
+        $choices = [];
+        foreach ($rounds as $round) {
+            if (!$round instanceof Round) {
+                throw new InvalidConfigurationException('$round must be an instance of ' . Round::class);
+            }
+            $choices[$round->name()] = $round->uuid();
+        }
+
         $builder->add('contest', HiddenType::class);
 
         $builder->add('name', TextType::class, [
@@ -60,7 +76,12 @@ class RoundForm extends AbstractType
             'required'      => true
         ]);
 
-        // TODO add sourceRound
+        $builder->add('sourceRound', ChoiceType::class, [
+            'label'         => 'app.round-create.form.source-round',
+            'placeholder'   => 'app.round-create.form.no-source',
+            'choices'       => $choices,
+            'required'      => false
+        ]);
 
         $builder->add('height', IntegerType::class, array(
             'label'         => 'app.create-page.form.height',

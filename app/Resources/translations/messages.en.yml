@@ -241,6 +241,7 @@ app:
             competitors:    "Competitors"
             of:             "of"
             rounds:         "Rounds"
+            participants:   "%num% participants"
             ask-remove:
                 contest:        "Remove contest %name%?"
                 competitor:     "Remove competitor %email%?"
@@ -249,16 +250,22 @@ app:
         buttons:
             edit:           "Edit"
             remove:         "Delete"
-            go-back:        "Go back"
+            add:            "Add"
             add-competitor: "Add competitor"
-            validate:       "Validate"
             add-round:      "Add round"
+            go-back:        "Go back"
+            validate:       "Validate"
 
     round-create:
         title:          "Create round"
 
+        texts:
+            round-name:     "Round #%num%"
+
         form:
             name:           "Name of the round"
+            source-round:   "Source round"
+            no-source:      "No source round!"
             submit:         "Create"
 
     credits:

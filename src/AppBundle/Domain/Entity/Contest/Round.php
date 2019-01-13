@@ -88,7 +88,7 @@ class Round
         $this->participants = [];
         if (null !== $participants) {
             foreach ($participants as $participant) {
-                $this->participants[] = clone $participant;
+                $this->addParticipant($participant);
             }
         }
     }
@@ -171,5 +171,17 @@ class Round
     public function participants(): array
     {
         return $this->participants;
+    }
+
+    /**
+     * Adds a participant
+     *
+     * @param Participant $participant
+     * @return Round
+     */
+    public function addParticipant(Participant $participant): Round
+    {
+        $this->participants[] = clone $participant;
+        return $this;
     }
 }

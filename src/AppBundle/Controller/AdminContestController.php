@@ -4,12 +4,15 @@ namespace AppBundle\Controller;
 
 use AppBundle\Domain\Entity\Contest\Competitor;
 use AppBundle\Domain\Entity\Contest\Contest;
+use AppBundle\Domain\Entity\Contest\Participant;
 use AppBundle\Domain\Entity\Contest\Round;
 use AppBundle\Entity\Competitor as CompetitorEntity;
 use AppBundle\Entity\Contest as ContestEntity;
 use AppBundle\Entity\Round as RoundEntity;
 use AppBundle\Form\CreateContest\ContestEntity as ContestFormEntity;
 use AppBundle\Form\CreateContest\ContestForm;
+use AppBundle\Form\CreateRound\RoundEntity as RoundFormEntity;
+use AppBundle\Form\CreateRound\RoundForm;
 use AppBundle\Form\RegisterCompetitor\CompetitorEntity as CompetitorFormEntity;
 use AppBundle\Form\RegisterCompetitor\CompetitorForm;
 use AppBundle\Repository\CompetitorRepository;
@@ -305,7 +308,7 @@ class AdminContestController extends Controller
         }
 
 
-        return $this->render('admin/contest/register.html.twig', array(
+        return $this->render('admin/contest/register-competitor.html.twig', array(
             'form' => $form->createView(),
         ));
     }
@@ -382,10 +385,71 @@ class AdminContestController extends Controller
      * @return Response
      * @throws \Exception
      */
-    public function roundCreateAxtion(Request $request, string $uuid)
+    public function roundCreateAction(Request $request, string $uuid)
     {
-        // TODO
-        return new Response(200);
+        /** @var ContestEntity $contestEntity */
+        $contestEntity = $this->getContestDoctrineRepository()->findOneBy(array(
+            'uuid' => $uuid
+        ));
+
+        if (!$contestEntity) {
+            throw new NotFoundHttpException();
+        }
+
+        $rounds = $this->getRoundDoctrineRepository()->findBy([
+            'contestUuid' => $uuid
+        ]);
+
+        $roundName = $this->get('translator')->trans('app.round-create.texts.round-name', [
+            '%num%' => (1 + count($rounds))
+        ]);
+
+        // Create round data entity
+        $formEntity = new RoundFormEntity($contestEntity->toDomainEntity());
+        $formEntity->setName($roundName);
+
+        // Create the round data form
+        $form = $this->createForm(RoundForm::class, $formEntity, [
+            'action' => $this->generateUrl('admin_round_create', [ 'uuid' => $uuid ]),
+            'rounds' => array_map(function (RoundEntity $entity) {
+                return $entity->toDomainEntity();
+            }, $rounds)
+        ]);
+
+        // Handle the request & if the data is valid...
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            /** @var Round $round */
+            $round = $formEntity->toDomainEntity();
+            $sourceRound = $formEntity->getSourceRound();
+            if (null !== $sourceRound) {
+                // TODO Add the participants from the source round
+            } else {
+                // Add the participants from the contest
+                $competitorEntities = $this->getCompetitorDoctrineRepository()->findBy([
+                    'contestUuid' => $uuid
+                ]);
+
+                /** @var CompetitorEntity $competitorEntity */
+                foreach ($competitorEntities as $competitorEntity) {
+                    $participant = new Participant($competitorEntity->toDomainEntity(), null, null);
+                    $round->addParticipant($participant);
+                }
+            }
+
+            $em = $this->getDoctrine()->getManager();
+            $entity = new RoundEntity($round);
+            $em->persist($entity);
+            $em->flush();
+
+            return $this->redirectToRoute('admin_contest_view', [
+                'uuid' => $uuid
+            ]);
+        }
+
+        return $this->render('admin/contest/create-round.html.twig', array(
+            'form' => $form->createView(),
+        ));
     }
 
     /**

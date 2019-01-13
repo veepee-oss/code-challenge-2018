@@ -5,6 +5,7 @@ namespace AppBundle\Form\CreateRound;
 use AppBundle\Domain\Entity\Contest\Contest;
 use AppBundle\Domain\Entity\Contest\Round;
 use AppBundle\Domain\Entity\Game\Game;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * Form entity: RoundEntity
@@ -17,7 +18,7 @@ class RoundEntity
      * @var string
      * @Assert\NotBlank()
      */
-    private $contest;
+    private $contest = null;
 
     /**
      * @var string|null
@@ -29,7 +30,7 @@ class RoundEntity
      * @Assert\NotBlank()
      * @Assert\Length(min=0, max=16)
      */
-    private $name;
+    private $name = null;
 
     /**
      * @var int
@@ -101,7 +102,7 @@ class RoundEntity
     /**
      * @return string
      */
-    public function getContest(): string
+    public function getContest(): ?string
     {
         return $this->contest;
     }
@@ -137,7 +138,7 @@ class RoundEntity
     /**
      * @return string
      */
-    public function getName(): string
+    public function getName(): ?string
     {
         return $this->name;
     }

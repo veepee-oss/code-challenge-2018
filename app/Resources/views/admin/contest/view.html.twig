@@ -89,20 +89,39 @@
                 </a>
 
                 <button
-                        class="btn btn-danger js-btn-remove"
-                        data-question="{{ 'app.contest-view.texts.ask-remove.contest' | trans({ '%name%' : contest.name }) }}"
-                        data-url="{{ url('admin_contest_remove', { 'uuid': contest.uuid }) }}"
-                        data-refresh="{{ url('admin_contest_index') }}">
+                    type="button"
+                    class="btn btn-danger js-btn-remove"
+                    data-question="{{ 'app.contest-view.texts.ask-remove.contest' | trans({ '%name%' : contest.name }) }}"
+                    data-url="{{ url('admin_contest_remove', { 'uuid': contest.uuid }) }}"
+                    data-refresh="{{ url('admin_contest_index') }}">
                     <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
                     {{ 'app.contest-view.buttons.remove' | trans }}
                 </button>
 
-                <a  role="button"
-                    class="btn btn-success"
-                    href="{{ url('admin_competitor_register', { 'uuid': contest.uuid }) }}">
-                    <span class="glyphicon glyphicon-plus"></span>
-                    {{ 'app.contest-view.buttons.add-competitor' | trans }}
-                </a>
+                <div class="btn-group">
+                    <button
+                        type="button"
+                        class="btn btn-success dropdown-toggle"
+                        data-toggle="dropdown"
+                        aria-haspopup="true"
+                        aria-expanded="false">
+                        <span class="glyphicon glyphicon-plus"></span>
+                        {{ 'app.contest-view.buttons.add' | trans }}
+                        <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li>
+                            <a href="{{ url('admin_competitor_register', { 'uuid': contest.uuid }) }}">
+                                {{ 'app.contest-view.buttons.add-competitor' | trans }}
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ url('admin_round_create', { 'uuid': contest.uuid }) }}">
+                                {{ 'app.contest-view.buttons.add-round' | trans }}
+                            </a>
+                        </li>
+                    </ul>
+                </div>
 
                 <a  role="button"
                     class="btn btn-default"
@@ -139,12 +158,6 @@
                             </a>
                         </li>
                     {% endfor %}
-                    <li role="presentation">
-                        <a href="{{ url('admin_round_create', { 'uuid': contest.uuid }) }}"
-                            title="{{ 'app.contest-view.buttons.add-round' | trans }}">
-                            <span class="glyphicon glyphicon-plus"></span>
-                        </a>
-                    </li>
                 </ul>
             </div>
 
@@ -186,12 +199,15 @@
                     {% endfor %}
                 </div>
 
-
-                <div class="tab-pane panel-list-striped active" role="tabpanel" id="tab-rounds">
+                <div class="tab-pane panel-list-striped" role="tabpanel" id="tab-rounds">
                     {% for round in rounds %}
                         <div class="row">
-                            <div class="col-xs-12 padding-xs">
+                            <div class="col-sm-4 col-xs-8 padding-xs">
                                 {{ round.name }}
+                            </div>
+
+                            <div class="col-sm-3 hidden-xs padding-xs">
+                                {{ 'app.contest-view.texts.participants' | trans({ '%num%' : round.participants | length }) }}
                             </div>
                         </div>
                     {% endfor %}
@@ -200,6 +216,9 @@
                 {% for round in rounds %}
                     <div class="tab-pane" role="tabpanel" id="{{ round.uuid }}">
                         {# TODO round data panel #}
+                        {{ round.name }}
+                        <br>
+                        {{ 'app.contest-view.texts.participants' | trans({ '%num%' : round.participants | length }) }}
                     </div>
                 {% endfor %}
             </div>
