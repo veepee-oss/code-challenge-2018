@@ -266,6 +266,7 @@ app:
             name:           "Name of the round"
             source-round:   "Source round"
             no-source:      "No source round!"
+            num-matches:    "Matches per player (1 to 10)"
             submit:         "Create"
 
     credits:

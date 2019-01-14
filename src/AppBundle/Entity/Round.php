@@ -106,6 +106,15 @@ class Round
     private $limit;
 
     /**
+     * Number of matches per player to do
+     *
+     * @var int
+     *
+     * @ORM\Column(name="num_matches", type="integer", nullable=false)
+     */
+    private $numMatches;
+
+    /**
      * All the data of the participants
      *
      * @var array
@@ -113,7 +122,6 @@ class Round
      * @ORM\Column(name="participants", type="json_array")
      */
     private $participants;
-
 
     /**
      * Round constructor.
@@ -133,6 +141,7 @@ class Round
             $this->minGhosts = DomainGame\Game::DEFAULT_MIN_GHOSTS;
             $this->ghostRate = DomainGame\Game::DEFAULT_GHOST_RATE;
             $this->limit = DomainGame\Game::DEFAULT_MOVES_LIMIT;
+            $this->numMatches = DomainContest\Round::DEFAULT_NUM_MATCHES;
             $this->participants = [];
         } elseif ($source instanceof Round) {
             $this->id = $source->getId();
@@ -145,6 +154,7 @@ class Round
             $this->minGhosts = $source->getMinGhosts();
             $this->ghostRate = $source->getGhostRate();
             $this->limit = $source->getLimit();
+            $this->numMatches = $source->getNumMatches();
             $this->participants = $source->getParticipants();
         } elseif ($source instanceof DomainContest\Round) {
             $this->id = null;
@@ -175,6 +185,7 @@ class Round
             $this->minGhosts,
             $this->ghostRate,
             $this->limit,
+            $this->numMatches,
             $participantsArray
         );
     }
@@ -196,6 +207,7 @@ class Round
         $this->setMinGhosts($round->minGhosts());
         $this->setGhostRate($round->ghostRate());
         $this->SetLimit($round->limit());
+        $this->setNumMatches($round->numMatches());
         $this->setParticipants($round->participants());
 
         return $this;
@@ -378,6 +390,24 @@ class Round
     public function setLimit(int $limit): Round
     {
         $this->limit = $limit;
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getNumMatches(): int
+    {
+        return $this->numMatches;
+    }
+
+    /**
+     * @param int $numMatches
+     * @return Round
+     */
+    public function setNumMatches(int $numMatches): Round
+    {
+        $this->numMatches = $numMatches;
         return $this;
     }
 

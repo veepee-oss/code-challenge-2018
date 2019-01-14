@@ -68,6 +68,14 @@ class RoundEntity
     private $limit = Game::DEFAULT_MOVES_LIMIT;
 
     /**
+     * @var int
+     * @Assert\NotBlank()
+     * @Assert\Range(min=1, max=10)
+     */
+    private $numMatches = Round::DEFAULT_NUM_MATCHES;
+
+
+    /**
      * RoundEntity constructor
      *
      * @param Contest $contest
@@ -95,6 +103,7 @@ class RoundEntity
             $this->minGhosts,
             $this->ghostRate,
             $this->limit,
+            $this->numMatches,
             []
         );
     }
@@ -240,6 +249,24 @@ class RoundEntity
     public function setLimit(int $limit): RoundEntity
     {
         $this->limit = $limit;
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getNumMatches(): int
+    {
+        return $this->numMatches;
+    }
+
+    /**
+     * @param int $numMatches
+     * @return RoundEntity
+     */
+    public function setNumMatches(int $numMatches): RoundEntity
+    {
+        $this->numMatches = $numMatches;
         return $this;
     }
 }

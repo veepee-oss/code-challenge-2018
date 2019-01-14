@@ -108,6 +108,11 @@ class RoundForm extends AbstractType
             'required'      => true
         ));
 
+        $builder->add('numMatches', IntegerType::class, array(
+            'label'         => 'app.round-create.form.num-matches',
+            'required'      => true
+        ));
+
         $builder->add('submit', SubmitType::class, array(
             'label'         => 'app.round-create.form.submit'
         ));

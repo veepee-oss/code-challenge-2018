@@ -41,12 +41,18 @@ class Round
     /** @var int the limit of movements to do */
     private $limit;
 
+    /** @var int number of matches per player to do */
+    private $numMatches;
+
     /** @var Participant[] the participants of the round */
     private $participants;
 
     /** @var int the constants for the match statuses */
     const STATUS_NOT_STARTED = 0;
     const STATUS_FINISHED = 16;
+
+    /** @var int the default matches per player */
+    const DEFAULT_NUM_MATCHES = 3;
 
     /**
      * Round constructor
@@ -60,6 +66,7 @@ class Round
      * @param int $minGhosts
      * @param int $ghostRate
      * @param int $limit
+     * @param int $numMatches
      * @param array|null $participants
      * @throws \Exception
      */
@@ -73,6 +80,7 @@ class Round
         int $minGhosts,
         int $ghostRate,
         int $limit,
+        int $numMatches,
         ?array $participants
     ) {
         $this->uuid = $uuid ?? Uuid::uuid4()->toString();
@@ -84,6 +92,7 @@ class Round
         $this->minGhosts = $minGhosts;
         $this->ghostRate = $ghostRate;
         $this->limit = $limit;
+        $this->numMatches = $numMatches;
 
         $this->participants = [];
         if (null !== $participants) {
@@ -163,6 +172,14 @@ class Round
     public function limit(): int
     {
         return $this->limit;
+    }
+
+    /**
+     * @return int
+     */
+    public function numMatches(): int
+    {
+        return $this->numMatches;
     }
 
     /**
