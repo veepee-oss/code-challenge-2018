@@ -245,6 +245,7 @@ app:
             ask-remove:
                 contest:        "Remove contest %name%?"
                 competitor:     "Remove competitor %email%?"
+                round:          "Remove round %name%?"
             ask-validate:   "Validate competitor %email%?"
 
         buttons:
