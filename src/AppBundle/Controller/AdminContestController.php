@@ -4,7 +4,6 @@ namespace AppBundle\Controller;
 
 use AppBundle\Domain\Entity\Contest\Competitor;
 use AppBundle\Domain\Entity\Contest\Contest;
-use AppBundle\Domain\Entity\Contest\Participant;
 use AppBundle\Domain\Entity\Contest\Round;
 use AppBundle\Entity\Competitor as CompetitorEntity;
 use AppBundle\Entity\Contest as ContestEntity;
@@ -20,6 +19,7 @@ use AppBundle\Repository\ContestRepository;
 use AppBundle\Repository\RoundRepository;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\Form\FormError;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -421,30 +421,24 @@ class AdminContestController extends Controller
         if ($form->isSubmitted() && $form->isValid()) {
             /** @var Round $round */
             $round = $formEntity->toDomainEntity();
-            $sourceRound = $formEntity->getSourceRound();
-            if (null !== $sourceRound) {
-                // TODO Add the participants from the source round
-            } else {
-                // Add the participants from the contest
-                $competitorEntities = $this->getCompetitorDoctrineRepository()->findBy([
-                    'contestUuid' => $uuid
+            $sourceRoundUuid = $formEntity->getSourceRound();
+
+            try {
+                $roundManager = $this->get('app.contest.round.manager');
+                $roundManager->addParticipants($round, $sourceRoundUuid);
+
+                $em = $this->getDoctrine()->getManager();
+                $entity = new RoundEntity($round);
+                $em->persist($entity);
+                $em->flush();
+
+                return $this->redirectToRoute('admin_contest_view', [
+                    'uuid' => $uuid
                 ]);
-
-                /** @var CompetitorEntity $competitorEntity */
-                foreach ($competitorEntities as $competitorEntity) {
-                    $participant = new Participant($competitorEntity->toDomainEntity(), null, null);
-                    $round->addParticipant($participant);
-                }
+            } catch (\Exception $exc) {
+                dump($exc);
+                $form->addError(new FormError($exc->getMessage()));
             }
-
-            $em = $this->getDoctrine()->getManager();
-            $entity = new RoundEntity($round);
-            $em->persist($entity);
-            $em->flush();
-
-            return $this->redirectToRoute('admin_contest_view', [
-                'uuid' => $uuid
-            ]);
         }
 
         return $this->render('admin/contest/create-round.html.twig', array(
