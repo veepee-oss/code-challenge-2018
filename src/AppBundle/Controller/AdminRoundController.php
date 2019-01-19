@@ -9,6 +9,8 @@ use AppBundle\Domain\Entity\Contest\Participant;
 use AppBundle\Domain\Entity\Contest\Round;
 use AppBundle\Entity\Competitor as CompetitorEntity;
 use AppBundle\Entity\Contest as ContestEntity;
+use AppBundle\Entity\Game as GameEntity;
+use AppBundle\Entity\Match as MatchEntity;
 use AppBundle\Entity\Round as RoundEntity;
 use AppBundle\Form\CreateContest\ContestEntity as ContestFormEntity;
 use AppBundle\Form\CreateContest\ContestForm;
@@ -18,6 +20,8 @@ use AppBundle\Form\RegisterCompetitor\CompetitorEntity as CompetitorFormEntity;
 use AppBundle\Form\RegisterCompetitor\CompetitorForm;
 use AppBundle\Repository\CompetitorRepository;
 use AppBundle\Repository\ContestRepository;
+use AppBundle\Repository\GameRepository;
+use AppBundle\Repository\MatchRepository;
 use AppBundle\Repository\RoundRepository;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -55,6 +59,22 @@ class AdminRoundController extends Controller
         }
 
         $em = $this->getDoctrine()->getManager();
+
+        /** @var MatchEntity[] $matchEntities */
+        $matchEntities = $this->getMatchDoctrineRepository()->findBy([
+            'roundUuid' => $roundEntity->getUuid()
+        ]);
+
+        /** @var MatchEntity $matchEntity */
+        foreach ($matchEntities as $matchEntity) {
+            /** @var GameEntity $gameEntity */
+            $gameEntity = $this->getGameDoctrineRepository()->findOneBy([
+                'uuid' => $matchEntity->getGameUuid()
+            ]);
+            $em->remove($gameEntity);
+            $em->remove($matchEntity);
+        }
+
         $em->remove($roundEntity);
         $em->flush();
 
@@ -69,5 +89,25 @@ class AdminRoundController extends Controller
     private function getRoundDoctrineRepository() : RoundRepository
     {
         return $this->getDoctrine()->getRepository('AppBundle:Round');
+    }
+
+    /**
+     * Return the repository object to Match entity
+     *
+     * @return MatchRepository
+     */
+    private function getMatchDoctrineRepository() : MatchRepository
+    {
+        return $this->getDoctrine()->getRepository('AppBundle:Match');
+    }
+
+    /**
+     * Return the repository object to Game entity
+     *
+     * @return GameRepository
+     */
+    private function getGameDoctrineRepository() : GameRepository
+    {
+        return $this->getDoctrine()->getRepository('AppBundle:Game');
     }
 }

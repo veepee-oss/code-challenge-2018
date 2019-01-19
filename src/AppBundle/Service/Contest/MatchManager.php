@@ -29,6 +29,18 @@ class MatchManager implements MatchManagerInterface
     const MAX_PLAYERS_PER_MATCH = 9;
 
     /**
+     * MatchManager constructor
+     *
+     * @param MazeBuilderInterface $mazeBuilder
+     * @param GameEngine $gameEngine
+     */
+    public function __construct(MazeBuilderInterface $mazeBuilder, GameEngine $gameEngine)
+    {
+        $this->mazeBuilder = $mazeBuilder;
+        $this->gameEngine = $gameEngine;
+    }
+
+    /**
      * Creates all the matches of a round
      *
      * @param Round $round
@@ -66,6 +78,8 @@ class MatchManager implements MatchManagerInterface
     }
 
     /**
+     * Creates a match and its associated game
+     *
      * @param Round         $round
      * @param Participant[] $participants
      * @param int           $numPlayers

@@ -129,6 +129,13 @@ services:
             - "@=service('doctrine.orm.entity_manager').getRepository('AppBundle:Round')"
         public: true
 
+    app.contest.match.manager:
+        class: AppBundle\Service\Contest\MatchManager
+        arguments:
+            - "@app.maze.builder"
+            - "@app.game.engine"
+        public: true
+
     app.logger:
         class: AppBundle\Service\LoggerService\LoggerService
         arguments:

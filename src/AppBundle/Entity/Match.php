@@ -9,7 +9,7 @@ use Doctrine\ORM\Mapping as ORM;
  * Doctrine Entity: Match
  *
  * @package AppBundle\Entity
- * @ORM\Table(name="match")
+ * @ORM\Table(name="`match`")
  * @ORM\Entity(repositoryClass="AppBundle\Repository\MatchRepository")
  *
  * @package AppBundle\Entity

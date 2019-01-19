@@ -4,10 +4,13 @@ namespace AppBundle\Controller;
 
 use AppBundle\Domain\Entity\Contest\Competitor;
 use AppBundle\Domain\Entity\Contest\Contest;
+use AppBundle\Domain\Entity\Contest\Match;
 use AppBundle\Domain\Entity\Contest\Round;
 use AppBundle\Entity\Competitor as CompetitorEntity;
 use AppBundle\Entity\Contest as ContestEntity;
+use AppBundle\Entity\Game as GameEntity;
 use AppBundle\Entity\Round as RoundEntity;
+use AppBundle\Entity\Match as MatchEntity;
 use AppBundle\Form\CreateContest\ContestEntity as ContestFormEntity;
 use AppBundle\Form\CreateContest\ContestForm;
 use AppBundle\Form\CreateRound\RoundEntity as RoundFormEntity;
@@ -427,9 +430,21 @@ class AdminContestController extends Controller
                 $roundManager = $this->get('app.contest.round.manager');
                 $roundManager->addParticipants($round, $sourceRoundUuid);
 
+                $matchManager = $this->get('app.contest.match.manager');
+                $matches = $matchManager->createMatches($round);
+
                 $em = $this->getDoctrine()->getManager();
-                $entity = new RoundEntity($round);
-                $em->persist($entity);
+                $roundEntity = new RoundEntity($round);
+                $em->persist($roundEntity);
+
+                /** @var Match $match */
+                foreach ($matches as $match) {
+                    $gameEntity = new GameEntity($match->game());
+                    $matchEntity = new MatchEntity($match);
+                    $em->persist($gameEntity);
+                    $em->persist($matchEntity);
+                }
+
                 $em->flush();
 
                 return $this->redirectToRoute('admin_contest_view', [
