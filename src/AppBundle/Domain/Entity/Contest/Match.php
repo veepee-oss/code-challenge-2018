@@ -2,6 +2,9 @@
 
 namespace AppBundle\Domain\Entity\Contest;
 
+use AppBundle\Domain\Entity\Game\Game;
+use Ramsey\Uuid\Uuid;
+
 /**
  * Domain entity: Match
  *
@@ -16,10 +19,10 @@ class Match
     private $uuid;
 
     /** @var string the UUID of the round */
-    private $round;
+    private $roundUuid;
 
     /** @var string the UUID of the game */
-    private $game;
+    private $gameUuid;
 
     /** @var int the status of the match */
     private $status;
@@ -27,26 +30,37 @@ class Match
     /** @var Result[] the results of the match */
     private $results;
 
+    /** @var Game|null */
+    private $game;
+
     /** @var int the constants for the match statuses */
     const STATUS_NOT_STARTED = 0;
     const STATUS_FINISHED = 16;
     const STATUS_VALIDATED = 32;
+
     /**
      * Match constructor
      *
-     * @param string $uuid
-     * @param string $round
-     * @param string $game
-     * @param int $status
+     * @param string|null $uuid
+     * @param string $roundUuid
+     * @param string $gameUuid
+     * @param int|null $status
      * @param Result[] $results
+     * @throws \Exception
      */
-    public function __construct(string $uuid, string $round, string $game, int $status, array $results)
+    public function __construct(?string $uuid, string $roundUuid, string $gameUuid, ?int $status, array $results = [])
     {
-        $this->uuid = $uuid;
-        $this->round = $round;
-        $this->game = $game;
-        $this->status = $status;
-        $this->results = $results;
+        $this->uuid = $uuid ?? Uuid::uuid4()->toString();
+        $this->roundUuid = $roundUuid;
+        $this->gameUuid = $gameUuid;
+        $this->status = $status ?? self::STATUS_NOT_STARTED;
+        $this->results = [];
+        $this->game = null;
+
+        /** @var Result $result */
+        foreach ($results as $result) {
+            $this->results[] = clone $result;
+        };
     }
 
     /**
@@ -60,17 +74,17 @@ class Match
     /**
      * @return string
      */
-    public function round(): string
+    public function roundUuid(): string
     {
-        return $this->round;
+        return $this->roundUuid;
     }
 
     /**
      * @return string
      */
-    public function game(): string
+    public function gameUuid(): string
     {
-        return $this->game;
+        return $this->gameUuid;
     }
 
     /**
@@ -87,5 +101,23 @@ class Match
     public function results(): array
     {
         return $this->results;
+    }
+
+    /**
+     * @return Game|null
+     */
+    public function game(): ?Game
+    {
+        return $this->game;
+    }
+
+    /**
+     * @param Game|null $game
+     * @return Match
+     */
+    public function setGame(Game $game): Match
+    {
+        $this->game = $game;
+        return $this;
     }
 }

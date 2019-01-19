@@ -126,8 +126,8 @@ class Match
     public function fromDomainEntity(DomainContest\Match $match)
     {
         $this->setUuid($match->uuid());
-        $this->setRoundUuid($match->round());
-        $this->setGameUuid($match->game());
+        $this->setRoundUuid($match->roundUuid());
+        $this->setGameUuid($match->gameUuid());
         $this->setStatus($match->status());
         $this->setResults($match->results());
 
