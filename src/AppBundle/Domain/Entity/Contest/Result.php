@@ -64,4 +64,38 @@ class Result
     {
         return $this->score;
     }
+
+    /**
+     * Serialize the object into an array
+     *
+     * @return array
+     */
+    public function serialize()
+    {
+        return array(
+            'competitorUuid' => $this->competitor(),
+            'playerUuid'     => $this->player(),
+            'score'          => $this->score(),
+        );
+    }
+
+    /**
+     * Unserialize from an array and create the object
+     *
+     * @param array $data
+     * @return Result
+     * @throws \Exception
+     */
+    public static function unserialize(array $data)
+    {
+        $competitorUuid  = $data['competitorUuid']  ?? null;
+        $playerUuid      = $data['playerUuid']      ?? null;
+        $score           = $data['score']           ?? null;
+
+        return new static(
+            $competitorUuid,
+            $playerUuid,
+            $score
+        );
+    }
 }
