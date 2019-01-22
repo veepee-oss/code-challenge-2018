@@ -202,12 +202,16 @@
                 <div class="tab-pane panel-list-striped" role="tabpanel" id="tab-rounds">
                     {% for round in rounds %}
                         <div class="row">
-                            <div class="col-sm-6 col-xs-8 padding-xs">
+                            <div class="col-sm-3 col-xs-8 padding-xs">
                                 {{ round.name }}
                             </div>
 
                             <div class="col-sm-3 hidden-xs padding-xs">
                                 {{ 'app.contest-view.texts.participants' | trans({ '%num%' : round.participants | length }) }}
+                            </div>
+
+                            <div class="col-sm-3 hidden-xs padding-xs">
+                                {{ 'app.contest-view.texts.matches' | trans({ '%num%' : matchCount[round.uuid] | default(0)}) }}
                             </div>
 
                             <div class="col-sm-3 col-xs-4 padding-xs text-right">
@@ -227,11 +231,33 @@
                 </div>
 
                 {% for round in rounds %}
-                    <div class="tab-pane" role="tabpanel" id="{{ round.uuid }}">
-                        {# TODO round data panel #}
-                        {{ round.name }}
-                        <br>
-                        {{ 'app.contest-view.texts.participants' | trans({ '%num%' : round.participants | length }) }}
+                    <div class="tab-pane panel-list-striped" role="tabpanel" id="{{ round.uuid }}">
+                        {% if round.participants is empty %}
+                            <p class="text-danger">
+                                {{ 'app.contest-view.texts.no-participants' | trans }}
+                            </p>
+                        {% else %}
+                            <div class="row text-info">
+                                <div class="col-xs-6 padding-xs">
+                                    <strong>{{ 'app.contest-view.texts.email' | trans }}</strong>
+                                </div>
+                                <div class="col-xs-6 padding-xs text-right">
+                                    <strong>{{ 'app.contest-view.texts.score' | trans }}</strong>
+                                </div>
+                            </div>
+                        {% endif %}
+                        {% for participant in round.participants %}
+                            <div class="row">
+                                <div class="col-xs-6 padding-xs">
+                                    {{ participant.competitor.email }}
+                                </div>
+                                <div class="col-xs-6 padding-xs text-right">
+                                    <span class="{% if participant.classified %}text-success{% else %}text-danger{% endif %}">
+                                        {{ participant.score }}
+                                    </span>
+                                </div>
+                            </div>
+                        {% endfor %}
                     </div>
                 {% endfor %}
             </div>

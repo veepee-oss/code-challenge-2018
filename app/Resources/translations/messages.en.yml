@@ -242,6 +242,10 @@ app:
             of:             "of"
             rounds:         "Rounds"
             participants:   "%num% participants"
+            matches:        "%num% matches"
+            email:          "Participant email"
+            score:          "Score"
+            no-participants: "No participants found!"
             ask-remove:
                 contest:        "Remove contest %name%?"
                 competitor:     "Remove competitor %email%?"

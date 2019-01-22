@@ -53,24 +53,26 @@ class MatchManager implements MatchManagerInterface
         $matches = [];
 
         $participants = $round->participants();
-        $numPlayers = count($participants);
-        $numGroups = ceil((float) $numPlayers / self::MAX_PLAYERS_PER_MATCH);
-        $maxPlayers = ceil ((float) $numPlayers / $numGroups);
-        $maxGroups =  $numPlayers % $numGroups;
-        $minPlayers = $maxPlayers - ($maxGroups > 0 ? 1 : 0);
-        $minGroups = $numGroups - $maxGroups;
+        if (!empty($participants)) {
+            $numPlayers = count($participants);
+            $numGroups = ceil((float)$numPlayers / self::MAX_PLAYERS_PER_MATCH);
+            $maxPlayers = ceil((float)$numPlayers / $numGroups);
+            $maxGroups = $numPlayers % $numGroups;
+            $minPlayers = $maxPlayers - ($maxGroups > 0 ? 1 : 0);
+            $minGroups = $numGroups - $maxGroups;
 
-        for ($groupNum = 1; $groupNum <= $round->numMatches(); ++$groupNum) {
-            $matchNum = 1;
-            shuffle($participants);
-            for ($i = 0; $i < $minGroups; ++$i) {
-                $match = $this->createMatch($round, $participants, $minPlayers, $groupNum, $matchNum++);
-                $matches[] = $match;
+            for ($groupNum = 1; $groupNum <= $round->numMatches(); ++$groupNum) {
+                $matchNum = 1;
+                shuffle($participants);
+                for ($i = 0; $i < $minGroups; ++$i) {
+                    $match = $this->createMatch($round, $participants, $minPlayers, $groupNum, $matchNum++);
+                    $matches[] = $match;
 
-            }
-            for ($i = 0; $i < $maxGroups; ++$i) {
-                $match = $this->createMatch($round, $participants, $maxPlayers, $groupNum, $matchNum++);
-                $matches[] = $match;
+                }
+                for ($i = 0; $i < $maxGroups; ++$i) {
+                    $match = $this->createMatch($round, $participants, $maxPlayers, $groupNum, $matchNum++);
+                    $matches[] = $match;
+                }
             }
         }
 

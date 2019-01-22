@@ -19,6 +19,7 @@ use AppBundle\Form\RegisterCompetitor\CompetitorEntity as CompetitorFormEntity;
 use AppBundle\Form\RegisterCompetitor\CompetitorForm;
 use AppBundle\Repository\CompetitorRepository;
 use AppBundle\Repository\ContestRepository;
+use AppBundle\Repository\MatchRepository;
 use AppBundle\Repository\RoundRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -171,10 +172,18 @@ class AdminContestController extends Controller
             $rounds[] = $roundEntity->toDomainEntity();
         }
 
+        $matchCount = [];
+        foreach ($rounds as $round) {
+            $matchCount[$round->uuid()] = $this->getMatchDoctrineRepository()->count([
+                'roundUuid' => $round->uuid()
+            ]);
+        }
+
         return $this->render('admin/contest/view.html.twig', [
             'contest'     => $contest,
             'competitors' => $competitors,
-            'rounds'      => $rounds
+            'rounds'      => $rounds,
+            'matchCount'  => $matchCount
         ]);
     }
 
@@ -494,5 +503,15 @@ class AdminContestController extends Controller
     private function getRoundDoctrineRepository() : RoundRepository
     {
         return $this->getDoctrine()->getRepository('AppBundle:Round');
+    }
+
+    /**
+     * Return the repository object to Match entity
+     *
+     * @return MatchRepository
+     */
+    private function getMatchDoctrineRepository() : MatchRepository
+    {
+        return $this->getDoctrine()->getRepository('AppBundle:Match');
     }
 }
