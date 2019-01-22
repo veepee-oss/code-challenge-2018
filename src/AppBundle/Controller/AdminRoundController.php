@@ -23,6 +23,8 @@ use AppBundle\Repository\ContestRepository;
 use AppBundle\Repository\GameRepository;
 use AppBundle\Repository\MatchRepository;
 use AppBundle\Repository\RoundRepository;
+use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
@@ -49,8 +51,14 @@ class AdminRoundController extends Controller
      */
     public function removeAction(string $uuid) : Response
     {
+        /** @var EntityManagerInterface $em */
+        $em = $this->getDoctrine()->getManager();
+
+        /** @var RoundRepository $repo */
+        $repo = $this->getRoundDoctrineRepository();
+
         /** @var RoundEntity $roundEntity */
-        $roundEntity = $this->getRoundDoctrineRepository()->findOneBy(array(
+        $roundEntity = $repo->findOneBy(array(
             'uuid' => $uuid
         ));
 
@@ -58,24 +66,8 @@ class AdminRoundController extends Controller
             throw new NotFoundHttpException();
         }
 
-        $em = $this->getDoctrine()->getManager();
-
-        /** @var MatchEntity[] $matchEntities */
-        $matchEntities = $this->getMatchDoctrineRepository()->findBy([
-            'roundUuid' => $roundEntity->getUuid()
-        ]);
-
-        /** @var MatchEntity $matchEntity */
-        foreach ($matchEntities as $matchEntity) {
-            /** @var GameEntity $gameEntity */
-            $gameEntity = $this->getGameDoctrineRepository()->findOneBy([
-                'uuid' => $matchEntity->getGameUuid()
-            ]);
-            $em->remove($gameEntity);
-            $em->remove($matchEntity);
-        }
-
-        $em->remove($roundEntity);
+        // Remove the entity and its relations
+        $repo->removeRound($roundEntity);
         $em->flush();
 
         return new Response('', 204);
@@ -89,25 +81,5 @@ class AdminRoundController extends Controller
     private function getRoundDoctrineRepository() : RoundRepository
     {
         return $this->getDoctrine()->getRepository('AppBundle:Round');
-    }
-
-    /**
-     * Return the repository object to Match entity
-     *
-     * @return MatchRepository
-     */
-    private function getMatchDoctrineRepository() : MatchRepository
-    {
-        return $this->getDoctrine()->getRepository('AppBundle:Match');
-    }
-
-    /**
-     * Return the repository object to Game entity
-     *
-     * @return GameRepository
-     */
-    private function getGameDoctrineRepository() : GameRepository
-    {
-        return $this->getDoctrine()->getRepository('AppBundle:Game');
     }
 }

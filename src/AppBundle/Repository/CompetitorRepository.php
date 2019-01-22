@@ -3,17 +3,42 @@
 namespace AppBundle\Repository;
 
 use AppBundle\Domain\Entity\Contest\Contest;
+use AppBundle\Domain\Repository\CompetitorRepositoryInterface;
+use AppBundle\Entity\Competitor as CompetitorEntity;
 use AppBundle\Entity\Contest as ContestEntity;
+use Doctrine\DBAL\Exception\InvalidArgumentException;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\NonUniqueResultException;
+use Doctrine\ORM\ORMException;
 
 /**
  * Doctrine Repository: CompetitorRepository
  *
  * @package AppBundle\Repository
  */
-class CompetitorRepository extends EntityRepository
+class CompetitorRepository extends EntityRepository implements CompetitorRepositoryInterface
 {
+    /**
+     * Removes a competitor
+     *
+     * @param mixed $competitor
+     * @return CompetitorRepositoryInterface
+     * @throws ORMException
+     * @throws InvalidArgumentException
+     */
+    public function removeCompetitor($competitor): CompetitorRepositoryInterface
+    {
+        /** @var EntityManagerInterface $em */
+        $em = $this->getEntityManager();
+
+        /** @var CompetitorEntity $competitor */
+        $competitor = $this->findCompetitorEntity($competitor);
+        $em->remove($competitor);
+
+        return $this;
+    }
+
     /**
      * Finds if there are another competitor with the same url registered
      *
@@ -69,5 +94,33 @@ class CompetitorRepository extends EntityRepository
         return $qb
             ->getQuery()
             ->getArrayResult();
+    }
+
+    /**
+     * Find Competitor entity
+     *
+     * @param mixed $competitor
+     * @return CompetitorEntity
+     * @throws InvalidArgumentException
+     */
+    protected function findCompetitorEntity($competitor): CompetitorEntity
+    {
+        if ($competitor instanceof CompetitorEntity) {
+            return $competitor;
+        }
+
+        if ($competitor instanceof Competitor) {
+            return $this->findOneBy([
+                'uuid' => $competitor->uuid()
+            ]);
+        }
+
+        if (is_string($competitor)) {
+            return $this->findOneBy([
+                'uuid' => $competitor
+            ]);
+        }
+
+        throw new InvalidArgumentException('$competitor is invalid!');
     }
 }

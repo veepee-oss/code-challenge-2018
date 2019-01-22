@@ -105,7 +105,8 @@ class MatchManager implements MatchManagerInterface
         $players = [];
         for ($i = 0; $i < $numPlayers; ++$i) {
             /** @var Participant $participant */
-            $participant = next($participants);
+            $participant = current($participants);
+            next($participants);
 
             $player = new Player(
                 $participant->competitor()->url(),

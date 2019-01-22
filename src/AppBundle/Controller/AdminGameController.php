@@ -6,6 +6,7 @@ use AppBundle\Domain\Entity\Game\Game;
 use AppBundle\Domain\Service\GameEngine\ConsumerDaemonManagerInterface;
 use AppBundle\Domain\Service\GameEngine\GameDaemonManagerInterface;
 use AppBundle\Repository\GameRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -138,8 +139,14 @@ class AdminGameController extends Controller
      */
     public function removeAction($uuid) : Response
     {
+        /** @var EntityManagerInterface $em */
+        $em = $this->getDoctrine()->getManager();
+
+        /** @var GameRepository $repo */
+        $repo = $this->getGameDoctrineRepository();
+
         /** @var \AppBundle\Entity\Game $entity */
-        $entity = $this->getGameDoctrineRepository()->findOneBy(array(
+        $entity = $repo->findOneBy(array(
             'uuid' => $uuid
         ));
 
@@ -147,11 +154,8 @@ class AdminGameController extends Controller
             throw new NotFoundHttpException();
         }
 
-        $logger = $this->get('app.logger');
-        $logger->clear($uuid);
-
-        $em = $this->getDoctrine()->getManager();
-        $em->remove($entity);
+        // Remove the entity and its relations
+        $repo->removeGame($entity);
         $em->flush();
 
         return new Response('', 204);

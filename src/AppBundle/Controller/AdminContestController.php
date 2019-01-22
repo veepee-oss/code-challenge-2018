@@ -20,6 +20,7 @@ use AppBundle\Form\RegisterCompetitor\CompetitorForm;
 use AppBundle\Repository\CompetitorRepository;
 use AppBundle\Repository\ContestRepository;
 use AppBundle\Repository\RoundRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\Form\FormError;
@@ -237,8 +238,14 @@ class AdminContestController extends Controller
      */
     public function removeAction(string $uuid) : Response
     {
+        /** @var EntityManagerInterface $em */
+        $em = $this->getDoctrine()->getManager();
+
+        /** @var ContestRepository $repo */
+        $repo = $this->getContestDoctrineRepository();
+
         /** @var ContestEntity $contestEntity */
-        $contestEntity = $this->getContestDoctrineRepository()->findOneBy(array(
+        $contestEntity = $repo->findOneBy(array(
             'uuid' => $uuid
         ));
 
@@ -246,16 +253,8 @@ class AdminContestController extends Controller
             throw new NotFoundHttpException();
         }
 
-        /** @var CompetitorEntity $competitorEntities */
-        $competitorEntities = $this->getCompetitorDoctrineRepository()->findBy([
-            'contestUuid' => $uuid
-        ]);
-
-        $em = $this->getDoctrine()->getManager();
-        foreach ($competitorEntities as $competitorEntity) {
-            $em->remove($competitorEntity);
-        }
-        $em->remove($contestEntity);
+        // Remove the entity and its relations
+        $repo->removeContest($contestEntity);
         $em->flush();
 
         return new Response('', 204);
@@ -328,8 +327,14 @@ class AdminContestController extends Controller
      */
     public function competitorRemoveAction(string $uuid) : Response
     {
+        /** @var EntityManagerInterface $em */
+        $em = $this->getDoctrine()->getManager();
+
+        /** @var CompetitorRepository $repo */
+        $repo = $this->getCompetitorDoctrineRepository();
+
         /** @var CompetitorEntity $competitorEntity */
-        $competitorEntity = $this->getCompetitorDoctrineRepository()->findOneBy(array(
+        $competitorEntity = $repo->findOneBy(array(
             'uuid' => $uuid
         ));
 
@@ -337,8 +342,8 @@ class AdminContestController extends Controller
             throw new NotFoundHttpException();
         }
 
-        $em = $this->getDoctrine()->getManager();
-        $em->remove($competitorEntity);
+        // Remove the entity and its relations
+        $repo->removeCompetitor($competitorEntity);
         $em->flush();
 
         return new Response('', 204);
