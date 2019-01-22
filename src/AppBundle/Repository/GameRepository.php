@@ -38,7 +38,7 @@ class GameRepository extends EntityRepository implements GameRepositoryInterface
 
         /** @var LoggerEntity[] $loggers */
         $loggers = $loggerRepo->findBy([
-            'contestUuid' => $game->getUuid()
+            'gameUuid' => $game->getUuid()
         ]);
 
         /** @var LoggerEntity $logger */
