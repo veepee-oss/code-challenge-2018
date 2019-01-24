@@ -147,6 +147,15 @@ class Game
     private $killedGhosts;
 
     /**
+     * UUID of the match (optional)
+     *
+     * @var string
+     *
+     * @ORM\Column(name="match_uuid", type="string", length=36, nullable=true)
+     */
+    private $matchUuid;
+
+    /**
      * Game constructor.
      *
      * @param $source
@@ -169,6 +178,7 @@ class Game
             $this->players = array();
             $this->ghosts = array();
             $this->killedGhosts = array();
+            $this->matchUuid = null;
         } elseif ($source instanceof Game) {
             $this->id = $source->getId();
             $this->uuid = $source->getUuid();
@@ -184,6 +194,7 @@ class Game
             $this->players = $source->getPlayers();
             $this->ghosts = $source->getGhosts();
             $this->killedGhosts = $source->getKilledGhosts();
+            $this->matchUuid = $source->getMatchUuid();
         } elseif ($source instanceof DomainGame\Game) {
             $this->id = null;
             $this->fromDomainEntity($source);
@@ -230,7 +241,8 @@ class Game
             $this->moves,
             $this->limit,
             $this->uuid,
-            $this->name
+            $this->name,
+            $this->matchUuid
         );
     }
 
@@ -253,6 +265,7 @@ class Game
         $this->setMinGhosts($game->minGhosts());
         $this->setLimit($game->limit());
         $this->setMoves($game->moves());
+        $this->setMatchUuid($game->matchUUid());
         return $this;
     }
 
@@ -591,5 +604,27 @@ class Game
     public function getKilledGhosts()
     {
         return $this->killedGhosts;
+    }
+
+    /**
+     * Get the match UUID (optional)
+     *
+     * @return string
+     */
+    public function getMatchUuid(): string
+    {
+        return $this->matchUuid;
+    }
+
+    /**
+     * Set the match UUID (optional)
+     *
+     * @param string|null $matchUuid
+     * @return Game
+     */
+    public function setMatchUuid(?string $matchUuid): Game
+    {
+        $this->matchUuid = $matchUuid;
+        return $this;
     }
 }

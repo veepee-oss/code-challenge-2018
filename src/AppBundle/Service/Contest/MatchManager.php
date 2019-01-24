@@ -4,6 +4,7 @@ namespace AppBundle\Service\Contest;
 
 use AppBundle\Domain\Entity\Contest\Match;
 use AppBundle\Domain\Entity\Contest\Participant;
+use AppBundle\Domain\Entity\Contest\Result;
 use AppBundle\Domain\Entity\Contest\Round;
 use AppBundle\Domain\Entity\Game\Game;
 use AppBundle\Domain\Entity\Maze\Maze;
@@ -11,6 +12,7 @@ use AppBundle\Domain\Entity\Player\Player;
 use AppBundle\Domain\Service\Contest\MatchManagerInterface;
 use AppBundle\Domain\Service\GameEngine\GameEngine;
 use AppBundle\Domain\Service\MazeBuilder\MazeBuilderInterface;
+use Ramsey\Uuid\Uuid;
 
 /**
  * Service to create the matches for a round, including the games
@@ -111,6 +113,9 @@ class MatchManager implements MatchManagerInterface
         /** @var Player[] $players */
         $players = [];
 
+        /** @var Result[] $results */
+        $results = [];
+
         /** @var Participant $participant */
         foreach ($participants as $participant) {
             $player = new Player(
@@ -124,11 +129,19 @@ class MatchManager implements MatchManagerInterface
             );
 
             $players[] = $player;
+
+            $results[] = new Result(
+                $participant->competitor()->uuid(),
+                $player->uuid(),
+                null
+            );
         }
 
         $name = $round->name()
             . ' - Group ' . $groupNum
             . ' - Match ' . $matchNum;
+
+        $matchUuid = Uuid::uuid4()->toString();
 
         /** @var Game $game */
         $game = $this->gameEngine->create(
@@ -137,15 +150,16 @@ class MatchManager implements MatchManagerInterface
             $round->ghostRate(),
             $round->minGhosts(),
             $round->limit(),
-            $name
+            $name,
+            $matchUuid
         );
 
         $match = new Match(
-            null,
+            $matchUuid,
             $round->uuid(),
             $game->uuid(),
             null,
-            []
+            $results
         );
 
         $match->setGame($game);

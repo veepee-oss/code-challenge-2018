@@ -18,6 +18,50 @@ use Doctrine\ORM\ORMException;
 class MatchRepository extends EntityRepository implements MatchRepositoryInterface
 {
     /**
+     * Reads a match from the database
+     *
+     * @param string $uuid
+     * @return Match
+     */
+    public function readMarch(string $uuid): Match
+    {
+        try {
+            $matchEntity = $this->findMatchEntity($uuid);
+            if (null == $matchEntity) {
+                return null;
+            }
+
+            return $matchEntity->toDomainEntity();
+        } catch (\Exception $exc) {
+            return null;
+        }
+    }
+
+    /**
+     * Persists a match in the database
+     *
+     * @param Match $match
+     * @param bool $autoFlush
+     * @return MatchRepositoryInterface
+     * @throws InvalidArgumentException
+     */
+    public function persistMatch(Match $match, bool $autoFlush = false): MatchRepositoryInterface
+    {
+        /** @var EntityManagerInterface $em */
+        $em = $this->getEntityManager();
+
+        $matchEntity = $this->findMatchEntity($match->uuid());
+        $matchEntity->fromDomainEntity($match);
+
+        $em->persist($match);
+        if ($autoFlush) {
+            $em->flush();
+        }
+
+        return $this;
+    }
+
+    /**
      * Removes a match
      *
      * @param mixed $match

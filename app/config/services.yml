@@ -32,6 +32,8 @@ services:
         arguments:
             - "@app.game.move_players_async.service"
             - "@app.ghost.move.factory"
+            - "@=service('doctrine.orm.entity_manager').getRepository('AppBundle:Match')"
+            - "@app.contest.score-calculator"
             - "@logger"
         public: true
 
@@ -134,6 +136,10 @@ services:
         arguments:
             - "@app.maze.builder"
             - "@app.game.engine"
+        public: true
+
+    app.contest.score-calculator:
+        class: AppBundle\Domain\Service\Contest\ScoreCalculator
         public: true
 
     app.logger:

@@ -64,6 +64,9 @@ class Game
     /** @var string the name of the game (optional) */
     protected $name;
 
+    /** @var string the uuid of the match (optional) */
+    protected $matchUUid;
+
     /**
      * Game constructor.
      *
@@ -78,6 +81,7 @@ class Game
      * @param int $limit
      * @param string $uuid
      * @param string $name
+     * @param string $matchUUid
      * @throws \Exception
      */
     public function __construct(
@@ -91,7 +95,8 @@ class Game
         $moves = 0,
         $limit = self::DEFAULT_MOVES_LIMIT,
         $uuid = null,
-        $name = null
+        $name = null,
+        $matchUUid = null
     ) {
         $this->maze = $maze;
         $this->players = $players;
@@ -104,6 +109,7 @@ class Game
         $this->limit = $limit;
         $this->uuid = $uuid ?: Uuid::uuid4()->toString();
         $this->name = $name ?: $this->uuid;
+        $this->matchUUid = $matchUUid;
     }
 
     /**
@@ -217,6 +223,16 @@ class Game
     }
 
     /**
+     * Get the uuid of the match (optional)
+     *
+     * @return string|null
+     */
+    public function matchUUid(): ?string
+    {
+        return $this->matchUUid;
+    }
+
+    /**
      * Returns if the game is started
      *
      * @return bool
@@ -296,6 +312,7 @@ class Game
      * Resets the game to its initial position
      *
      * @return $this
+     * @throws \Exception
      */
     public function resetPlaying()
     {
@@ -448,7 +465,7 @@ class Game
             $condition = $p2->score() <=> $p1->score();
             if (0 == $condition) {
                 // Order by timestamp when the same score
-                $condition = $p2->timestamp()->getTimestamp() <=> $p1->timestamp()->getTimestamp();
+                $condition = $p1->timestamp()->getTimestamp() <=> $p2->timestamp()->getTimestamp();
             }
             return $condition;
         });

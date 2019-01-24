@@ -32,13 +32,13 @@ class Result
      *
      * @param string $competitor
      * @param string $player
-     * @param int $score
+     * @param int|null $score
      */
-    public function __construct(string $competitor, string $player, int $score)
+    public function __construct(string $competitor, string $player, ?int $score)
     {
         $this->competitor = $competitor;
         $this->player = $player;
-        $this->score = $score;
+        $this->score = $score ?? 0;
     }
 
     /**
@@ -63,6 +63,16 @@ class Result
     public function score(): int
     {
         return $this->score;
+    }
+
+    /**
+     * @param int $score
+     * @return Result
+     */
+    public function setScore(int $score): Result
+    {
+        $this->score = $score;
+        return $this;
     }
 
     /**
@@ -97,5 +107,21 @@ class Result
             $playerUuid,
             $score
         );
+    }
+
+    /**
+     * Get the scores array
+     *
+     * @return array
+     */
+    public static function awards()
+    {
+        return [
+            self::SCORE_GOLD,
+            self::SCORE_SILVER,
+            self::SCORE_BRONZE,
+            self::SCORE_FORTH,
+            self::SCORE_FIFTH
+        ];
     }
 }

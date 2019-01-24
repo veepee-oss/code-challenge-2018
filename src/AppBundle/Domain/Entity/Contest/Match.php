@@ -60,7 +60,7 @@ class Match
         /** @var Result $result */
         foreach ($results as $result) {
             $this->results[] = clone $result;
-        };
+        }
     }
 
     /**
@@ -96,11 +96,70 @@ class Match
     }
 
     /**
+     * Return if the status is finished
+     *
+     * @return bool
+     */
+    public function isFinished(): bool
+    {
+        return $this->status >= self::STATUS_FINISHED;
+    }
+
+    /**
+     * Return if the status is validated
+     *
+     * @return bool
+     */
+    public function isValidated(): bool
+    {
+        return $this->status == self::STATUS_VALIDATED;
+    }
+
+    /**
+     * Set the status finished
+     *
+     * @return Match
+     */
+    public function setFinished(): Match
+    {
+        $this->status = self::STATUS_FINISHED;
+        return $this;
+    }
+
+    /**
+     * Set the status validated
+     *
+     * @return Match
+     */
+    public function setValidated(): Match
+    {
+        $this->status = self::STATUS_VALIDATED;
+        return $this;
+    }
+
+    /**
      * @return Result[]
      */
     public function results(): array
     {
         return $this->results;
+    }
+
+    /**
+     * Updates a result
+     *
+     * @param string $player
+     * @param int $score
+     * @return Match
+     */
+    public function setResultScore(string $player, int $score): Match
+    {
+        foreach ($this->results as $result) {
+            if ($player == $result->player()) {
+                $result->setScore($score);
+            }
+        }
+        return $this;
     }
 
     /**

@@ -9,6 +9,9 @@ use AppBundle\Domain\Entity\Maze\Maze;
 use AppBundle\Domain\Entity\Maze\MazeCell;
 use AppBundle\Domain\Entity\Player\Player;
 use AppBundle\Domain\Entity\Position\Position;
+use AppBundle\Domain\Repository\MatchRepositoryInterface;
+use AppBundle\Domain\Service\Contest\ScoreCalculatorException;
+use AppBundle\Domain\Service\Contest\ScoreCalculatorInterface;
 use AppBundle\Domain\Service\MoveGhost\MoveGhostException;
 use AppBundle\Domain\Service\MoveGhost\MoveGhostFactory;
 use AppBundle\Domain\Service\MovePlayer\MoveAllPlayersServiceInterface;
@@ -28,6 +31,12 @@ class GameEngine
     /** @var  MoveGhostFactory */
     protected $moveGhostFactory;
 
+    /** @var MatchRepositoryInterface */
+    protected $matchRepo;
+
+    /** @var ScoreCalculatorInterface */
+    protected $scoreCalculator;
+
     /** @var LoggerInterface */
     protected $logger;
 
@@ -41,15 +50,21 @@ class GameEngine
      *
      * @param MoveAllPlayersServiceInterface $moveAllPlayersService
      * @param MoveGhostFactory $moveGhostFactory
+     * @param MatchRepositoryInterface $matchRepo
+     * @param ScoreCalculatorInterface $scoreCalculator
      * @param LoggerInterface $logger
      */
     public function __construct(
         MoveAllPlayersServiceInterface $moveAllPlayersService,
         MoveGhostFactory $moveGhostFactory,
+        MatchRepositoryInterface $matchRepo,
+        ScoreCalculatorInterface $scoreCalculator,
         LoggerInterface $logger
     ) {
         $this->moveAllPlayersService = $moveAllPlayersService;
         $this->moveGhostFactory = $moveGhostFactory;
+        $this->matchRepo = $matchRepo;
+        $this->scoreCalculator = $scoreCalculator;
         $this->logger = $logger;
     }
 
@@ -61,7 +76,8 @@ class GameEngine
      * @param int $ghostRate
      * @param int $minGhosts
      * @param int $limitMoves
-     * @param string $name
+     * @param string|null $name
+     * @param string|null $matchUuid
      * @return Game
      * @throws \Exception
      */
@@ -71,7 +87,8 @@ class GameEngine
         int $ghostRate,
         int $minGhosts,
         int $limitMoves,
-        ?string $name
+        ?string $name,
+        ?string $matchUuid = null
     ) : Game {
         $game = new Game(
             $maze,
@@ -84,7 +101,8 @@ class GameEngine
             0,
             $limitMoves,
             null,
-            $name
+            $name,
+            $matchUuid
         );
 
         $this->createGhosts($game);
@@ -97,6 +115,7 @@ class GameEngine
      *
      * @param Game $game
      * @return $this
+     * @throws \Exception
      */
     public function reset(Game &$game) : GameEngine
     {
@@ -110,6 +129,7 @@ class GameEngine
      *
      * @param Game $game
      * @return bool TRUE if the game is not finished
+     * @throws \Exception
      */
     public function move(Game &$game) : bool
     {
@@ -123,29 +143,11 @@ class GameEngine
 
         $game->incMoves();
         if ($game->finished()) {
+            $this->updateScores($game);
             return false;
         }
 
         return true;
-    }
-
-    /**
-     * Resets players fire
-     *
-     * @param Game $game
-     * @return $this
-     */
-    protected function resetFire(Game& $game) : GameEngine
-    {
-        $this->logger->debug(
-            'Game engine - Reset firing direction for all players of game ' . $game->uuid()
-        );
-
-        foreach ($game->players() as $player) {
-            $player->resetFiringDir();
-        }
-
-        return $this;
     }
 
     /**
@@ -170,10 +172,30 @@ class GameEngine
     }
 
     /**
+     * Resets players fire
+     *
+     * @param Game $game
+     * @return $this
+     */
+    protected function resetFire(Game& $game) : GameEngine
+    {
+        $this->logger->debug(
+            'Game engine - Reset firing direction for all players of game ' . $game->uuid()
+        );
+
+        foreach ($game->players() as $player) {
+            $player->resetFiringDir();
+        }
+
+        return $this;
+    }
+
+    /**
      * Checks the players positions searching overlapping
      *
      * @param Game $game
      * @return $this
+     * @throws \Exception
      */
     protected function checkPlayersPositions(Game &$game) : GameEngine
     {
@@ -198,6 +220,7 @@ class GameEngine
      *
      * @param Game $game
      * @return GameEngine
+     * @throws \Exception
      */
     protected function checkPlayersFire(Game& $game) : GameEngine
     {
@@ -253,6 +276,7 @@ class GameEngine
      *
      * @param Game $game
      * @return $this
+     * @throws \Exception
      */
     protected function moveGhosts(Game &$game) : GameEngine
     {
@@ -285,8 +309,9 @@ class GameEngine
      * Checks if a ghost killed a player. If a player is killed the ghost also dies.
      *
      * @param Ghost $ghost
-     * @param Game  $game
+     * @param Game $game
      * @return bool true if the ghost still alive, false in other case
+     * @throws \Exception
      */
     protected function checkGhostKill(Ghost $ghost, Game& $game) : bool
     {
@@ -359,7 +384,7 @@ class GameEngine
      * @param int $type
      * @return $this
      */
-    protected function createNewGhost(Game &$game, $type = Ghost::TYPE_RANDOM) : GameEngine
+    protected function createNewGhost(Game &$game, $type = Ghost::TYPE_RANDOM): GameEngine
     {
         $maze = $game->maze();
         do {
@@ -367,6 +392,31 @@ class GameEngine
             $x = rand(1, $maze->width() - 2);
         } while ($maze[$y][$x]->getContent() != MazeCell::CELL_EMPTY);
         $game->addGhost(new Ghost(new Position($y, $x), null, $type));
+        return $this;
+    }
+
+    /**
+     * Updates the scores when the game belongs to a contest
+     *
+     * @param Game $game
+     * @return GameEngine
+     */
+    protected function updateScores(Game& $game): GameEngine
+    {
+        if (null !== $game->matchUUid()) {
+            $math = $this->matchRepo->readMarch($game->matchUUid());
+            if (null !== $math) {
+                $math->setGame($game);
+                try {
+                    $this->scoreCalculator->calculateMatchScore($math);
+                    $this->matchRepo->persistMatch($math, true);
+                } catch (ScoreCalculatorException $exc) {
+                    $this->logger->debug(
+                        'Game engine - Calculating scores for match ' . $game->uuid()
+                    );
+                }
+            }
+        }
         return $this;
     }
 }
