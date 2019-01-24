@@ -51,11 +51,40 @@ class Participant
     }
 
     /**
+     * @return Participant
+     */
+    public function resetScore(): Participant
+    {
+        $this->score = 0;
+        return $this;
+    }
+
+    /**
+     * @param int $score
+     * @return Participant
+     */
+    public function addScore(int $score): Participant
+    {
+        $this->score += $score;
+        return $this;
+    }
+
+    /**
      * @return bool
      */
     public function classified(): bool
     {
         return $this->classified;
+    }
+
+    /**
+     * @param bool $classified
+     * @return Participant
+     */
+    public function setClassified(bool $classified): Participant
+    {
+        $this->classified = $classified;
+        return $this;
     }
 
     /**

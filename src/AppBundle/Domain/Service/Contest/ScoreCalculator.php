@@ -4,6 +4,7 @@ namespace AppBundle\Domain\Service\Contest;
 
 use AppBundle\Domain\Entity\Contest\Match;
 use AppBundle\Domain\Entity\Contest\Result;
+use AppBundle\Domain\Entity\Contest\Round;
 
 /**
  * Service to calculate the score of each player of a match or round
@@ -16,10 +17,10 @@ class ScoreCalculator implements ScoreCalculatorInterface
      * Calculates the score of each player for a match
      *
      * @param Match $match
-     * @return void
+     * @return $this
      * @throws ScoreCalculatorException
      */
-    public function calculateMatchScore(Match $match): void
+    public function calculateMatchScore(Match $match): ScoreCalculatorInterface
     {
         $game = $match->game();
         if (null == $game) {
@@ -52,5 +53,36 @@ class ScoreCalculator implements ScoreCalculatorInterface
         if (!$match->isFinished()) {
             $match->setFinished();
         }
+
+        return $this;
+    }
+
+    /**
+     * Calculates the score of each player for a round
+     *
+     * @param Round $round
+     * @param Match[] $matches
+     * @return $this
+     * @throws ScoreCalculatorException
+     */
+    public function calculateRoundScore(Round $round, array $matches): ScoreCalculatorInterface
+    {
+        $round->resetParticipantScores();
+
+        $roundFinished = true;
+        foreach ($matches as $match) {
+            if (!$match->isFinished()) {
+                $roundFinished = false;
+            } else {
+                $round->calculateParticipantScores($match);
+            }
+        }
+
+        if ($roundFinished) {
+            $round->setFinished();
+            $round->calculateParticipantClassification();
+
+        }
+        return $this;
     }
 }

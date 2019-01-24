@@ -135,6 +135,23 @@ class Round
     }
 
     /**
+     * @return bool
+     */
+    public function isFinished(): bool
+    {
+        return $this->status == self::STATUS_FINISHED;
+    }
+
+    /**
+     * @return Round
+     */
+    public function setFinished(): Round
+    {
+        $this->status = self::STATUS_FINISHED;
+        return $this;
+    }
+
+    /**
      * @return int
      */
     public function height(): int
@@ -199,6 +216,45 @@ class Round
     public function addParticipant(Participant $participant): Round
     {
         $this->participants[] = clone $participant;
+        return $this;
+    }
+
+    /**
+     * Resets the scores of the participants of the round
+     *
+     * @return Round
+     */
+    public function resetParticipantScores(): Round
+    {
+        foreach ($this->participants() as $participant) {
+            $participant->resetScore();
+            $participant->setClassified(false);
+        }
+        return $this;
+    }
+
+    /**
+     * Accumulates the results of a match into the round
+     *
+     * @param Match $match
+     * @return Round
+     */
+    public function calculateParticipantScores(Match $match): Round
+    {
+        /** @var Result $result */
+        foreach ($match->results() as $result) {
+            foreach ($this->participants() as $participant) {
+                if ($result->competitor() == $participant->competitor()->uuid()) {
+                    $participant->addScore($result->score());
+                }
+            }
+        }
+        return $this;
+    }
+
+    public function calculateParticipantClassification(): Round
+    {
+        // TODO
         return $this;
     }
 }
