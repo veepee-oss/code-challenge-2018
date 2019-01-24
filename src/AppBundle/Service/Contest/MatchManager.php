@@ -62,15 +62,22 @@ class MatchManager implements MatchManagerInterface
             $minGroups = $numGroups - $maxGroups;
 
             for ($groupNum = 1; $groupNum <= $round->numMatches(); ++$groupNum) {
-                $matchNum = 1;
                 shuffle($participants);
-                for ($i = 0; $i < $minGroups; ++$i) {
-                    $match = $this->createMatch($round, $participants, $minPlayers, $groupNum, $matchNum++);
-                    $matches[] = $match;
 
+                $matchNum = 1;
+                $firstPlayer = 0;
+
+                for ($i = 0; $i < $minGroups; ++$i) {
+                    $matchParticipants = array_slice($participants, $firstPlayer, $minPlayers);
+                    $match = $this->createMatch($round, $matchParticipants, $groupNum, $matchNum++);
+                    $firstPlayer += $minPlayers;
+                    $matches[] = $match;
                 }
+
                 for ($i = 0; $i < $maxGroups; ++$i) {
-                    $match = $this->createMatch($round, $participants, $maxPlayers, $groupNum, $matchNum++);
+                    $matchParticipants = array_slice($participants, $firstPlayer, $minPlayers);
+                    $match = $this->createMatch($round, $matchParticipants, $groupNum, $matchNum++);
+                    $firstPlayer += $maxPlayers;
                     $matches[] = $match;
                 }
             }
@@ -84,7 +91,6 @@ class MatchManager implements MatchManagerInterface
      *
      * @param Round         $round
      * @param Participant[] $participants
-     * @param int           $numPlayers
      * @param int           $groupNum
      * @param int           $matchNum
      * @return Match
@@ -93,7 +99,6 @@ class MatchManager implements MatchManagerInterface
     protected function createMatch(
         Round $round,
         array $participants,
-        int $numPlayers,
         int $groupNum,
         int $matchNum
     ): Match {
@@ -105,11 +110,9 @@ class MatchManager implements MatchManagerInterface
 
         /** @var Player[] $players */
         $players = [];
-        for ($i = 0; $i < $numPlayers; ++$i) {
-            /** @var Participant $participant */
-            $participant = current($participants);
-            next($participants);
 
+        /** @var Participant $participant */
+        foreach ($participants as $participant) {
             $player = new Player(
                 $participant->competitor()->url(),
                 $maze->createStartPosition()
