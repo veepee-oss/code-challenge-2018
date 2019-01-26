@@ -38,6 +38,9 @@ class Match
     const STATUS_FINISHED = 16;
     const STATUS_VALIDATED = 32;
 
+    /** @var int the maximum number of players per match */
+    const MAX_PLAYERS_PER_MATCH = 9;
+
     /**
      * Match constructor
      *

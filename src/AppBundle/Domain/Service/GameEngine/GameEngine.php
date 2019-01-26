@@ -404,7 +404,7 @@ class GameEngine
     protected function updateScores(Game& $game): GameEngine
     {
         if (null !== $game->matchUUid()) {
-            $math = $this->matchRepo->readMarch($game->matchUUid());
+            $math = $this->matchRepo->readMatch($game->matchUUid());
             if (null !== $math) {
                 $math->setGame($game);
                 try {

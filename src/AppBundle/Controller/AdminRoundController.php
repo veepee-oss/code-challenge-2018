@@ -2,32 +2,15 @@
 
 namespace AppBundle\Controller;
 
-
-use AppBundle\Domain\Entity\Contest\Competitor;
-use AppBundle\Domain\Entity\Contest\Contest;
-use AppBundle\Domain\Entity\Contest\Participant;
+use AppBundle\Domain\Entity\Contest\Match;
 use AppBundle\Domain\Entity\Contest\Round;
-use AppBundle\Entity\Competitor as CompetitorEntity;
-use AppBundle\Entity\Contest as ContestEntity;
-use AppBundle\Entity\Game as GameEntity;
-use AppBundle\Entity\Match as MatchEntity;
+use AppBundle\Domain\Service\Contest\ScoreCalculatorInterface;
 use AppBundle\Entity\Round as RoundEntity;
-use AppBundle\Form\CreateContest\ContestEntity as ContestFormEntity;
-use AppBundle\Form\CreateContest\ContestForm;
-use AppBundle\Form\CreateRound\RoundEntity as RoundFormEntity;
-use AppBundle\Form\CreateRound\RoundForm;
-use AppBundle\Form\RegisterCompetitor\CompetitorEntity as CompetitorFormEntity;
-use AppBundle\Form\RegisterCompetitor\CompetitorForm;
-use AppBundle\Repository\CompetitorRepository;
-use AppBundle\Repository\ContestRepository;
-use AppBundle\Repository\GameRepository;
 use AppBundle\Repository\MatchRepository;
 use AppBundle\Repository\RoundRepository;
-use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
@@ -40,6 +23,54 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 class AdminRoundController extends Controller
 {
     /**
+     * Validate the scores of a round
+     *
+     * @Route("/{uuid}/validate", name="admin_round_validate",
+     *     requirements={"uuid": "[0-9a-f]{8}\-[0-9a-f]{4}\-[0-9a-f]{4}\-[0-9a-f]{4}\-[0-9a-f]{12}"})
+     *
+     * @param string $uuid
+     * @return Response
+     * @throws \Exception
+     */
+    public function validateAction(string $uuid) : Response
+    {
+        /** @var EntityManagerInterface $em */
+        $em = $this->getDoctrine()->getManager();
+
+        /** @var RoundRepository $roundRepo */
+        $roundRepo = $this->getRoundDoctrineRepository();
+
+        /** @var RoundEntity $roundEntity */
+        $roundEntity = $roundRepo->findOneBy(array(
+            'uuid' => $uuid
+        ));
+
+        if (!$roundEntity) {
+            throw new NotFoundHttpException();
+        }
+
+        /** @var Round $round */
+        $round = $roundEntity->toDomainEntity();
+
+        /** @var MatchRepository $matchRepo */
+        $matchRepo = $this->getMatchDoctrineRepository();
+
+        /** @var Match[] $matches */
+        $matches = $matchRepo->readMatches($round->uuid());
+
+        /** @var ScoreCalculatorInterface $scoreCalculator */
+        $scoreCalculator = $this->get('app.contest.score-calculator');
+        $scoreCalculator->calculateRoundScore($round, $matches);
+
+        $matchRepo->persistMatches($matches, false);
+        $roundEntity->fromDomainEntity($round);
+        $em->persist($roundEntity);
+        $em->flush();
+
+        return new Response('', 204);
+    }
+
+    /**
      * Remove a round and all its matches
      *
      * @Route("/{uuid}/remove", name="admin_round_remove",
@@ -51,9 +82,6 @@ class AdminRoundController extends Controller
      */
     public function removeAction(string $uuid) : Response
     {
-        /** @var EntityManagerInterface $em */
-        $em = $this->getDoctrine()->getManager();
-
         /** @var RoundRepository $repo */
         $repo = $this->getRoundDoctrineRepository();
 
@@ -68,6 +96,9 @@ class AdminRoundController extends Controller
 
         // Remove the entity and its relations
         $repo->removeRound($roundEntity);
+
+        /** @var EntityManagerInterface $em */
+        $em = $this->getDoctrine()->getManager();
         $em->flush();
 
         return new Response('', 204);
@@ -80,6 +111,20 @@ class AdminRoundController extends Controller
      */
     private function getRoundDoctrineRepository() : RoundRepository
     {
-        return $this->getDoctrine()->getRepository('AppBundle:Round');
+        /** @var RoundRepository $repo */
+        $repo = $this->getDoctrine()->getRepository('AppBundle:Round');
+        return $repo;
+    }
+
+    /**
+     * Return the repository object to Match entity
+     *
+     * @return MatchRepository
+     */
+    private function getMatchDoctrineRepository() : MatchRepository
+    {
+        /** @var MatchRepository $repo */
+        $repo = $this->getDoctrine()->getRepository('AppBundle:Match');
+        return $repo;
     }
 }

@@ -27,9 +27,6 @@ class MatchManager implements MatchManagerInterface
     /** @var GameEngine */
     private $gameEngine;
 
-    /** @var int Constant */
-    const MAX_PLAYERS_PER_MATCH = 9;
-
     /**
      * MatchManager constructor
      *
@@ -57,13 +54,13 @@ class MatchManager implements MatchManagerInterface
         $participants = $round->participants();
         if (!empty($participants)) {
             $numPlayers = count($participants);
-            $numGroups = ceil((float)$numPlayers / self::MAX_PLAYERS_PER_MATCH);
+            $numGroups = ceil((float)$numPlayers / Match::MAX_PLAYERS_PER_MATCH);
             $maxPlayers = ceil((float)$numPlayers / $numGroups);
             $maxGroups = $numPlayers % $numGroups;
             $minPlayers = $maxPlayers - ($maxGroups > 0 ? 1 : 0);
             $minGroups = $numGroups - $maxGroups;
 
-            for ($groupNum = 1; $groupNum <= $round->numMatches(); ++$groupNum) {
+            for ($groupNum = 1; $groupNum <= $round->matchesPerPlayer(); ++$groupNum) {
                 shuffle($participants);
 
                 $matchNum = 1;

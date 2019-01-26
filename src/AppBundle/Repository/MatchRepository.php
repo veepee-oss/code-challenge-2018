@@ -8,7 +8,6 @@ use AppBundle\Entity\Match as MatchEntity;
 use Doctrine\DBAL\Exception\InvalidArgumentException;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
-use Doctrine\ORM\ORMException;
 
 /**
  * Doctrine Repository: MatchRepository
@@ -23,7 +22,7 @@ class MatchRepository extends EntityRepository implements MatchRepositoryInterfa
      * @param string $uuid
      * @return Match
      */
-    public function readMarch(string $uuid): Match
+    public function readMatch(string $uuid): Match
     {
         try {
             $matchEntity = $this->findMatchEntity($uuid);
@@ -34,6 +33,29 @@ class MatchRepository extends EntityRepository implements MatchRepositoryInterfa
             return $matchEntity->toDomainEntity();
         } catch (\Exception $exc) {
             return null;
+        }
+    }
+
+    /**
+     * Reads all the matches of a round
+     *
+     * @param string $roundUuid
+     * @return Match[]
+     */
+    public function readMatches(string $roundUuid): array
+    {
+        try {
+            /** @var MatchEntity[] $matchEntities */
+            $matchEntities = $this->findBy(['roundUuid' => $roundUuid]);
+
+            $matches = [];
+            foreach ($matchEntities as $matchEntity) {
+                $matches[] = $matchEntity->toDomainEntity();
+            }
+
+            return $matches;
+        } catch (\Exception $exc) {
+            return [];
         }
     }
 
@@ -53,8 +75,32 @@ class MatchRepository extends EntityRepository implements MatchRepositoryInterfa
         $matchEntity = $this->findMatchEntity($match->uuid());
         $matchEntity->fromDomainEntity($match);
 
-        $em->persist($match);
+        $em->persist($matchEntity);
         if ($autoFlush) {
+            $em->flush();
+        }
+
+        return $this;
+    }
+
+    /**
+     * Persists an array of matches in the database
+     *
+     * @param Match[] $matches
+     * @param bool $autoFlush
+     * @return MatchRepositoryInterface
+     * @throws InvalidArgumentException
+     */
+    public function persistMatches(array $matches, bool $autoFlush = false): MatchRepositoryInterface
+    {
+        /** @var Match $match */
+        foreach ($matches as $match) {
+            $this->persistMatch($match, false);
+        }
+
+        if ($autoFlush) {
+            /** @var EntityManagerInterface $em */
+            $em = $this->getEntityManager();
             $em->flush();
         }
 
@@ -67,7 +113,6 @@ class MatchRepository extends EntityRepository implements MatchRepositoryInterfa
      * @param mixed $match
      * @return MatchRepositoryInterface
      * @throws InvalidArgumentException
-     * @throws ORMException
      */
     public function removeMatch($match): MatchRepositoryInterface
     {

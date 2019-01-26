@@ -256,7 +256,9 @@ app:
                 contest:        "Remove contest %name%?"
                 competitor:     "Remove competitor %email%?"
                 round:          "Remove round %name%?"
-            ask-validate:   "Validate competitor %email%?"
+            ask-validate:
+                email:          "Validate competitor %email%?"
+                round:          "Validate round %name% scores?"
 
         buttons:
             edit:           "Edit"
@@ -266,6 +268,7 @@ app:
             add-round:      "Add round"
             go-back:        "Go back"
             validate:       "Validate"
+            val-scores:     "Validate scores"
 
     round-create:
         title:          "Create round"

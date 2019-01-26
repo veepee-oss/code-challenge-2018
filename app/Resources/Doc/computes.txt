@@ -10,6 +10,8 @@
 
 	[19] => 3 groups => 7+6+6 => 9 winners
 
+	[26] => 3 groups => 9+9+8 => 9 winners
+
 28 - 81 -> quarter + semis + final
 
 	[36] => 4 groups => 9+9+9+9 => 12 winners

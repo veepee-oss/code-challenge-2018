@@ -9,7 +9,6 @@ use AppBundle\Entity\Round as RoundEntity;
 use Doctrine\DBAL\Exception\InvalidArgumentException;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
-use Doctrine\ORM\ORMException;
 
 /**
  * Doctrine Repository: RoundRepository
@@ -23,7 +22,6 @@ class RoundRepository extends EntityRepository implements RoundRepositoryInterfa
      *
      * @param mixed $round
      * @return RoundRepositoryInterface
-     * @throws ORMException
      * @throws InvalidArgumentException
      */
     public function removeRound($round): RoundRepositoryInterface
@@ -32,15 +30,15 @@ class RoundRepository extends EntityRepository implements RoundRepositoryInterfa
         $em = $this->getEntityManager();
 
         /** @var RoundEntity $round */
-        $round = $this->findRoundEntity($round);
-        $em->remove($round);
+        $roundEntity = $this->findRoundEntity($round);
+        $em->remove($roundEntity);
 
         /** @var MatchRepository $matchRepo */
         $matchRepo = $em->getRepository('AppBundle:Match');
 
         /** @var Match[] $matches */
         $matches = $matchRepo->findBy([
-            'roundUuid' => $round->getUuid()
+            'roundUuid' => $roundEntity->getUuid()
         ]);
 
         /** @var Match $match */

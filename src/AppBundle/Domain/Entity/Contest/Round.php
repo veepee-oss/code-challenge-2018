@@ -42,7 +42,7 @@ class Round
     private $limit;
 
     /** @var int number of matches per player to do */
-    private $numMatches;
+    private $matchesPerPlayer;
 
     /** @var Participant[] the participants of the round */
     private $participants;
@@ -52,7 +52,10 @@ class Round
     const STATUS_FINISHED = 16;
 
     /** @var int the default matches per player */
-    const DEFAULT_NUM_MATCHES = 3;
+    const DEFAULT_MATCHES_PER_PLAYER = 3;
+
+    /** @var int the maximum number of winners per round */
+    const MAX_WINNERS_PER_ROUND = 3;
 
     /**
      * Round constructor
@@ -66,7 +69,7 @@ class Round
      * @param int $minGhosts
      * @param int $ghostRate
      * @param int $limit
-     * @param int $numMatches
+     * @param int $matchesPerPlayer
      * @param array|null $participants
      * @throws \Exception
      */
@@ -80,7 +83,7 @@ class Round
         int $minGhosts,
         int $ghostRate,
         int $limit,
-        int $numMatches,
+        int $matchesPerPlayer,
         ?array $participants
     ) {
         $this->uuid = $uuid ?? Uuid::uuid4()->toString();
@@ -92,7 +95,7 @@ class Round
         $this->minGhosts = $minGhosts;
         $this->ghostRate = $ghostRate;
         $this->limit = $limit;
-        $this->numMatches = $numMatches;
+        $this->matchesPerPlayer = $matchesPerPlayer;
 
         $this->participants = [];
         if (null !== $participants) {
@@ -194,9 +197,9 @@ class Round
     /**
      * @return int
      */
-    public function numMatches(): int
+    public function matchesPerPlayer(): int
     {
-        return $this->numMatches;
+        return $this->matchesPerPlayer;
     }
 
     /**
@@ -205,6 +208,24 @@ class Round
     public function participants(): array
     {
         return $this->participants;
+    }
+
+    /**
+     * @return Participant[]
+     */
+    public function classification(): array
+    {
+        $classification = $this->participants;
+
+        usort($classification, function (Participant $p1, Participant $p2) {
+            $result = $p2->classified() <=> $p1->classified();
+            if (0 == $result) {
+                $result = $p2->score() <=> $p1->score();
+            }
+            return $result;
+        });
+
+        return $classification;
     }
 
     /**
@@ -252,8 +273,39 @@ class Round
         return $this;
     }
 
-    public function calculateParticipantClassification(): Round
+    /**
+     * Calculates the classification of the players of the round
+     *
+     * @return Round
+     */
+    public function calculateClassification(): Round
     {
+        $classification = $this->classification();
+        $numPlayers = count($classification);
+        if ($numPlayers <= self::MAX_WINNERS_PER_ROUND) {
+            $numWinners = 1;
+        } elseif ($numPlayers <= Match::MAX_PLAYERS_PER_MATCH) {
+            $numWinners = self::MAX_WINNERS_PER_ROUND;
+        } else {
+            $numGroups = ceil((float)$numPlayers / Match::MAX_PLAYERS_PER_MATCH);
+            $numWinners = $numGroups * self::MAX_WINNERS_PER_ROUND;
+        }
+
+        $lastScore = -1;
+
+        /** @var Participant $participant */
+        foreach ($classification as $participant) {
+            if ($numWinners > 0) {
+                $participant->setClassified(true);
+                $lastScore = $participant->score();
+                $numWinners--;
+            } elseif ($numWinners == 0 && $lastScore == $participant->score()) {
+                $participant->setClassified(true);
+            } else {
+                $numWinners = -1;
+            }
+        }
+
         // TODO
         return $this;
     }

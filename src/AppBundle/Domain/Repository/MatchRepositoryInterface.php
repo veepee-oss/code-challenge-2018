@@ -17,7 +17,13 @@ interface MatchRepositoryInterface
      * @param string $uuid
      * @return Match
      */
-    public function readMarch(string $uuid): Match;
+    public function readMatch(string $uuid): Match;
+
+    /**
+     * @param string $roundUuid
+     * @return Match[]
+     */
+    public function readMatches(string $roundUuid): array;
 
     /**
      * Persists a match in the database
@@ -27,6 +33,15 @@ interface MatchRepositoryInterface
      * @return MatchRepositoryInterface
      */
     public function persistMatch(Match $match, bool $autoFlush = false): MatchRepositoryInterface;
+
+    /**
+     * Persists an array of matches in the database
+     *
+     * @param Match[] $matches
+     * @param bool $autoFlush
+     * @return MatchRepositoryInterface
+     */
+    public function persistMatches(array $matches, bool $autoFlush = false): MatchRepositoryInterface;
 
     /**
      * Removes a match

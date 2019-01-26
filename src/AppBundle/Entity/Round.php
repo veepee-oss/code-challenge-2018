@@ -110,9 +110,9 @@ class Round
      *
      * @var int
      *
-     * @ORM\Column(name="num_matches", type="integer", nullable=false)
+     * @ORM\Column(name="matches_per_round", type="integer", nullable=false)
      */
-    private $numMatches;
+    private $matchesPerPlayer;
 
     /**
      * All the data of the participants
@@ -141,7 +141,7 @@ class Round
             $this->minGhosts = DomainGame\Game::DEFAULT_MIN_GHOSTS;
             $this->ghostRate = DomainGame\Game::DEFAULT_GHOST_RATE;
             $this->limit = DomainGame\Game::DEFAULT_MOVES_LIMIT;
-            $this->numMatches = DomainContest\Round::DEFAULT_NUM_MATCHES;
+            $this->matchesPerPlayer = DomainContest\Round::DEFAULT_MATCHES_PER_PLAYER;
             $this->participants = [];
         } elseif ($source instanceof Round) {
             $this->id = $source->getId();
@@ -154,7 +154,7 @@ class Round
             $this->minGhosts = $source->getMinGhosts();
             $this->ghostRate = $source->getGhostRate();
             $this->limit = $source->getLimit();
-            $this->numMatches = $source->getNumMatches();
+            $this->matchesPerPlayer = $source->getMatchesPerPlayer();
             $this->participants = $source->getParticipants();
         } elseif ($source instanceof DomainContest\Round) {
             $this->id = null;
@@ -185,7 +185,7 @@ class Round
             $this->minGhosts,
             $this->ghostRate,
             $this->limit,
-            $this->numMatches,
+            $this->matchesPerPlayer,
             $participantsArray
         );
     }
@@ -207,7 +207,7 @@ class Round
         $this->setMinGhosts($round->minGhosts());
         $this->setGhostRate($round->ghostRate());
         $this->SetLimit($round->limit());
-        $this->setNumMatches($round->numMatches());
+        $this->setMatchesPerPlayer($round->matchesPerPlayer());
         $this->setParticipants($round->participants());
 
         return $this;
@@ -396,18 +396,18 @@ class Round
     /**
      * @return int
      */
-    public function getNumMatches(): int
+    public function getMatchesPerPlayer(): int
     {
-        return $this->numMatches;
+        return $this->matchesPerPlayer;
     }
 
     /**
-     * @param int $numMatches
+     * @param int $matchesPerPlayer
      * @return Round
      */
-    public function setNumMatches(int $numMatches): Round
+    public function setMatchesPerPlayer(int $matchesPerPlayer): Round
     {
-        $this->numMatches = $numMatches;
+        $this->matchesPerPlayer = $matchesPerPlayer;
         return $this;
     }
 

@@ -13,6 +13,9 @@
             </h1>
         </div>
 
+        {#
+         # Contest data panel
+         #}
         <div class="panel panel-success">
             <div class="panel-heading">
                 {{ 'app.contest-view.texts.data' | trans }}
@@ -80,6 +83,9 @@
                 </div>
             </div>
 
+            {#
+             # Contest data panel buttons
+             #}
             <div class="panel-footer text-center">
                 <a  role="button"
                     class="btn btn-warning"
@@ -132,6 +138,9 @@
             </div>
         </div>
 
+        {#
+         # Navigation panel
+         #}
         <div class="panel panel-info">
             <div class="panel-heading">
                 <ul class="nav nav-pills">
@@ -160,8 +169,11 @@
                     {% endfor %}
                 </ul>
             </div>
-
             <div class="panel-body tab-content">
+
+                {#
+                 # Competitors list tab panel
+                 #}
                 <div class="tab-pane panel-list-striped active" role="tabpanel" id="tab-competitors">
                     {% if competitors is empty %}
                         <p class="text-danger">
@@ -197,7 +209,7 @@
                                         <button
                                             class="btn btn-xs btn-success js-btn-action"
                                             title="{{ 'app.contest-view.buttons.validate' | trans }}"
-                                            data-question="{{ 'app.contest-view.texts.ask-validate' | trans({ '%email%' : competitor.email }) }}"
+                                            data-question="{{ 'app.contest-view.texts.ask-validate.email' | trans({ '%email%' : competitor.email }) }}"
                                             data-url="{{ url('admin_competitor_validate', { 'uuid': competitor.uuid }) }}"
                                             data-refresh="{{ url('admin_contest_view', { 'uuid': contest.uuid }) }}">
                                             <span class="glyphicon glyphicon-ok" aria-hidden="true"></span>
@@ -217,6 +229,9 @@
                     {% endfor %}
                 </div>
 
+                {#
+                 # Round list tab panel
+                 #}
                 <div class="tab-pane panel-list-striped" role="tabpanel" id="tab-rounds">
                     {% if rounds is empty %}
                         <p class="text-danger">
@@ -257,6 +272,14 @@
                             <div class="col-sm-3 col-xs-4 padding-xs text-right">
                                 <div class="btn-group" role="group">
                                     <button
+                                        class="btn btn-xs btn-success js-btn-action"
+                                        title="{{ 'app.contest-view.buttons.val-scores' | trans }}"
+                                        data-question="{{ 'app.contest-view.texts.ask-validate.round' | trans({ '%name%' : round.name }) }}"
+                                        data-url="{{ url('admin_round_validate', { 'uuid': round.uuid }) }}"
+                                        data-refresh="{{ url('admin_contest_view', { 'uuid': contest.uuid }) }}">
+                                        <span class="glyphicon glyphicon-sort-by-attributes-alt" aria-hidden="true"></span>
+                                    </button>
+                                    <button
                                         class="btn btn-xs btn-danger js-btn-remove"
                                         title="{{ 'app.contest-view.buttons.remove' | trans }}"
                                         data-question="{{ 'app.contest-view.texts.ask-remove.round' | trans({ '%name%' : round.name }) }}"
@@ -270,6 +293,9 @@
                     {% endfor %}
                 </div>
 
+                {#
+                 # Rounds tab panels
+                 #}
                 {% for round in rounds %}
                     <div class="tab-pane panel-list-striped" role="tabpanel" id="{{ round.uuid }}">
                         {% if round.participants is empty %}
@@ -286,7 +312,7 @@
                                 </div>
                             </div>
                         {% endif %}
-                        {% for participant in round.participants %}
+                        {% for participant in round.classification %}
                             <div class="row">
                                 <div class="col-xs-6 padding-xs">
                                     {{ participant.competitor.email }}

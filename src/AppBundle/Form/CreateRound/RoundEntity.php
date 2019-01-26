@@ -72,7 +72,7 @@ class RoundEntity
      * @Assert\NotBlank()
      * @Assert\Range(min=1, max=10)
      */
-    private $numMatches = Round::DEFAULT_NUM_MATCHES;
+    private $matchesPerPlayer = Round::DEFAULT_MATCHES_PER_PLAYER;
 
 
     /**
@@ -103,7 +103,7 @@ class RoundEntity
             $this->minGhosts,
             $this->ghostRate,
             $this->limit,
-            $this->numMatches,
+            $this->matchesPerPlayer,
             []
         );
     }
@@ -255,18 +255,18 @@ class RoundEntity
     /**
      * @return int
      */
-    public function getNumMatches(): int
+    public function getMatchesPerPlayer(): int
     {
-        return $this->numMatches;
+        return $this->matchesPerPlayer;
     }
 
     /**
-     * @param int $numMatches
+     * @param int $matchesPerPlayer
      * @return RoundEntity
      */
-    public function setNumMatches(int $numMatches): RoundEntity
+    public function setMatchesPerPlayer(int $matchesPerPlayer): RoundEntity
     {
-        $this->numMatches = $numMatches;
+        $this->matchesPerPlayer = $matchesPerPlayer;
         return $this;
     }
 }

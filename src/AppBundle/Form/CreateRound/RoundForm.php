@@ -108,7 +108,7 @@ class RoundForm extends AbstractType
             'required'      => true
         ));
 
-        $builder->add('numMatches', IntegerType::class, array(
+        $builder->add('matchesPerPlayer', IntegerType::class, array(
             'label'         => 'app.round-create.form.num-matches',
             'required'      => true
         ));
