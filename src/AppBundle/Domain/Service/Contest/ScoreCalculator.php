@@ -81,8 +81,8 @@ class ScoreCalculator implements ScoreCalculatorInterface
         if ($roundFinished) {
             $round->setFinished();
             $round->calculateClassification();
-
         }
+
         return $this;
     }
 }

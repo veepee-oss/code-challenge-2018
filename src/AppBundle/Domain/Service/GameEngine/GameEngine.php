@@ -2,6 +2,8 @@
 
 namespace AppBundle\Domain\Service\GameEngine;
 
+use AppBundle\Domain\Entity\Contest\Match;
+use AppBundle\Domain\Entity\Contest\Round;
 use AppBundle\Domain\Entity\Fire\Fire;
 use AppBundle\Domain\Entity\Game\Game;
 use AppBundle\Domain\Entity\Ghost\Ghost;
@@ -10,6 +12,7 @@ use AppBundle\Domain\Entity\Maze\MazeCell;
 use AppBundle\Domain\Entity\Player\Player;
 use AppBundle\Domain\Entity\Position\Position;
 use AppBundle\Domain\Repository\MatchRepositoryInterface;
+use AppBundle\Domain\Repository\RoundRepositoryInterface;
 use AppBundle\Domain\Service\Contest\ScoreCalculatorException;
 use AppBundle\Domain\Service\Contest\ScoreCalculatorInterface;
 use AppBundle\Domain\Service\MoveGhost\MoveGhostException;
@@ -31,6 +34,9 @@ class GameEngine
     /** @var  MoveGhostFactory */
     protected $moveGhostFactory;
 
+    /** @var RoundRepositoryInterface */
+    protected $roundRepo;
+
     /** @var MatchRepositoryInterface */
     protected $matchRepo;
 
@@ -50,6 +56,7 @@ class GameEngine
      *
      * @param MoveAllPlayersServiceInterface $moveAllPlayersService
      * @param MoveGhostFactory $moveGhostFactory
+     * @param RoundRepositoryInterface $roundRepo
      * @param MatchRepositoryInterface $matchRepo
      * @param ScoreCalculatorInterface $scoreCalculator
      * @param LoggerInterface $logger
@@ -57,12 +64,14 @@ class GameEngine
     public function __construct(
         MoveAllPlayersServiceInterface $moveAllPlayersService,
         MoveGhostFactory $moveGhostFactory,
+        RoundRepositoryInterface $roundRepo,
         MatchRepositoryInterface $matchRepo,
         ScoreCalculatorInterface $scoreCalculator,
         LoggerInterface $logger
     ) {
         $this->moveAllPlayersService = $moveAllPlayersService;
         $this->moveGhostFactory = $moveGhostFactory;
+        $this->roundRepo = $roundRepo;
         $this->matchRepo = $matchRepo;
         $this->scoreCalculator = $scoreCalculator;
         $this->logger = $logger;
@@ -405,15 +414,55 @@ class GameEngine
     {
         if (null !== $game->matchUUid()) {
             $math = $this->matchRepo->readMatch($game->matchUUid());
-            if (null !== $math) {
+            if (null === $math) {
+                $this->logger->error(
+                    'Game engine - Error occurred updating math scores. Match not found: ' . $game->matchUUid()
+                );
+            } else {
                 $math->setGame($game);
                 try {
                     $this->scoreCalculator->calculateMatchScore($math);
                     $this->matchRepo->persistMatch($math, true);
+                    $this->updateClassification($math->roundUuid());
                 } catch (ScoreCalculatorException $exc) {
-                    $this->logger->debug(
-                        'Game engine - Calculating scores for match ' . $game->uuid()
+                    $this->logger->error(
+                        'Game engine - Exception calculating scores for match ' . $math->uuid()
                     );
+                    $this->logger->debug($exc);
+                }
+            }
+        }
+        return $this;
+    }
+
+    /**
+     * Updates the classification when the game belongs to a contest
+     *
+     * @param string $roundUuid
+     * @return GameEngine
+     */
+    protected function updateClassification(string $roundUuid): GameEngine
+    {
+        if (null !== $roundUuid) {
+            /** @var Round $round */
+            $round = $this->roundRepo->readRound($roundUuid);
+            if (null === $round) {
+                $this->logger->error(
+                    'Game engine - Error occurred updating classification. Round not found: ' . $roundUuid
+                );
+            } else {
+                /** @var Match[] $matches */
+                $matches = $this->matchRepo->readMatches($roundUuid);
+
+                try {
+                    $this->scoreCalculator->calculateRoundScore($round, $matches);
+                    $this->matchRepo->persistMatches($matches, false);
+                    $this->roundRepo->persistRound($round, true);
+                } catch (ScoreCalculatorException $exc) {
+                    $this->logger->error(
+                        'Game engine - Exception calculating classification for round ' . $roundUuid
+                    );
+                    $this->logger->debug($exc);
                 }
             }
         }

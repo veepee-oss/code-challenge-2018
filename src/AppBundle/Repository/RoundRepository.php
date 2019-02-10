@@ -18,6 +18,50 @@ use Doctrine\ORM\EntityRepository;
 class RoundRepository extends EntityRepository implements RoundRepositoryInterface
 {
     /**
+     * Reads a round from the database
+     *
+     * @param string $uuid
+     * @return Round
+     */
+    public function readRound(string $uuid): Round
+    {
+        try {
+            $roundEntity = $this->findRoundEntity($uuid);
+            if (null == $roundEntity) {
+                return null;
+            }
+
+            return $roundEntity->toDomainEntity();
+        } catch (\Exception $exc) {
+            return null;
+        }
+    }
+
+    /**
+     * Persists a round in the database
+     *
+     * @param Round $round
+     * @param bool $autoFlush
+     * @return RoundRepositoryInterface
+     * @throws InvalidArgumentException
+     */
+    public function persistRound(Round $round, bool $autoFlush = false): RoundRepositoryInterface
+    {
+        /** @var EntityManagerInterface $em */
+        $em = $this->getEntityManager();
+
+        $roundEntity = $this->findRoundEntity($round->uuid());
+        $roundEntity->fromDomainEntity($round);
+
+        $em->persist($roundEntity);
+        if ($autoFlush) {
+            $em->flush();
+        }
+
+        return $this;
+    }
+
+    /**
      * Removes a round
      *
      * @param mixed $round

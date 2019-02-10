@@ -32,6 +32,7 @@ services:
         arguments:
             - "@app.game.move_players_async.service"
             - "@app.ghost.move.factory"
+            - "@=service('doctrine.orm.entity_manager').getRepository('AppBundle:Round')"
             - "@=service('doctrine.orm.entity_manager').getRepository('AppBundle:Match')"
             - "@app.contest.score-calculator"
             - "@logger"
