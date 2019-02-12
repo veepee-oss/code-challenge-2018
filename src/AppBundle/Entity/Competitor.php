@@ -53,6 +53,15 @@ class Competitor
     private $email;
 
     /**
+     * Name of the competitor
+     *
+     * @var string
+     *
+     * @ORM\Column(name="name", type="string", length=64, nullable=true)
+     */
+    private $name;
+
+    /**
      * URL of the API of the competitor
      *
      * @var string
@@ -92,6 +101,7 @@ class Competitor
             $this->uuid = null;
             $this->contestUuid = null;
             $this->email = null;
+            $this->name = null;
             $this->url = null;
             $this->validated = false;
             $this->token = null;
@@ -100,6 +110,7 @@ class Competitor
             $this->uuid = $source->getUuid();
             $this->contestUuid = $source->getContestUuid();
             $this->email = $source->getEmail();
+            $this->name = $source->getName();
             $this->url = $source->getUrl();
             $this->validated = $source->isValidated();
             $this->token = $source->getToken();
@@ -121,6 +132,7 @@ class Competitor
             $this->uuid,
             $this->contestUuid,
             $this->email,
+            $this->name,
             $this->url,
             $this->validated,
             $this->token
@@ -138,6 +150,7 @@ class Competitor
         $this->uuid = $competitor->uuid();
         $this->contestUuid = $competitor->contest();
         $this->email = $competitor->email();
+        $this->name = $competitor->name();
         $this->url = $competitor->url();
         $this->validated = $competitor->validated();
         $this->token = $competitor->validationToken();
@@ -203,6 +216,24 @@ class Competitor
     public function setEmail(string $email): Competitor
     {
         $this->email = $email;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getName(): string
+    {
+        return $this->name;
+    }
+
+    /**
+     * @param string $name
+     * @return Competitor
+     */
+    public function setName(string $name): Competitor
+    {
+        $this->name = $name;
         return $this;
     }
 

@@ -22,13 +22,16 @@ class Competitor
     /** @var string the email of the competitor */
     protected $email;
 
+    /** @var string|null the name of the competitor */
+    protected $name;
+
     /** @var string the URL of the API to move the competitor */
     protected $url;
 
     /** @var bool if the competitor has been validated */
     protected $validated;
 
-    /** @var string the token to validate the competitor's email */
+    /** @var string|null the token to validate the competitor's email */
     protected $validationToken;
 
     /**
@@ -37,6 +40,7 @@ class Competitor
      * @param string|null $uuid
      * @param string      $contest
      * @param string      $email
+     * @param string|null $name
      * @param string      $url
      * @param bool|null   $validated
      * @param string|null $validationToken
@@ -46,6 +50,7 @@ class Competitor
         ?string $uuid,
         string $contest,
         string $email,
+        ?string $name,
         string $url,
         ?bool $validated,
         ?string $validationToken
@@ -53,6 +58,7 @@ class Competitor
         $this->uuid = $uuid ?? Uuid::uuid4()->toString();
         $this->contest = $contest;
         $this->email = $email;
+        $this->name = $name;
         $this->url = $url;
         $this->validated = $validated ?? false;
         $this->validationToken = $validationToken;
@@ -80,6 +86,24 @@ class Competitor
     public function email(): string
     {
         return $this->email;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function name(): ?string
+    {
+        return $this->name;
+    }
+
+    /**
+     * @param string $name
+     * @return Competitor
+     */
+    public function setName(string $name): Competitor
+    {
+        $this->name = $name;
+        return $this;
     }
 
     /**

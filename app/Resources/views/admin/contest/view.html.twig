@@ -181,10 +181,13 @@
                         </p>
                     {% else %}
                         <div class="row text-info">
-                            <div class="col-sm-4 col-xs-8 padding-xs">
+                            <div class="col-sm-3 col-xs-8 padding-xs">
                                 <strong>{{ 'app.contest-view.texts.email-c' | trans }}</strong>
                             </div>
-                            <div class="col-sm-5 hidden-xs padding-xs">
+                            <div class="col-sm-3 hidden-xs padding-xs">
+                                <strong>{{ 'app.contest-view.texts.name-p' | trans }}</strong>
+                            </div>
+                            <div class="col-sm-3 hidden-xs padding-xs">
                                 <strong>{{ 'app.contest-view.texts.api-url' | trans }}</strong>
                             </div>
 
@@ -195,11 +198,15 @@
                     {% endif %}
                     {% for competitor in competitors %}
                         <div class="row">
-                            <div class="col-sm-4 col-xs-8 padding-xs">
+                            <div class="col-sm-3 col-xs-8 padding-xs">
                                 {{ competitor.email }}
                             </div>
 
-                            <div class="col-sm-5 hidden-xs padding-xs">
+                            <div class="col-sm-3 hidden-xs padding-xs">
+                                {{ competitor.name }}
+                            </div>
+
+                            <div class="col-sm-3 hidden-xs padding-xs">
                                 {{ competitor.url }}
                             </div>
 

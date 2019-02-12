@@ -103,6 +103,7 @@ app:
 
         form:
             contest:        "Contest (*)"
+            name:           "Name (*)"
             email:          "Your email (*)"
             url:            "The URL of your API (*)"
             submit:         "Register"
@@ -245,6 +246,7 @@ app:
             matches:        "Matches"
             email-c:        "Competitor email"
             email-p:        "Participant email"
+            name-p:         "Participant name"
             api-url:        "API URL"
             round-name:     "Round name"
             score:          "Score"

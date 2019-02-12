@@ -15,21 +15,27 @@ class CompetitorEntity
 {
     /**
      * @var Contest
-     * @Assert\NotBlank()
+     * @Assert\NotBlank(groups={"default"})
      */
     private $contest = null;
 
     /**
      * @var string
-     * @Assert\NotBlank()
-     * @Assert\Email()
+     * @Assert\NotBlank(groups={"default"})
+     * @Assert\Email(groups={"default"})
      */
     private $email = null;
 
     /**
      * @var string
-     * @Assert\NotBlank()
-     * @Assert\Url()
+     * @Assert\NotBlank(groups={"admin"})
+     */
+    private $name = null;
+
+    /**
+     * @var string
+     * @Assert\NotBlank(groups={"default"})
+     * @Assert\Url(groups={"default"})
      */
     private $url = null;
 
@@ -45,6 +51,7 @@ class CompetitorEntity
             null,
             $this->contest->getUuid(),
             $this->email,
+            $this->name,
             $this->url,
             null,
             null
@@ -84,6 +91,24 @@ class CompetitorEntity
     public function setEmail(?string $email): CompetitorEntity
     {
         $this->email = $email;
+        return $this;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getName(): ?string
+    {
+        return $this->name;
+    }
+
+    /**
+     * @param string $name
+     * @return CompetitorEntity
+     */
+    public function setName(string $name): CompetitorEntity
+    {
+        $this->name = $name;
         return $this;
     }
 

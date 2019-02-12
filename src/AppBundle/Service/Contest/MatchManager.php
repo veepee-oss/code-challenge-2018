@@ -121,7 +121,7 @@ class MatchManager implements MatchManagerInterface
             );
 
             $player->setPlayerIds(
-                $participant->competitor()->email(),
+                $participant->competitor()->name(),
                 $participant->competitor()->email()
             );
 

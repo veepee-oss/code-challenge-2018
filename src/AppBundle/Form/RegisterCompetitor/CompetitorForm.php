@@ -12,6 +12,7 @@ use Symfony\Component\Form\Extension\Core\Type\UrlType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
+use Symfony\Component\Form\FormInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
@@ -41,6 +42,16 @@ class CompetitorForm extends AbstractType
 
         $resolver->setAllowedTypes('action', 'string');
         $resolver->setAllowedTypes('admin', 'bool');
+
+        $resolver->setDefaults([
+            'validation_groups' => function (FormInterface $form) {
+                $isAdmin = $form->getConfig()->getOption('admin');
+                if (!$isAdmin) {
+                    return ['default'];
+                }
+                return ['default', 'admin'];
+            }
+        ]);
     }
 
     /**
@@ -87,11 +98,17 @@ class CompetitorForm extends AbstractType
             });
         }
 
-
         $builder->add('email', EmailType::class, [
             'label'         => 'app.register-competitor.form.email',
             'required'      => true
         ]);
+
+        if ($options['admin']) {
+            $builder->add('name', TextType::class, [
+                'label'         => 'app.register-competitor.form.name',
+                'required'      => true
+            ]);
+        }
 
         $builder->add('url', UrlType::class, [
             'label'         => 'app.register-competitor.form.url',

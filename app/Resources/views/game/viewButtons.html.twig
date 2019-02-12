@@ -1,62 +1,64 @@
-<div class="container">
-    <div class="maze-buttons">
-        <button
-            type="button"
-            {% if game.playing %}
-                disabled="disabled"
-            {% endif %}
-            class="btn btn-success js-btn-start"
-            data-url="{{ url('game_start', { 'uuid': game.uuid }) }}">
-            <span class="glyphicon glyphicon-play" aria-hidden="true"></span>
-            {{ 'app.game-page.buttons.start' | trans }}
-        </button>
-
-        &nbsp;
-
-        <button
-            type="button"
-            {% if not game.playing %}
-                disabled="disabled"
-            {% endif %}
-            class="btn btn-danger js-btn-stop"
-            data-url="{{ url('game_stop', { 'uuid': game.uuid }) }}">
-            <span class="glyphicon glyphicon-stop" aria-hidden="true"></span>
-            {{ 'app.game-page.buttons.stop' | trans }}
-        </button>
-
-        &nbsp;
-
-        <button
-            type="button"
-            class="btn btn-warning js-btn-reset"
-            data-url="{{ url('game_reset', { 'uuid': game.uuid }) }}">
-            <span class="glyphicon glyphicon-step-backward" aria-hidden="true"></span>
-            {{ 'app.game-page.buttons.reset' | trans }}
-        </button>
-
-        &nbsp;
-
-        <div class="btn-group">
+{% if is_granted('ROLE_ADMIN') or game.matchUUid is empty %}
+    <div class="container">
+        <div class="maze-buttons">
             <button
                 type="button"
-                class="btn btn-default dropdown-toggle"
-                data-toggle="dropdown"
-                aria-haspopup="true"
-                aria-expanded="false">
-                <span class="glyphicon glyphicon-download" aria-hidden="true"></span>
-                {{ 'app.game-page.buttons.download' | trans }}
-                <span class="caret"></span>
+                {% if game.playing %}
+                    disabled="disabled"
+                {% endif %}
+                class="btn btn-success js-btn-start"
+                data-url="{{ url('game_start', { 'uuid': game.uuid }) }}">
+                <span class="glyphicon glyphicon-play" aria-hidden="true"></span>
+                {{ 'app.game-page.buttons.start' | trans }}
             </button>
-            <ul class="dropdown-menu">
-                {% for player in game.classification %}
-                    <li>
-                        <a href="{{ url('player_download', {'guuid': game.uuid, 'puuid': player.uuid }) }}">
-                            <span class="glyphicon glyphicon-user" aria-hidden="true"></span>
-                            {{ player.name }} ({{ player.score }} {{ 'app.maze-page.texts.points' | trans }})
-                        </a>
-                    </li>
-                {% endfor %}
-            </ul>
+
+            &nbsp;
+
+            <button
+                type="button"
+                {% if not game.playing %}
+                    disabled="disabled"
+                {% endif %}
+                class="btn btn-danger js-btn-stop"
+                data-url="{{ url('game_stop', { 'uuid': game.uuid }) }}">
+                <span class="glyphicon glyphicon-stop" aria-hidden="true"></span>
+                {{ 'app.game-page.buttons.stop' | trans }}
+            </button>
+
+            &nbsp;
+
+            <button
+                type="button"
+                class="btn btn-warning js-btn-reset"
+                data-url="{{ url('game_reset', { 'uuid': game.uuid }) }}">
+                <span class="glyphicon glyphicon-step-backward" aria-hidden="true"></span>
+                {{ 'app.game-page.buttons.reset' | trans }}
+            </button>
+
+            &nbsp;
+
+            <div class="btn-group">
+                <button
+                    type="button"
+                    class="btn btn-default dropdown-toggle"
+                    data-toggle="dropdown"
+                    aria-haspopup="true"
+                    aria-expanded="false">
+                    <span class="glyphicon glyphicon-download" aria-hidden="true"></span>
+                    {{ 'app.game-page.buttons.download' | trans }}
+                    <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu">
+                    {% for player in game.classification %}
+                        <li>
+                            <a href="{{ url('player_download', {'guuid': game.uuid, 'puuid': player.uuid }) }}">
+                                <span class="glyphicon glyphicon-user" aria-hidden="true"></span>
+                                {{ player.name }} ({{ player.score }} {{ 'app.maze-page.texts.points' | trans }})
+                            </a>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
         </div>
     </div>
-</div>
+{% endif %}

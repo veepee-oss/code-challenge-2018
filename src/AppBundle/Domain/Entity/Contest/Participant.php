@@ -98,6 +98,7 @@ class Participant
             'competitorUuid'  => $this->competitor()->uuid(),
             'contestUuid'     => $this->competitor()->contest(),
             'competitorEmail' => $this->competitor()->email(),
+            'competitorName'  => $this->competitor()->name(),
             'competitorUrl'   => $this->competitor()->url(),
             'score'           => $this->score(),
             'classified'      => $this->classified()
@@ -116,6 +117,7 @@ class Participant
         $competitorUuid  = $data['competitorUuid']  ?? null;
         $contestUuid     = $data['contestUuid']     ?? null;
         $competitorEmail = $data['competitorEmail'] ?? null;
+        $competitorName  = $data['competitorName']  ?? null;
         $competitorUrl   = $data['competitorUrl']   ?? null;
         $score           = $data['score']           ?? null;
         $classified      = $data['classified']      ?? null;
@@ -124,6 +126,7 @@ class Participant
             $competitorUuid,
             $contestUuid,
             $competitorEmail,
+            $competitorName,
             $competitorUrl,
             true,
             null

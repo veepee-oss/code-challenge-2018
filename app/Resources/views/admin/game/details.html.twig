@@ -70,26 +70,28 @@
                         <span class="glyphicon glyphicon-list-alt" aria-hidden="true"></span>
                         {{ 'app.admin-page.buttons.view-panels' | trans }}
                     </a>
-                    {% if not game.finished %}
+                    {% if game.matchUuid is empty %}
+                        {% if not game.finished %}
+                            <button
+                                class="btn btn-warning js-btn-action"
+                                title="{{ 'app.admin-page.buttons.move-finished' | trans }}"
+                                data-question="{{ 'app.admin-page.texts.ask-finish' | trans({ '%uuid%' : game.uuid }) }}"
+                                data-url="{{ url('game_finish', { 'uuid': game.uuid }) }}"
+                                data-refresh="{{ url('admin_index') }}">
+                                <span class="glyphicon glyphicon-ban-circle" aria-hidden="true"></span>
+                                {{ 'app.admin-page.buttons.move-finished' | trans }}
+                            </button>
+                        {% endif %}
                         <button
-                            class="btn btn-warning js-btn-action"
-                            title="{{ 'app.admin-page.buttons.move-finished' | trans }}"
-                            data-question="{{ 'app.admin-page.texts.ask-finish' | trans({ '%uuid%' : game.uuid }) }}"
-                            data-url="{{ url('game_finish', { 'uuid': game.uuid }) }}"
+                            class="btn btn-danger js-btn-remove"
+                            title="{{ 'app.admin-page.buttons.remove' | trans }}"
+                            data-question="{{ 'app.admin-page.texts.ask-remove' | trans({ '%uuid%' : game.uuid }) }}"
+                            data-url="{{ url('admin_game_remove', { 'uuid': game.uuid }) }}"
                             data-refresh="{{ url('admin_index') }}">
-                            <span class="glyphicon glyphicon-ban-circle" aria-hidden="true"></span>
-                            {{ 'app.admin-page.buttons.move-finished' | trans }}
+                            <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
+                            {{ 'app.admin-page.buttons.remove' | trans }}
                         </button>
                     {% endif %}
-                    <button
-                        class="btn btn-danger js-btn-remove"
-                        title="{{ 'app.admin-page.buttons.remove' | trans }}"
-                        data-question="{{ 'app.admin-page.texts.ask-remove' | trans({ '%uuid%' : game.uuid }) }}"
-                        data-url="{{ url('admin_game_remove', { 'uuid': game.uuid }) }}"
-                        data-refresh="{{ url('admin_index') }}">
-                        <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
-                        {{ 'app.admin-page.buttons.remove' | trans }}
-                    </button>
                 </div>
             </div>
             <div class="col-xs-6">

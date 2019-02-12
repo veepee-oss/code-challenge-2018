@@ -39,8 +39,8 @@ class ValidateCompetitor implements ValidateCompetitorInterface
     {
         $results = new ValidationResults();
 
-        $this->validateEmail($competitor->email(), $contest->emailRestrictionsRegex(), $results);
-        $this->validateUrlAndEmail($competitor->url(), $competitor->email(), $results);
+        $this->validateEmail($competitor, $contest, $results);
+        $this->validateUrlAndEmailAndGetName($competitor, $results);
 
         return $results;
     }
@@ -48,17 +48,19 @@ class ValidateCompetitor implements ValidateCompetitorInterface
     /**
      * Validates the email using a regular expression
      *
-     * @param string $email
-     * @param string|null $regex
+     * @param Competitor $competitor
+     * @param Contest $contest
      * @param ValidationResults $results
      * @return void
      */
-    protected function validateEmail(string $email, ?string $regex, ValidationResults $results)
+    protected function validateEmail(Competitor $competitor, Contest $contest, ValidationResults $results)
     {
+        $regex = $contest->emailRestrictionsRegex();
         if (null === $regex || empty($regex)) {
             return;
         }
 
+        $email = $competitor->email();
         if (!preg_match('/' . $regex . '/', $email)) {
             $results->addFieldError('The email does not match the rules of this this contest!', 'email');
         }
@@ -67,18 +69,19 @@ class ValidateCompetitor implements ValidateCompetitorInterface
     /**
      * Validates the endpoint /name of the URL and the email returned
      *
-     * @param string $url
-     * @param string $email
+     * @param Competitor $competitor
      * @param ValidationResults $results
      * @return void
      */
-    protected function validateUrlAndEmail(string $url, string $email, ValidationResults $results)
+    protected function validateUrlAndEmailAndGetName(Competitor $competitor, ValidationResults $results)
     {
         try {
-            $player = new Player($url, new Position(0, 0));
+            $player = new Player($competitor->url(), new Position(0, 0));
             $this->playerValidator->validate($player);
-            if ($email != $player->email()) {
+            if ($competitor->email() != $player->email()) {
                 $results->addFieldError('The email provided is not the same returned by the API!', 'email');
+            } else {
+                $competitor->setName($player->name());
             }
         } catch (\Exception $exc) {
             $results->addFieldError($exc->getMessage(), 'url');
