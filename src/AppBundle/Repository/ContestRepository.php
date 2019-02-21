@@ -90,9 +90,9 @@ class ContestRepository extends EntityRepository implements ContestRepositoryInt
     {
         return $this
             ->createQueryBuilder('c')
-            ->where('c.startDate <= :date')
-            ->andWhere('c.endDate >= :date')
-            ->orderBy('c.startDate', 'asc')
+            ->where('c.registrationStartDate <= :date')
+            ->andWhere('c.registrationEndDate >= :date')
+            ->orderBy('c.registrationStartDate', 'asc')
             ->setParameter('date', new \DateTime());
     }
 

@@ -169,7 +169,7 @@ class ContestController extends Controller
 
         $validated = false;
         $now = new \DateTime();
-        if ($now >= $contest->startRegistrationDate() && $now <= $contest->endRegistrationDate()) {
+        if ($now >= $contest->registrationStartDate() && $now <= $contest->registrationEndDate()) {
             $competitor->setValidated();
             $competitorEntity->fromDomainEntity($competitor);
             $em->persist($competitorEntity);

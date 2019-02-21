@@ -26,13 +26,16 @@ class Contest
     protected $emailRestrictionsRegex;
 
     /** @var \DateTime the start date & time for registering */
-    protected $startRegistrationDate;
+    protected $registrationStartDate;
 
     /** @var \DateTime the end date & time for registration */
-    protected $endRegistrationDate;
+    protected $registrationEndDate;
 
-    /** @var \DateTime the date & time of the contest */
-    protected $contestDate;
+    /** @var \DateTime the start date & time of the contest */
+    protected $contestStartDate;
+
+    /** @var \DateTime the end date & time of the contest */
+    protected $contestEndDate;
 
     /** @var int|null the max competitors */
     protected $maxCompetitors;
@@ -47,9 +50,10 @@ class Contest
      * @param string         $name
      * @param string|null    $description
      * @param string         $emailRestrictionsRegex
-     * @param \DateTime      $startRegistrationDate
-     * @param \DateTime      $endRegistrationDate
-     * @param \DateTime|null $contestDate
+     * @param \DateTime      $registrationStartDate
+     * @param \DateTime      $registrationEndDate
+     * @param \DateTime|null $contestStartDate
+     * @param \DateTime|null $contestEndDate
      * @param int|null       $maxCompetitors
      * @throws \Exception
      */
@@ -58,18 +62,20 @@ class Contest
         string $name,
         ?string $description,
         ?string $emailRestrictionsRegex,
-        \DateTime $startRegistrationDate,
-        \DateTime $endRegistrationDate,
-        ?\DateTime $contestDate,
+        \DateTime $registrationStartDate,
+        \DateTime $registrationEndDate,
+        ?\DateTime $contestStartDate,
+        ?\DateTime $contestEndDate,
         ?int $maxCompetitors
     ) {
         $this->uuid = $uuid ?? Uuid::uuid4()->toString();
         $this->name = $name;
         $this->description = $description;
         $this->emailRestrictionsRegex = $emailRestrictionsRegex;
-        $this->startRegistrationDate = $startRegistrationDate;
-        $this->endRegistrationDate = $endRegistrationDate;
-        $this->contestDate = $contestDate;
+        $this->registrationStartDate = $registrationStartDate;
+        $this->registrationEndDate = $registrationEndDate;
+        $this->contestStartDate = $contestStartDate;
+        $this->contestEndDate = $contestEndDate;
         $this->maxCompetitors = $maxCompetitors;
         $this->countCompetitors = null;
     }
@@ -109,25 +115,33 @@ class Contest
     /**
      * @return \DateTime
      */
-    public function startRegistrationDate(): \DateTime
+    public function registrationStartDate(): \DateTime
     {
-        return $this->startRegistrationDate;
+        return $this->registrationStartDate;
     }
 
     /**
      * @return \DateTime
      */
-    public function endRegistrationDate(): \DateTime
+    public function registrationEndDate(): \DateTime
     {
-        return $this->endRegistrationDate;
+        return $this->registrationEndDate;
     }
 
     /**
      * @return \DateTime|null
      */
-    public function contestDate(): ?\DateTime
+    public function contestStartDate(): ?\DateTime
     {
-        return $this->contestDate;
+        return $this->contestStartDate;
+    }
+
+    /**
+     * @return \DateTime|null
+     */
+    public function contestEndDate(): ?\DateTime
+    {
+        return $this->contestEndDate;
     }
 
     /**

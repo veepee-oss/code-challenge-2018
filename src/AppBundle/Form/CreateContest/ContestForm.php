@@ -86,22 +86,29 @@ class ContestForm extends AbstractType
             'required'      => false
         ]);
 
-        $builder->add('startDate', DateTimeType::class, [
-            'label'         => 'app.contest-edit.form.start-date',
+        $builder->add('registrationStartDate', DateTimeType::class, [
+            'label'         => 'app.contest-edit.form.r-start-date',
             'date_widget'   => 'single_text',
             'time_widget'   => 'single_text',
             'required'      => true
         ]);
 
-        $builder->add('endDate', DateTimeType::class, [
-            'label'         => 'app.contest-edit.form.end-date',
+        $builder->add('registrationEndDate', DateTimeType::class, [
+            'label'         => 'app.contest-edit.form.r-end-date',
             'date_widget'   => 'single_text',
             'time_widget'   => 'single_text',
             'required'      => true
         ]);
 
-        $builder->add('contestDate', DateTimeType::class, [
-            'label'         => 'app.contest-edit.form.contest-date',
+        $builder->add('contestStartDate', DateTimeType::class, [
+            'label'         => 'app.contest-edit.form.c-start-date',
+            'date_widget'   => 'single_text',
+            'time_widget'   => 'single_text',
+            'required'      => false
+        ]);
+
+        $builder->add('contestEndDate', DateTimeType::class, [
+            'label'         => 'app.contest-edit.form.c-end-date',
             'date_widget'   => 'single_text',
             'time_widget'   => 'single_text',
             'required'      => false

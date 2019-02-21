@@ -40,20 +40,26 @@ class ContestEntity
      * @Assert\NotBlank()
      * @Assert\DateTime()
      */
-    private $startDate;
+    private $registrationStartDate;
 
     /**
      * @var \DateTime
      * @Assert\NotBlank()
      * @Assert\DateTime()
      */
-    private $endDate;
+    private $registrationEndDate;
 
     /**
      * @var \DateTime
      * @Assert\DateTime()
      */
-    private $contestDate;
+    private $contestStartDate;
+
+    /**
+     * @var \DateTime
+     * @Assert\DateTime()
+     */
+    private $contestEndDate;
 
     /**
      * @var int
@@ -74,21 +80,23 @@ class ContestEntity
             $this->name = null;
             $this->description = null;
             $this->regex = null;
-            $this->startDate = new \DateTime();
-            $this->startDate->setTime(0, 0, 0, 0);
-            $this->endDate = clone $this->startDate;
-            $this->endDate->add(new \DateInterval('P10D'));
-            $this->endDate->setTime(23, 59, 59, 0);
-            $this->contestDate = null;
+            $this->registrationStartDate = new \DateTime();
+            $this->registrationStartDate->setTime(0, 0, 0, 0);
+            $this->registrationEndDate = clone $this->registrationStartDate;
+            $this->registrationEndDate->add(new \DateInterval('P10D'));
+            $this->registrationEndDate->setTime(23, 59, 59, 0);
+            $this->contestStartDate = null;
+            $this->contestEndDate = null;
             $this->maxCompetitors = null;
         } else {
             $this->uuid = $contest->uuid();
             $this->name = $contest->name();
             $this->description = $contest->description();
             $this->regex = $contest->emailRestrictionsRegex();
-            $this->startDate = $contest->startRegistrationDate();
-            $this->endDate = $contest->endRegistrationDate();
-            $this->contestDate = $contest->contestDate();
+            $this->registrationStartDate = $contest->registrationStartDate();
+            $this->registrationEndDate = $contest->registrationEndDate();
+            $this->contestStartDate = $contest->contestStartDate();
+            $this->contestEndDate = $contest->contestEndDate();
             $this->maxCompetitors = $contest->maxCompetitors();
         }
     }
@@ -106,9 +114,10 @@ class ContestEntity
             $this->name,
             $this->description,
             $this->regex,
-            $this->startDate,
-            $this->endDate,
-            $this->contestDate,
+            $this->registrationStartDate,
+            $this->registrationEndDate,
+            $this->contestStartDate,
+            $this->contestEndDate,
             $this->maxCompetitors
         );
     }
@@ -188,54 +197,72 @@ class ContestEntity
     /**
      * @return \DateTime|null
      */
-    public function getStartDate(): ?\DateTime
+    public function getRegistrationStartDate(): ?\DateTime
     {
-        return $this->startDate;
+        return $this->registrationStartDate;
     }
 
     /**
-     * @param \DateTime $startDate
+     * @param \DateTime $registrationStartDate
      * @return ContestEntity
      */
-    public function setStartDate(?\DateTime $startDate): ContestEntity
+    public function setRegistrationStartDate(?\DateTime $registrationStartDate): ContestEntity
     {
-        $this->startDate = $startDate;
+        $this->registrationStartDate = $registrationStartDate;
         return $this;
     }
 
     /**
      * @return \DateTime|null
      */
-    public function getEndDate(): ?\DateTime
+    public function getRegistrationEndDate(): ?\DateTime
     {
-        return $this->endDate;
+        return $this->registrationEndDate;
     }
 
     /**
-     * @param \DateTime $endDate
+     * @param \DateTime $registrationEndDate
      * @return ContestEntity
      */
-    public function setEndDate(?\DateTime $endDate): ContestEntity
+    public function setRegistrationEndDate(?\DateTime $registrationEndDate): ContestEntity
     {
-        $this->endDate = $endDate;
+        $this->registrationEndDate = $registrationEndDate;
         return $this;
     }
 
     /**
      * @return \DateTime|null
      */
-    public function getContestDate(): ?\DateTime
+    public function getContestStartDate(): ?\DateTime
     {
-        return $this->contestDate;
+        return $this->contestStartDate;
     }
 
     /**
-     * @param \DateTime $contestDate
+     * @param \DateTime $contestStartDate
      * @return ContestEntity
      */
-    public function setContestDate(?\DateTime $contestDate): ContestEntity
+    public function setContestStartDate(?\DateTime $contestStartDate): ContestEntity
     {
-        $this->contestDate = $contestDate;
+        $this->contestStartDate = $contestStartDate;
+        return $this;
+    }
+
+    /**
+     * @return \DateTime|null
+     */
+    public function getContestEndDate(): ?\DateTime
+    {
+        return $this->contestEndDate;
+    }
+
+    /**
+     * @param \DateTime $contestEndDate
+     * @return ContestEntity
+     */
+    public function setContestEndDate(\DateTime $contestEndDate): ContestEntity
+    {
+        $this->contestEndDate = $contestEndDate;
         return $this;
     }
 

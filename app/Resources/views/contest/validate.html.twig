@@ -36,7 +36,7 @@
                 </p>
 
                 <p class="lead">
-                    {{ 'app.validate-competitor.texts.reg-period' | trans({ "%start-date%": contest.startRegistrationDate | date('Y-m-d H:i e'), "%end-date%": contest.endRegistrationDate | date('Y-m-d H:i e') }) | raw }}
+                    {{ 'app.validate-competitor.texts.reg-period' | trans({ "%start-date%": contest.registrationStartDate| date('Y-m-d H:i e'), "%end-date%": contest.registrationEndDate| date('Y-m-d H:i e') }) | raw }}
                 </p>
             {% endif %}
 

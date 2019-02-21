@@ -43,28 +43,37 @@
 
                     <div class="col-md-3 col-sm-6 col-xs-12">
                         <p class="text-info small">
-                            {{ 'app.contest-view.texts.start-date' | trans }}:
+                            {{ 'app.contest-view.texts.r-start-date' | trans }}:
                         </p>
                         <p class="bg-warning padding-xs">
-                            {{ contest.startRegistrationDate | date('Y-m-d H:i:s e') }}
+                            {{ contest.registrationStartDate | date('Y-m-d H:i:s e') }}
                         </p>
                     </div>
 
                     <div class="col-md-3 col-sm-6 col-xs-12">
                         <p class="text-info small">
-                            {{ 'app.contest-view.texts.end-date' | trans }}:
+                            {{ 'app.contest-view.texts.r-end-date' | trans }}:
                         </p>
                         <p class="bg-warning padding-xs">
-                            {{ contest.endRegistrationDate | date('Y-m-d H:i:s e') }}
+                            {{ contest.registrationEndDate | date('Y-m-d H:i:s e') }}
                         </p>
                     </div>
 
                     <div class="col-md-3 col-sm-6 col-xs-12">
                         <p class="text-info small">
-                            {{ 'app.contest-view.texts.contest-date' | trans }}:
+                            {{ 'app.contest-view.texts.c-start-date' | trans }}:
                         </p>
                         <p class="bg-warning padding-xs">
-                            {{ contest.contestDate is empty ? "--" : contest.contestDate | date('Y-m-d H:i:s e') }}
+                            {{ contest.contestStartDate is empty ? "--" : contest.contestStartDate | date('Y-m-d H:i:s e') }}
+                        </p>
+                    </div>
+
+                    <div class="col-md-3 col-sm-6 col-xs-12">
+                        <p class="text-info small">
+                            {{ 'app.contest-view.texts.c-end-date' | trans }}:
+                        </p>
+                        <p class="bg-warning padding-xs">
+                            {{ contest.contestEndDate is empty ? "--" : contest.contestEndDate | date('Y-m-d H:i:s e') }}
                         </p>
                     </div>
 

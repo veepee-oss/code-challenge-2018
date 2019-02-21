@@ -72,13 +72,18 @@
                                         {{ 'app.contest-index.texts.registration-dates' | trans }}
                                         <br>
                                         &bullet;
-                                        {{ 'app.contest-index.texts.registration-from' | trans({ '%start-date%': contest.startRegistrationDate | date("Y-m-d H:i e") }) | raw }}
+                                        {{ 'app.contest-index.texts.date-from' | trans({ '%start-date%': contest.registrationStartDate| date("Y-m-d H:i e") }) | raw }}
                                         <br>
                                         &bullet;
-                                        {{ 'app.contest-index.texts.registration-to' | trans({ '%end-date%': contest.endRegistrationDate | date("Y-m-d H:i e") }) | raw }}
+                                        {{ 'app.contest-index.texts.date-to' | trans({ '%end-date%': contest.registrationEndDate| date("Y-m-d H:i e") }) | raw }}
                                         <br>
-                                        {% if contest.contestDate is not empty %}
-                                            {{ 'app.contest-index.texts.contest-date' | trans({ '%contest-date%': contest.contestDate | date("Y-m-d H:i e") }) | raw }}
+                                         {% if contest.contestStartDate is not empty or contest.contestEndDate is not empty %}
+                                             {{ 'app.contest-index.texts.contest-dates' | trans }}
+                                             <br>
+                                             &bullet;
+                                             {{ 'app.contest-index.texts.date-from' | trans({ '%start-date%': contest.contestStartDate | date("Y-m-d H:i e") }) | default('&nbsp;') | raw }}
+                                             &bullet;
+                                             {{ 'app.contest-index.texts.date-to' | trans({ '%end-date%': contest.contestStartDate | date("Y-m-d H:i e") }) | default('&nbsp;') | raw }}
                                             <br>
                                         {% endif %}
                                         {{ 'app.contest-index.texts.competitors' | trans({ '%count%': contest.countCompetitors | default('&ndash;') }) | raw }}
