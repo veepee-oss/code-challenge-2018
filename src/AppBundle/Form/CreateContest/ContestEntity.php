@@ -149,7 +149,7 @@ class ContestEntity
     }
 
     /**
-     * @param string $name
+     * @param string|null $name
      * @return ContestEntity
      */
     public function setName(?string $name): ContestEntity
@@ -167,7 +167,7 @@ class ContestEntity
     }
 
     /**
-     * @param string $description
+     * @param string|null $description
      * @return ContestEntity
      */
     public function setDescription(?string $description): ContestEntity
@@ -185,7 +185,7 @@ class ContestEntity
     }
 
     /**
-     * @param string $regex
+     * @param string|null $regex
      * @return ContestEntity
      */
     public function setRegex(?string $regex): ContestEntity
@@ -203,7 +203,7 @@ class ContestEntity
     }
 
     /**
-     * @param \DateTime $registrationStartDate
+     * @param \DateTime|null $registrationStartDate
      * @return ContestEntity
      */
     public function setRegistrationStartDate(?\DateTime $registrationStartDate): ContestEntity
@@ -221,7 +221,7 @@ class ContestEntity
     }
 
     /**
-     * @param \DateTime $registrationEndDate
+     * @param \DateTime|null $registrationEndDate
      * @return ContestEntity
      */
     public function setRegistrationEndDate(?\DateTime $registrationEndDate): ContestEntity
@@ -239,7 +239,7 @@ class ContestEntity
     }
 
     /**
-     * @param \DateTime $contestStartDate
+     * @param \DateTime|null $contestStartDate
      * @return ContestEntity
      */
     public function setContestStartDate(?\DateTime $contestStartDate): ContestEntity
@@ -257,10 +257,10 @@ class ContestEntity
     }
 
     /**
-     * @param \DateTime $contestEndDate
+     * @param \DateTime|null $contestEndDate
      * @return ContestEntity
      */
-    public function setContestEndDate(\DateTime $contestEndDate): ContestEntity
+    public function setContestEndDate(?\DateTime $contestEndDate): ContestEntity
     {
         $this->contestEndDate = $contestEndDate;
         return $this;
@@ -275,10 +275,10 @@ class ContestEntity
     }
 
     /**
-     * @param int $maxCompetitors
+     * @param int|null $maxCompetitors
      * @return ContestEntity
      */
-    public function setMaxCompetitors(int $maxCompetitors): ContestEntity
+    public function setMaxCompetitors(?int $maxCompetitors): ContestEntity
     {
         $this->maxCompetitors = $maxCompetitors;
         return $this;
