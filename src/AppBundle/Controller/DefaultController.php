@@ -2,6 +2,7 @@
 
 namespace AppBundle\Controller;
 
+use AppBundle\Entity\Contest as ContestEntity;
 use AppBundle\Repository\ContestRepository;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -25,10 +26,16 @@ class DefaultController extends Controller
     {
         /** @var ContestRepository $repo */
         $repo = $this->getDoctrine()->getRepository('AppBundle:Contest');
-        $contests = $repo->findActiveContests();
+
+        /** @var ContestEntity $openedContests */
+        $openedContests = $repo->findOpenedContests();
+
+        /** @var ContestEntity $openedContests */
+        $activeContests = $repo->findActiveContests();
 
         return $this->render('default/index.html.twig', [
-            'activeContests' => count($contests) > 0
+            'openedContests' => $openedContests,
+            'activeContests' => $activeContests
         ]);
     }
 

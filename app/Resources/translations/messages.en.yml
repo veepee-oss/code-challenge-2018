@@ -26,6 +26,8 @@ app:
             2:              "<strong>%score% points</strong> to kill another player's starship."
             3:              "<strong>%score% points</strong> when killed by another player or invader."
 
+        contests:   "Current active contests:"
+
         rules:          "See the rules"
         create:         "Create test game"
         register:       "Register"

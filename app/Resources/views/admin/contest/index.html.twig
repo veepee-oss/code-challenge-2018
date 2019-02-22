@@ -82,6 +82,7 @@
                                              <br>
                                              &bullet;
                                              {{ 'app.contest-index.texts.date-from' | trans({ '%start-date%': contest.contestStartDate | date("Y-m-d H:i e") }) | default('&nbsp;') | raw }}
+                                             <br>
                                              &bullet;
                                              {{ 'app.contest-index.texts.date-to' | trans({ '%end-date%': contest.contestStartDate | date("Y-m-d H:i e") }) | default('&nbsp;') | raw }}
                                             <br>

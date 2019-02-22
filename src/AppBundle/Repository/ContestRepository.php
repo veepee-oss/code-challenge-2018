@@ -67,6 +67,36 @@ class ContestRepository extends EntityRepository implements ContestRepositoryInt
     }
 
     /**
+     * Finds the contests with open registration period
+     *
+     * @return mixed
+     * @throws \Exception
+     */
+    public function findOpenedContests()
+    {
+        return $this
+            ->getFindOpenedContestsQueryBuilder()
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
+     * Creates a query builder to get the contests with open registration period
+     *
+     * @return QueryBuilder
+     * @throws \Exception
+     */
+    public function getFindOpenedContestsQueryBuilder() : QueryBuilder
+    {
+        return $this
+            ->createQueryBuilder('c')
+            ->where('c.registrationStartDate <= :date')
+            ->andWhere('c.registrationEndDate >= :date')
+            ->orderBy('c.registrationStartDate', 'asc')
+            ->setParameter('date', new \DateTime());
+    }
+
+    /**
      * Finds the active contests
      *
      * @return mixed
@@ -90,8 +120,8 @@ class ContestRepository extends EntityRepository implements ContestRepositoryInt
     {
         return $this
             ->createQueryBuilder('c')
-            ->where('c.registrationStartDate <= :date')
-            ->andWhere('c.registrationEndDate >= :date')
+            ->where('c.contestStartDate <= :date')
+            ->andWhere('c.contestEndDate >= :date')
             ->orderBy('c.registrationStartDate', 'asc')
             ->setParameter('date', new \DateTime());
     }

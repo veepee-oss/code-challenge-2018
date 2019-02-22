@@ -76,7 +76,7 @@ class CompetitorForm extends AbstractType
                 'class'         => 'AppBundle:Contest',
                 'choice_label'  => 'name',
                 'query_builder' => function (ContestRepository $repo) {
-                    return $repo->getFindActiveContestsQueryBuilder();
+                    return $repo->getFindOpenedContestsQueryBuilder();
                 },
                 'required'      => true
             ]);

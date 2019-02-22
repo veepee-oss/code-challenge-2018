@@ -29,7 +29,7 @@
                         <span class="glyphicon glyphicon-info-sign"></span>
                     </a>
 
-                    {% if activeContests %}
+                    {% if openedContests | length > 0 %}
                         <br>
 
                         <a class="btn btn-warning btn-block btn-lg" href="{{ url('contest_register') }}" role="button">
@@ -66,6 +66,15 @@
                             {{ 'app.homepage.score.3' | trans({ '%score%': constant('AppBundle\\Domain\\Service\\GameEngine\\GameEngine::SCORE_DEAD') }) | raw }}
                         </li>
                     </ul>
+                    {% if activeContests | length > 0 %}
+                        <p>
+                            {{ 'app.homepage.contests' | trans }}
+                            {% for contest in activeContests %}
+                                {{ loop.index0 > 0 ? ', ' : '' }}
+                                <strong>{{ contest.name }}</strong>
+                            {% endfor %}
+                        </p>
+                    {% endif %}
                 </div>
             </div>
         </div>
