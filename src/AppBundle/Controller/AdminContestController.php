@@ -291,6 +291,18 @@ class AdminContestController extends Controller
             throw new NotFoundHttpException();
         }
 
+        /** @var Contest $contest */
+        $contest = $contestEntity->toDomainEntity();
+
+        // Check max competitors
+        $countCompetitors = $this->getCompetitorDoctrineRepository()->countPerContest([ $contest ]);
+        if ($countCompetitors >= $contest->maxCompetitors()) {
+            $this->addFlash("danger", $this->get('translator')->trans('app.error-messages.max-competitors', [
+                '%name%' => $contest->name()
+            ]));
+            return $this->redirectToRoute('admin_contest_view', [ 'uuid' => $contest->uuid() ]);
+        }
+
         // Create competitor data entity
         $formEntity = new CompetitorFormEntity();
         $formEntity->setContest($contestEntity);
@@ -317,7 +329,6 @@ class AdminContestController extends Controller
                 'uuid' => $uuid
             ]);
         }
-
 
         return $this->render('admin/contest/register-competitor.html.twig', array(
             'form' => $form->createView(),

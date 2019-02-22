@@ -89,3 +89,10 @@ textarea {
 .padding-xl {
     padding: 3em;
 }
+
+/**********************************************************************************************************************/
+
+.alert {
+    margin-top: 15px !important;
+    margin-bottom: 15px !important;
+}

@@ -296,3 +296,6 @@ app:
             attributions:   "Attributions"
             libraries:      "Software Libraries"
             graphics:       "Graphics and Icons"
+
+    error-messages:
+        max-competitors:   "Max. competitors reached for contest \"%name%\"!"

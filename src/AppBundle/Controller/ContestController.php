@@ -52,49 +52,60 @@ class ContestController extends Controller
             $competitor = $formEntity->toDomainEntity();
             $contest = $formEntity->getContest()->toDomainEntity();
 
-            /** @var GenerateTokenInterface $generator */
-            $generator = $this->get('app.contest.register.generate_token');
-            $generator->addToken($competitor);
+            $countCompetitors = $this->getDoctrine()
+                ->getRepository('AppBundle:Competitor')
+                ->countPerContest([ $contest ]);
 
-            /** @var ValidateCompetitorInterface $validator */
-            $validator = $this->get('app.contest.register.validate_competitor_ex');
-            $result = $validator->validate($competitor, $contest);
-
-            if (ValidationResults::STATUS_ERROR == $result->status()) {
-                foreach ($result->result() as $field => $messages) {
-                    try {
-                        $control = $form->get($field);
-                    } catch (\OutOfBoundsException $exc) {
-                        $control = $form;
-                    }
-                    foreach ($messages as $message) {
-                        $error = new FormError($message);
-                        $control->addError($error);
-                    }
-                }
+            if ($countCompetitors >= $contest->maxCompetitors()) {
+                $form->addError(new FormError($this->get('translator')->trans('app.error-messages.max-competitors', [
+                    '%name%' => $contest->name()
+                ])));
             } else {
-                $em = $this->getDoctrine()->getManager();
-                $entities = $em
-                    ->getRepository('AppBundle:Competitor')
-                    ->findBy([
-                        'contestUuid' => $competitor->contest(),
-                        'email'       => $competitor->email()
+
+                /** @var GenerateTokenInterface $generator */
+                $generator = $this->get('app.contest.register.generate_token');
+                $generator->addToken($competitor);
+
+                /** @var ValidateCompetitorInterface $validator */
+                $validator = $this->get('app.contest.register.validate_competitor_ex');
+                $result = $validator->validate($competitor, $contest);
+
+                if (ValidationResults::STATUS_ERROR == $result->status()) {
+                    foreach ($result->result() as $field => $messages) {
+                        try {
+                            $control = $form->get($field);
+                        } catch (\OutOfBoundsException $exc) {
+                            $control = $form;
+                        }
+                        foreach ($messages as $message) {
+                            $error = new FormError($message);
+                            $control->addError($error);
+                        }
+                    }
+                } else {
+                    $em = $this->getDoctrine()->getManager();
+                    $entities = $em
+                        ->getRepository('AppBundle:Competitor')
+                        ->findBy([
+                            'contestUuid' => $competitor->contest(),
+                            'email' => $competitor->email()
+                        ]);
+
+                    /** @var CompetitorEntity $entity */
+                    foreach ($entities as $entity) {
+                        $em->remove($entity);
+                    }
+
+                    $entity = new CompetitorEntity($competitor);
+                    $em->persist($entity);
+                    $em->flush();
+
+                    // TODO: Send email to the user
+
+                    return $this->redirectToRoute('contest_registered', [
+                        'uuid' => $competitor->contest()
                     ]);
-
-                /** @var CompetitorEntity $entity */
-                foreach ($entities as $entity) {
-                    $em->remove($entity);
                 }
-
-                $entity = new CompetitorEntity($competitor);
-                $em->persist($entity);
-                $em->flush();
-
-                // TODO: Send email to the user
-
-                return $this->redirectToRoute('contest_registered', [
-                    'uuid' => $competitor->contest()
-                ]);
             }
         }
 
