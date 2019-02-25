@@ -38,6 +38,27 @@ class RoundRepository extends EntityRepository implements RoundRepositoryInterfa
     }
 
     /**
+     * @param string $contestUuid
+     * @return Round[]
+     */
+    public function readRounds(string $contestUuid): array
+    {
+        try {
+            /** @var RoundEntity[] $roundEntities */
+            $roundEntities = $this->findBy([ 'contestUuid' => $contestUuid ]);
+
+            $rounds = [];
+            foreach ($roundEntities as $roundEntity) {
+                $rounds[] = $roundEntity->toDomainEntity();
+            }
+
+            return $rounds;
+        } catch (\Exception $exc) {
+            return [];
+        }
+    }
+
+    /**
      * Persists a round in the database
      *
      * @param Round $round

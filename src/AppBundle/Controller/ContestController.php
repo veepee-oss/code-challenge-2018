@@ -4,14 +4,24 @@ namespace AppBundle\Controller;
 
 use AppBundle\Domain\Entity\Contest\Competitor;
 use AppBundle\Domain\Entity\Contest\Contest;
+use AppBundle\Domain\Entity\Contest\Match;
+use AppBundle\Domain\Entity\Contest\Round;
+use AppBundle\Domain\Entity\Game\Game;
 use AppBundle\Domain\Service\Register\GenerateTokenInterface;
 use AppBundle\Domain\Service\Register\ValidateCompetitorInterface;
 use AppBundle\Domain\Service\Register\ValidationResults;
 use AppBundle\Entity\Competitor as CompetitorEntity;
 use AppBundle\Entity\Contest as ContestEntity;
+use AppBundle\Entity\Game as GameEntity;
+use AppBundle\Entity\Match as MatchEntity;
+use AppBundle\Entity\Round as RoundEntity;
 use AppBundle\Form\RegisterCompetitor\CompetitorEntity as CompetitorFormEntity;
 use AppBundle\Form\RegisterCompetitor\CompetitorForm;
+use AppBundle\Repository\CompetitorRepository;
 use AppBundle\Repository\ContestRepository;
+use AppBundle\Repository\GameRepository;
+use AppBundle\Repository\MatchRepository;
+use AppBundle\Repository\RoundRepository;
 use Doctrine\ORM\EntityManager;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -28,6 +38,80 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
  */
 class ContestController extends Controller
 {
+    /**
+     * Page to show all the content of the contest
+     *
+     * @Route("/{uuid}/view", name="contest_view",
+     *     requirements={"uuid": "[0-9a-f]{8}\-[0-9a-f]{4}\-[0-9a-f]{4}\-[0-9a-f]{4}\-[0-9a-f]{12}"})
+     *
+     * @param string $uuid
+     * @return Response
+     * @throws \Exception
+     */
+    public function viewAction(string $uuid) : Response
+    {
+        /** @var ContestRepository $contestRepo */
+        $contestRepo = $this->getContestDoctrineRepository();
+
+        /** @var CompetitorRepository $competitorRepo */
+        $competitorRepo = $this->getCompetitorDoctrineRepository();
+
+        /** @var RoundRepository $roundRepo */
+        $roundRepo = $this->getRoundDoctrineRepository();
+
+        /** @var MatchRepository $matchRepo */
+        $matchRepo = $this->getMatchDoctrineRepository();
+
+        /** @var GameRepository $gameRepo */
+        $gameRepo = $this->getGameDoctrineRepository();
+
+        /** @var ContestEntity $contestEntity */
+        $contestEntity = $contestRepo->findOneBy(array(
+            'uuid' => $uuid
+        ));
+
+        if (null === $contestEntity) {
+            throw new NotFoundHttpException();
+        }
+
+        /** @var Contest $contest */
+        $contest = $contestEntity->toDomainEntity();
+
+        /** @var CompetitorEntity[] $competitorEntities */
+        $competitorEntities = $competitorRepo->findBy([ 'contestUuid' => $contest->uuid() ]);
+
+        /** @var Competitor[] $competitors */
+        $competitors = [];
+        foreach ($competitorEntities as $competitorEntity) {
+            $competitors[] = $competitorEntity->toDomainEntity();
+        }
+        $contest->setCountCompetitors(count($competitors));
+
+        /** @var Round[] $rounds */
+        $rounds = $roundRepo->readRounds($contest->uuid());
+
+        /** @var Match[] $matchs */
+        $matches = [];
+        foreach ($rounds as $round) {
+            $matches += $matchRepo->readMatches($round->uuid());
+        }
+
+        foreach ($matches as $match) {
+            /** @var GameEntity $game */
+            $game = $gameRepo->findOneBy([ 'matchUuid' => $match->uuid() ]);
+            if (null !== $game) {
+                $match->setGame($game->toDomainEntity());
+            }
+        }
+
+        return $this->render('contest/view.html.twig', [
+            'contest'     => $contest,
+            'competitors' => $competitors,
+            'rounds'      => $rounds,
+            'matches'     => $matches
+        ]);
+    }
+
     /**
      * Page to register a competitor to a contest
      *
@@ -52,11 +136,16 @@ class ContestController extends Controller
             $competitor = $formEntity->toDomainEntity();
             $contest = $formEntity->getContest()->toDomainEntity();
 
-            $countCompetitors = $this->getDoctrine()
-                ->getRepository('AppBundle:Competitor')
+            $competitorCounts = $this->getCompetitorDoctrineRepository()
                 ->countPerContest([ $contest ]);
 
-            if ($countCompetitors >= $contest->maxCompetitors()) {
+            foreach ($competitorCounts as $competitorCount) {
+                if ($competitorCount['contestUuid'] == $contest->uuid()) {
+                    $contest->setCountCompetitors($competitorCount['competitorCount']);
+                }
+            }
+
+            if ($contest->countCompetitors() >= $contest->maxCompetitors()) {
                 $form->addError(new FormError($this->get('translator')->trans('app.error-messages.max-competitors', [
                     '%name%' => $contest->name()
                 ])));
@@ -84,8 +173,7 @@ class ContestController extends Controller
                     }
                 } else {
                     $em = $this->getDoctrine()->getManager();
-                    $entities = $em
-                        ->getRepository('AppBundle:Competitor')
+                    $entities = $this->getCompetitorDoctrineRepository()
                         ->findBy([
                             'contestUuid' => $competitor->contest(),
                             'email' => $competitor->email()
@@ -126,20 +214,20 @@ class ContestController extends Controller
      */
     public function registeredAction(string $uuid) : Response
     {
-        /** @var ContestRepository $repo */
-        $repo = $this->getDoctrine()->getRepository('AppBundle:Contest');
+        /** @var ContestRepository $contestRepo */
+        $contestRepo = $this->getContestDoctrineRepository();
 
-        /** @var ContestEntity $entity */
-        $entity = $repo->findOneBy(array(
+        /** @var ContestEntity $contestEntity */
+        $contestEntity = $contestRepo->findOneBy(array(
             'uuid' => $uuid
         ));
 
-        if (null === $entity) {
+        if (null === $contestEntity) {
             throw new NotFoundHttpException();
         }
 
         return $this->render('contest/registered.html.twig', [
-            'contest' => $entity->toDomainEntity()
+            'contest' => $contestEntity->toDomainEntity()
         ]);
     }
 
@@ -159,7 +247,7 @@ class ContestController extends Controller
         $em = $this->getDoctrine()->getManager();
 
         /** @var CompetitorEntity $competitorEntity */
-        $competitorEntity = $em->getRepository('AppBundle:Competitor')->findOneBy(array(
+        $competitorEntity = $this->getCompetitorDoctrineRepository()->findOneBy(array(
             'token' => $token
         ));
 
@@ -171,7 +259,7 @@ class ContestController extends Controller
         $competitor = $competitorEntity->toDomainEntity();
 
         /** @var ContestEntity $contestEntity */
-        $contestEntity = $em->getRepository('AppBundle:Contest')->findOneBy([
+        $contestEntity = $this->getContestDoctrineRepository()->findOneBy([
             'uuid' => $competitor->contest()
         ]);
 
@@ -193,5 +281,55 @@ class ContestController extends Controller
             'competitor' => $competitor,
             'validated'  => $validated
         ]);
+    }
+
+    /**
+     * Return the repository object to Contest entity
+     *
+     * @return ContestRepository
+     */
+    private function getContestDoctrineRepository() : ContestRepository
+    {
+        return $this->getDoctrine()->getRepository('AppBundle:Contest');
+    }
+
+    /**
+     * Return the repository object to Competitor entity
+     *
+     * @return CompetitorRepository
+     */
+    private function getCompetitorDoctrineRepository() : CompetitorRepository
+    {
+        return $this->getDoctrine()->getRepository('AppBundle:Competitor');
+    }
+
+    /**
+     * Return the repository object to Round entity
+     *
+     * @return RoundRepository
+     */
+    private function getRoundDoctrineRepository() : RoundRepository
+    {
+        return $this->getDoctrine()->getRepository('AppBundle:Round');
+    }
+
+    /**
+     * Return the repository object to Match entity
+     *
+     * @return MatchRepository
+     */
+    private function getMatchDoctrineRepository() : MatchRepository
+    {
+        return $this->getDoctrine()->getRepository('AppBundle:Match');
+    }
+
+    /**
+     * Return the repository object to Game entity
+     *
+     * @return GameRepository
+     */
+    private function getGameDoctrineRepository() : GameRepository
+    {
+        return $this->getDoctrine()->getRepository('AppBundle:Game');
     }
 }

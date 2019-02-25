@@ -20,6 +20,13 @@ interface RoundRepositoryInterface
     public function readRound(string $uuid): Round;
 
     /**
+     * @param string $contestUuid
+     * @return Round[]
+     */
+
+    public function readRounds(string $contestUuid): array;
+
+    /**
      * Persists a round in the database
      *
      * @param Round $round

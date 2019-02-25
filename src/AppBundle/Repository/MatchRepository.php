@@ -46,7 +46,7 @@ class MatchRepository extends EntityRepository implements MatchRepositoryInterfa
     {
         try {
             /** @var MatchEntity[] $matchEntities */
-            $matchEntities = $this->findBy(['roundUuid' => $roundUuid]);
+            $matchEntities = $this->findBy([ 'roundUuid' => $roundUuid ]);
 
             $matches = [];
             foreach ($matchEntities as $matchEntity) {

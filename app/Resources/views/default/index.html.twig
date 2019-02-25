@@ -69,12 +69,14 @@
                     {% if activeContests | length > 0 %}
                         <p>
                             {{ 'app.homepage.contests' | trans }}
-                            {% for contest in activeContests %}
-                                {{ loop.index0 > 0 ? ', ' : '' }}
-                                <strong>{{ contest.name }}</strong>
-                            {% endfor %}
-                            .
                         </p>
+                        <ul class="lead">
+                            {% for contest in activeContests %}
+                                <li>
+                                    <a href="{{ url('contest_view', { 'uuid': contest.uuid }) }}"><strong>{{ contest.name }}</strong></a>.
+                                </li>
+                            {% endfor %}
+                        </ul>
                     {% endif %}
                 </div>
             </div>

@@ -1,0 +1,122 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ contest.name }} - {{ parent() }}{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <div class="page-header">
+            <h1>
+                {{ contest.name }}
+                <small>
+                    {{ 'app.contest-view.title' | trans }}
+                </small>
+            </h1>
+        </div>
+
+        <div>
+            <p>
+                {{ contest.name }}
+            </p>
+            {% if contest.description is not empty %}
+                <p>
+                    {{ contest.description }}
+                </p>
+            {% endif %}
+            <p>
+                {{ contest.registrationStartDate | date('Y-m-d H:i:s e') }}
+                <br>
+                {{ contest.registrationEndDate | date('Y-m-d H:i:s e') }}
+            </p>
+            <p>
+                {{ contest.contestStartDate is empty ? "--" : contest.contestStartDate | date('Y-m-d H:i:s e') }}
+                <br>
+                {{ contest.contestEndDate is empty ? "--" : contest.contestEndDate | date('Y-m-d H:i:s e') }}
+            </p>
+            <p>
+                {{ contest.countCompetitors | length }}
+                {% if contest.maxCompetitors is not empty %}
+                    <br>
+                    {{ contest.maxCompetitors }}
+                {% endif %}
+            </p>
+        </div>
+
+        <h2>
+            Rounds
+        </h2>
+
+        {% for round in rounds %}
+            <div>
+                <h3>
+                    Round {{ round.name }}
+                </h3>
+                <p>
+                    {% if round.finished %}
+                        Finished
+                    {% else %}
+                        Not Finished
+                    {% endif %}
+                </p>
+
+                <h4>
+                    Classification
+                </h4>
+
+                <ul>
+                    {% for participant in round.classification %}
+                        <li>
+                            {{ participant.competitor.name }}:
+                            {{ participant.score }}
+                            {% if participant.classified %}
+                                - Classified
+                            {% endif %}
+                        </li>
+                    {% endfor %}
+                </ul>
+
+                <h4>
+                    Matches
+                </h4>
+
+                {% for match in matches %}
+                    {% if match.roundUuid == round.uuid %}
+                        <h5>
+                            {% if match.game is empty %}
+                                Match {{ match.uuid }}
+                            {% else %}
+                                {{ match.game.name }}
+                            {% endif %}
+                        </h5>
+
+                        <p>
+                            {% if match.validated %}
+                                Validated
+                            {% elseif match.finished %}
+                                finished
+                            {% else %}
+                                Not Finished
+                            {% endif %}
+                        </p>
+
+                        <h6>
+                            Results
+                        </h6>
+
+                        <ul>
+                            {% for result in match.results %}
+                                <li>
+                                    {% for competitor in competitors %}
+                                        {% if competitor.uuid == result.competitor %}
+                                            {{ competitor.name }}:
+                                            {{ result.score }}
+                                        {% endif %}
+                                    {% endfor %}
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        {% endfor %}
+    </div>
+{% endblock %}
