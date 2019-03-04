@@ -295,8 +295,15 @@ class AdminContestController extends Controller
         $contest = $contestEntity->toDomainEntity();
 
         // Check max competitors
-        $countCompetitors = $this->getCompetitorDoctrineRepository()->countPerContest([ $contest ]);
-        if ($countCompetitors >= $contest->maxCompetitors()) {
+        $competitorCounts = $this->getCompetitorDoctrineRepository()->countPerContest([ $contest ]);
+        foreach ($competitorCounts as $competitorCount) {
+            if ($competitorCount['contestUuid'] == $contest->uuid()) {
+                $contest->setCountCompetitors($competitorCount['competitorCount']);
+            }
+        }
+
+        $maxCompetitors = $contest->maxCompetitors();
+        if (null !== $maxCompetitors && $contest->countCompetitors() >= $maxCompetitors) {
             $this->addFlash("danger", $this->get('translator')->trans('app.error-messages.max-competitors', [
                 '%name%' => $contest->name()
             ]));

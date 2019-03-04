@@ -145,7 +145,8 @@ class ContestController extends Controller
                 }
             }
 
-            if ($contest->countCompetitors() >= $contest->maxCompetitors()) {
+            $maxCompetitors = $contest->maxCompetitors();
+            if (null !== $maxCompetitors && $contest->countCompetitors() >= $maxCompetitors) {
                 $form->addError(new FormError($this->get('translator')->trans('app.error-messages.max-competitors', [
                     '%name%' => $contest->name()
                 ])));
