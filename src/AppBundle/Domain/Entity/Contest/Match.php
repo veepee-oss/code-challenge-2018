@@ -149,6 +149,20 @@ class Match
     }
 
     /**
+     * @return Result[]
+     */
+    public function classification(): array
+    {
+        $classification = $this->results;
+
+        usort($classification, function (Result $r1, Result $r2) {
+            return $r2->score() <=> $r1->score();
+        });
+
+        return $classification;
+    }
+
+    /**
      * Updates a result
      *
      * @param string $player
