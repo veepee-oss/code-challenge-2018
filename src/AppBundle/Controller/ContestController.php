@@ -93,7 +93,7 @@ class ContestController extends Controller
         /** @var Match[] $matchs */
         $matches = [];
         foreach ($rounds as $round) {
-            $matches += $matchRepo->readMatches($round->uuid());
+            $matches = array_merge($matches, $matchRepo->readMatches($round->uuid()));
         }
 
         foreach ($matches as $match) {

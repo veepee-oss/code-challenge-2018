@@ -68,14 +68,24 @@
                 </div>
                 <div class="panel-body">
                     <div class="row">
-                        <div class="col-sm-6">
+                        <div class="col-sm-4">
                             <ul class="list-group">
                                 <li class="list-group-item active">
                                     <strong class="list-group-item-heading">{{ 'app.contest-view.texts.classification' | trans }}</strong>
                                 </li>
                                 {% for participant in round.classification %}
-                                    <li class="list-group-item {% if participant.classified %}list-group-item-success{% endif %}">
-                                        {{ participant.competitor.name }}
+                                    <li class="list-group-item {% if participant.classified %}text-success{% endif %}">
+                                        <strong>
+                                            {{ participant.competitor.name }}
+                                        </strong>
+
+                                        {% if participant.classified %}
+                                            &nbsp;
+                                            <span class="label label-success">
+                                                {{ 'app.contest-view.texts.classified' | trans }}
+                                            </span>
+                                        {% endif %}
+
                                         <span class="badge">
                                             {{ participant.score }}
                                         </span>
@@ -83,20 +93,22 @@
                                 {% endfor %}
                             </ul>
                         </div>
-                        <div class="col-sm-6">
+                        <div class="col-sm-8">
                             <div class="list-group">
                                 <div class="list-group-item active">
                                     <strong class="list-group-item-heading">{{ 'app.contest-view.texts.matches' | trans }}</strong>
                                 </div>
-                                {% for match in matches %}
+                                {% for match in matches if match.roundUuid == round.uuid %}
                                     <div class="list-group-item">
                                         <p class="list-group-item-heading">
                                             <strong>
-                                                {% if match.game is empty %}
-                                                    Match {{ match.uuid }}
-                                                {% else %}
-                                                    {{ match.game.name }}
-                                                {% endif %}
+                                                <a target="_blank" href="{{ url('game_view', { 'uuid': match.game.uuid }) }}">
+                                                    {% if match.game is empty %}
+                                                        {{ match.uuid }}
+                                                    {% else %}
+                                                        {{ match.game.name }}
+                                                    {% endif %}
+                                                </a>
                                             </strong>
 
                                             &nbsp;
@@ -115,7 +127,7 @@
                                                 </span>
                                             {% endif %}
 
-                                            <ul>
+                                            <ol>
                                                 {% for result in match.classification %}
                                                     <li>
                                                         {% for competitor in competitors %}
@@ -128,7 +140,7 @@
                                                         {% endfor %}
                                                     </li>
                                                 {% endfor %}
-                                            </ul>
+                                            </ol>
                                         </p>
                                     </div>
                                 {% endfor %}

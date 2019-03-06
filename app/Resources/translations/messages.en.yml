@@ -252,6 +252,7 @@ app:
             rounds:         "Rounds"
             participants:   "Participants"
             classification: "Classification"
+            classified:     "Classified"
             matches:        "Matches"
             email-c:        "Competitor email"
             email-p:        "Participant email"
