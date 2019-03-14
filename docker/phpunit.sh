@@ -17,6 +17,6 @@ while [[ $# -ge 1 ]]; do
     shift
 done;
 
-docker exec -it -u ${DOCKER_SERVER_USER} ${DOCKER_SERVER} ${APP_PHP} ${APP_PHPUNIT} $args
+docker exec -it -u ${DOCKER_SERVER_USER} ${DOCKER_SERVER} ${APP_PHP} ${APP_PHPUNIT} ${ARGS}
 
 echo -e ""
