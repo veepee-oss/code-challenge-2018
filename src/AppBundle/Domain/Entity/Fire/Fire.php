@@ -51,23 +51,28 @@ class Fire
      */
     public static function direction(?string $fire) : ?string
     {
+        $dir = Direction::STOPPED;
         switch ($fire) {
             case self::UP:
-                return Direction::UP;
+                $dir = Direction::UP;
+                break;
 
             case self::DOWN:
-                return Direction::DOWN;
+                $dir = Direction::DOWN;
+                break;
 
             case self::LEFT:
-                return Direction::LEFT;
+                $dir = Direction::LEFT;
+                break;
 
             case self::RIGHT:
-                return Direction::RIGHT;
+                $dir = Direction::RIGHT;
+                break;
 
             default:
                 break;
         }
 
-        return Direction::STOPPED;
+        return $dir;
     }
 }

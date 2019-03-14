@@ -7,7 +7,6 @@ use AppBundle\Domain\Entity\Position\Position;
 use PHPUnit\Framework\TestCase;
 
 /**
-/**
  * Unit test for domain entity Direction
  *
  * @package Tests\AppBundle\Domain\Entity\Position
@@ -86,50 +85,41 @@ class DirectionTest extends TestCase
     }
 
     /**
-     * Test turnLeft when heading up
+     * Test turnLeft multiple cases
+     * @testWith    ["up", "left" ]
+     *              ["down", "right"]
+     *              ["left", "down"]
+     *              ["right", "up"]
+     *              ["other", null]
      */
-    public function testTurnLeftFromUpReturnsLeft()
+    public function testTurnLeftMultipleCases(string $original, ?string $expected)
     {
-        $this->assertEquals(Direction::LEFT, Direction::turnLeft(Direction::UP));
+        $this->assertEquals($expected, Direction::turnLeft($original));
     }
 
     /**
-     * Test turnLeft when heading down
+     * Test turnRight multiple cases
+     * @testWith    ["up", "right"]
+     *              ["down", "left"]
+     *              ["right", "down"]
+     *              ["left", "up"]
+     *              ["other", null]
      */
-    public function testTurnLeftFromDonwReturnsRight()
+    public function testTurnRightMultipleCases(string $original, ?string $expected)
     {
-        $this->assertEquals(Direction::RIGHT, Direction::turnLeft(Direction::DOWN));
+        $this->assertEquals($expected, Direction::turnRight($original));
     }
 
     /**
-     * Test turnRight when heading up
+     * Test turnBack multiple cases
+     * @testWith    ["up", "down"]
+     *              ["down", "up"]
+     *              ["right", "left"]
+     *              ["left", "right"]
+     *              ["other", null]
      */
-    public function testTurnRightFromUpReturnsRight()
+    public function testturnBackMultipleCases(string $original, ?string $expected)
     {
-        $this->assertEquals(Direction::RIGHT, Direction::turnRight(Direction::UP));
-    }
-
-    /**
-     * Test turnRight when heading down
-     */
-    public function testTurnRightFromDownReturnsLeft()
-    {
-        $this->assertEquals(Direction::LEFT, Direction::turnRight(Direction::DOWN));
-    }
-
-    /**
-     * Test turnBack when heading up
-     */
-    public function testTurnBackFromUpReturnsDown()
-    {
-        $this->assertEquals(Direction::DOWN, Direction::turnBack(Direction::UP));
-    }
-
-    /**
-     * Test turnBack when heading down
-     */
-    public function testTurnBackFromDownReturnsUp()
-    {
-        $this->assertEquals(Direction::UP, Direction::turnBack(Direction::DOWN));
+        $this->assertEquals($expected, Direction::turnBack($original));
     }
 }
