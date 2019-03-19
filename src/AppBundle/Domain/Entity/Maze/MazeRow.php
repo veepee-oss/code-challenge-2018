@@ -124,7 +124,7 @@ class MazeRow implements \ArrayAccess, \Countable, \Iterator
      */
     public function current()
     {
-        return $this[$this->pos];
+        return $this->cells[$this->pos];
     }
 
     /**

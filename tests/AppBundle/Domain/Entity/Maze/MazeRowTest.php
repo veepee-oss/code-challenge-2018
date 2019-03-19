@@ -14,17 +14,56 @@ use PHPUnit\Framework\TestCase;
 class MazeRowTest extends TestCase
 {
     /**
+     * Test walk a row using foreach
+     */
+    public function testArrayAccessInterface()
+    {
+        $row = new MazeRow(7);
+        for ($i = 0; $i < 7; $i++) {
+            $content = 9 - $i;
+            $row[$i] = new MazeCell($content);
+        }
+
+        $content = 9;
+        for ($i = 0; $i < 7; $i++) {
+            $this->assertEquals($content, $row[$i]->getContent());
+            $content--;
+        }
+    }
+
+    /**
+     * Test walk a row using foreach
+     */
+    public function testIteratorInterface()
+    {
+        $row = new MazeRow(5);
+        for ($i = 0; $i < 5; $i++) {
+            $content = 5 - $i;
+            $row[$i] = new MazeCell($content);
+        }
+
+        $content = 5;
+        foreach ($row as $cell) {
+            $this->assertEquals($content, $cell->getContent());
+            $content--;
+        }
+    }
+
+    /**
      * Test constructor multiple cases:
      * - Valid offset
      * - No cells
      *
+     * @param int $count
      * @testWith    [10]
+     *              [5]
      *              [0]
      */
-    public function testConstructor(int $count)
+    public function testCountableInterface(int $count)
     {
         $row = new MazeRow($count);
         $this->assertEquals($count, $row->count());
+        $this->assertEquals($count, count($row));
     }
 
     /**
@@ -33,6 +72,8 @@ class MazeRowTest extends TestCase
      * - Upper bounds offset
      * - Zero (lower bounds offset)
      *
+     * @param int   $count
+     * @param mixed $offset
      * @testWith    [10, 5]
      *              [10, 9]
      *              [10, 0]
@@ -51,6 +92,8 @@ class MazeRowTest extends TestCase
      * - No cells
      * - Non integer value offset
      *
+     * @param int   $count
+     * @param mixed $offset
      * @testWith    [10, 10]
      *              [10, -1]
      *              [0, 0]
@@ -104,33 +147,94 @@ class MazeRowTest extends TestCase
         $row->offsetSet(7, new MazeCell(5));
     }
 
-    public function testOffsetUnset()
+    /**
+     * Test unset offset when valid offset
+     */
+    public function testOffsetUnsetWhenOffsetExist()
     {
-        $this->markTestSkipped('TODO');
+        $this->expectException(\InvalidArgumentException::class);
+        $row = new MazeRow(5);
+        $row->offsetUnset(-1);
     }
 
+    /**
+     * Test unset offset when invalid offset
+     */
+    public function testOffsetUnsetWhenOffsetDoesntExist()
+    {
+        $row = new MazeRow(5);
+        $row->offsetSet(1, new MazeCell(3));
+        $row->offsetUnset(1);
+
+        $this->assertEquals(0, $row[1]->getContent());
+    }
+
+    /**
+     * Test current (ArrayAccess)
+     */
     public function testCurrent()
     {
-        $this->markTestSkipped('TODO');
+        $row = new MazeRow(5);
+        $row[0] = new MazeCell(0x80);
+        $cell = $row->current();
+
+        $this->assertEquals(0x80, $cell->getContent());
     }
 
+    /**
+     * Test next (ArrayAccess)
+     */
     public function testNext()
     {
-        $this->markTestSkipped('TODO');
+        $row = new MazeRow(5);
+        $row[0] = new MazeCell(0x80);
+        $row[1] = new MazeCell(0x66);
+        $row->next();
+        $cell = $row->current();
+
+        $this->assertEquals(0x66, $cell->getContent());
     }
 
+    /**
+     * Test key (ArrayAccess)
+     */
     public function testKey()
     {
-        $this->markTestSkipped('TODO');
+        $row = new MazeRow(5);
+        $i = 0;
+
+        foreach ($row as $cell) {
+            $this->assertEquals($i, $row->key());
+            $i++;
+        }
     }
 
+    /**
+     * Test valid (ArrayAccess)
+     */
     public function testValid()
     {
-        $this->markTestSkipped('TODO');
+        $row = new MazeRow(3);
+
+        foreach ($row as $cell) {
+            $this->assertTrue($row->valid());
+        }
+
+        $this->assertFalse($row->valid());
     }
 
+    /**
+     * Test rewind (ArrayAccess)
+     */
     public function testRewind()
     {
-        $this->markTestSkipped('TODO');
+        $row = new MazeRow(3);
+        $this->assertEquals(0, $row->key());
+
+        $row->next();
+        $this->assertEquals(1, $row->key());
+
+        $row->rewind();
+        $this->assertEquals(0, $row->key());
     }
 }
