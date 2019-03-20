@@ -84,7 +84,6 @@ class MazeRowTest extends TestCase
         $this->assertTrue($row->offsetExists($offset));
     }
 
-
     /**
      * Test offset doesn't exists multiple cases
      * - Offset out of bounds
@@ -126,7 +125,7 @@ class MazeRowTest extends TestCase
     }
 
     /**
-     * Test get offset when valid offset
+     * Test set offset when valid offset
      */
     public function testOffsetSetWhenOffsetExist()
     {
@@ -138,7 +137,7 @@ class MazeRowTest extends TestCase
     }
 
     /**
-     * Test get offset when invalid offset
+     * Test set offset when invalid offset
      */
     public function testOffsetSetWhenOffsetDoesntExist()
     {
@@ -152,16 +151,6 @@ class MazeRowTest extends TestCase
      */
     public function testOffsetUnsetWhenOffsetExist()
     {
-        $this->expectException(\InvalidArgumentException::class);
-        $row = new MazeRow(5);
-        $row->offsetUnset(-1);
-    }
-
-    /**
-     * Test unset offset when invalid offset
-     */
-    public function testOffsetUnsetWhenOffsetDoesntExist()
-    {
         $row = new MazeRow(5);
         $row->offsetSet(1, new MazeCell(3));
         $row->offsetUnset(1);
@@ -170,7 +159,17 @@ class MazeRowTest extends TestCase
     }
 
     /**
-     * Test current (ArrayAccess)
+     * Test unset offset when invalid offset
+     */
+    public function testOffsetUnsetWhenOffsetDoesntExist()
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        $row = new MazeRow(5);
+        $row->offsetUnset(-1);
+    }
+
+    /**
+     * Test current (\ArrayAccess interface)
      */
     public function testCurrent()
     {
@@ -182,7 +181,7 @@ class MazeRowTest extends TestCase
     }
 
     /**
-     * Test next (ArrayAccess)
+     * Test next (\ArrayAccess interface)
      */
     public function testNext()
     {
@@ -196,7 +195,7 @@ class MazeRowTest extends TestCase
     }
 
     /**
-     * Test key (ArrayAccess)
+     * Test key (\ArrayAccess interface)
      */
     public function testKey()
     {
@@ -210,7 +209,7 @@ class MazeRowTest extends TestCase
     }
 
     /**
-     * Test valid (ArrayAccess)
+     * Test valid (\ArrayAccess interface)
      */
     public function testValid()
     {
@@ -224,7 +223,7 @@ class MazeRowTest extends TestCase
     }
 
     /**
-     * Test rewind (ArrayAccess)
+     * Test rewind (\ArrayAccess interface)
      */
     public function testRewind()
     {

@@ -27,7 +27,7 @@ class Maze implements \ArrayAccess, \Countable, \Iterator
      *
      * @param int $height the width of the maze
      * @param int $width  the height of the maze
-     * @param array $cells the initial content of the maze
+     * @param int[][] $cells the initial content of the maze
      */
     public function __construct(
         int $height,
@@ -77,10 +77,23 @@ class Maze implements \ArrayAccess, \Countable, \Iterator
      * Creates a random start position for a player
      *
      * @return Position
+     * @throws \OutOfRangeException
      */
     public function createStartPosition() : Position
     {
+        $mazeHeight = $this->height();
+        $mazeWidth = $this->width();
+
+        if ($mazeHeight < 3 || $mazeWidth < 3) {
+            throw new \OutOfRangeException("Can't create start position when height or width are less tha 3!");
+        }
+
+        $attempts = 2 * $mazeHeight * $mazeWidth;
         do {
+            if ($attempts-- <= 0) {
+                throw new \OutOfRangeException("Too many attempts to generate the start position!");
+            }
+
             $y = rand(1, $this->height() - 2);
             $x = rand(1, $this->width() - 2);
         } while (!$this[$y][$x]->isEmpty());
