@@ -3,13 +3,14 @@
 namespace Tests\AppBundle\Domain\Entity\Maze;
 
 use AppBundle\Domain\Entity\Maze\MazeCell;
+use PHPUnit\Framework\TestCase;
 
 /**
  * Unit test for domain entity MazeCell
  *
  * @package Tests\AppBundle\Domain\Entity\Maze
  */
-class MazeCellTest extends \PHPUnit_Framework_TestCase
+class MazeCellTest extends TestCase
 {
     /**
      * Test get cell content

@@ -3,13 +3,14 @@
 namespace Tests\AppBundle\Domain\Entity\Fire;
 
 use AppBundle\Domain\Entity\Fire\Fire;
+use PHPUnit\Framework\TestCase;
 
 /**
  * Unit test for domain entity Fire
  *
  * @package Tests\AppBundle\Domain\Entity\Fire
  */
-class FireTest extends \PHPUnit_Framework_TestCase
+class FireTest extends TestCase
 {
     /**
      * Test direction multiple cases
