@@ -57,9 +57,6 @@ class Player extends MazeObject
     /** @var string the URL of the API to move the player */
     protected $url;
 
-    /** @var Position the stating position */
-    protected $start;
-
     /** @var bool If the player respawned this turn */
     protected $respawned;
 
@@ -82,7 +79,6 @@ class Player extends MazeObject
         $this->name = $this->uuid;
         $this->email = null;
         $this->url = $url;
-        $this->start = clone $position;
         $this->respawned = false;
 
         $this->resetStatus();
@@ -168,9 +164,9 @@ class Player extends MazeObject
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function email() : string
+    public function email() : ?string
     {
         return $this->email;
     }
@@ -186,16 +182,6 @@ class Player extends MazeObject
     }
 
     /**
-     * Get stating position
-     *
-     * @return Position
-     */
-    public function start() : Position
-    {
-        return $this->start;
-    }
-
-    /**
      * Get if the player respawned this turn
      *
      * @return bool
@@ -206,17 +192,19 @@ class Player extends MazeObject
     }
 
     /**
-     * Get current direction
+     * Get current direction - where is the starship facing? (left, right, up, down)
+     *
+     * If it's firing, the name is facing in the shot direction. If not it depends on the las movement.
      *
      * @return string|null
      */
     public function direction(): ?string
     {
-        if (!$this->isFiring()) {
-            return parent::direction();
+        if ($this->isFiring()) {
+            return Fire::direction($this->firingDir);
         }
 
-        return Fire::direction($this->firingDir);
+        return parent::direction();
     }
 
     /**
@@ -475,8 +463,7 @@ class Player extends MazeObject
             'uuid' => $this->uuid(),
             'name' => $this->name(),
             'email' => $this->email(),
-            'url' => $this->url(),
-            'start' => $this->start()->serialize()
+            'url' => $this->url()
         );
     }
 
@@ -542,11 +529,6 @@ class Player extends MazeObject
         $email = $data['email'] ?? null;
         if (null !== $email) {
             $player->email = $email;
-        }
-
-        $start = $data['start'] ?? null;
-        if (null !== $start) {
-            $player->start = Position::unserialize($start);
         }
 
         return $player;
