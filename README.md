@@ -44,6 +44,8 @@ $ docker/start.sh
 $ docker/composer.sh install
 $ docker/console.sh doctrine:database:create
 $ docker/console.sh doctrine:schema:create
+$ docker/console.sh -e prod cache:clear
+$ docker/console.sh -e prod cache:warmup
 ```
 
 ## License
