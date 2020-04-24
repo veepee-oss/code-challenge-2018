@@ -186,7 +186,7 @@ app:
         title:          "Game Details"
 
     contest-index:
-        title:          "Contests"
+        title:          "Contest administration"
 
         texts:
             contests:           "Contests"

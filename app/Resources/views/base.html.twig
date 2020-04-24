@@ -90,6 +90,8 @@
                                 <br>
 
                                 {% if is_granted('ROLE_ADMIN') %}
+                                    <a href="{{ url('admin_contest_index') }}">{{ 'app.contest-index.title' | trans }}</a>
+                                    |
                                     <a href="{{ url('admin_index') }}">{{ 'app.admin-page.title' | trans }}</a>
                                     <span class="glyphicon glyphicon-wrench" aria-hidden="true"></span>
                                 {%  elseif is_granted('IS_AUTHENTICATED_FULLY') or is_granted('IS_AUTHENTICATED_REMEMBERED') %}
