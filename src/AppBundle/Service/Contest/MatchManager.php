@@ -74,7 +74,7 @@ class MatchManager implements MatchManagerInterface
                 }
 
                 for ($i = 0; $i < $maxGroups; ++$i) {
-                    $matchParticipants = array_slice($participants, $firstPlayer, $minPlayers);
+                    $matchParticipants = array_slice($participants, $firstPlayer, $maxPlayers);
                     $match = $this->createMatch($round, $matchParticipants, $groupNum, $matchNum++);
                     $firstPlayer += $maxPlayers;
                     $matches[] = $match;
