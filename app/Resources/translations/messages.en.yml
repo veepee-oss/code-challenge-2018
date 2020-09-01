@@ -266,6 +266,8 @@ app:
             no-rounds:      "This contest doesn't have any round!"
             no-participants: "This round doesn't have any participant!"
             status:
+                not-started:    "Not started"
+                running:        "Running"
                 not-finished:   "Not finished"
                 finished:       "Finished"
                 validated:      "Validated"

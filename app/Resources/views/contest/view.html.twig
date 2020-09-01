@@ -54,7 +54,7 @@
         {#
          # For each round...
          #}
-        {% for round in rounds %}
+        {% for round in rounds | reverse %}
             <div class="panel panel-info">
                 <div class="panel-heading lead">
                     <strong>
@@ -117,7 +117,7 @@
                                 {#
                                  # For each match...
                                  #}
-                                {% for match in matches | reverse if match.roundUuid == round.uuid %}
+                                {% for match in matches if match.roundUuid == round.uuid %}
                                     <div class="list-group-item">
                                         <p class="list-group-item-heading">
                                             <strong>
@@ -137,12 +137,16 @@
                                                     {{ 'app.contest-view.texts.status.validated' | trans }}
                                                 </span>
                                             {% elseif match.finished %}
-                                                <span class="label label-warning">
+                                                <span class="label label-danger">
                                                     {{ 'app.contest-view.texts.status.finished' | trans }}
                                                 </span>
+                                            {% elseif match.playing %}
+                                                <span class="label label-warning">
+                                                    {{ 'app.contest-view.texts.status.running' | trans }}
+                                                </span>
                                             {% else %}
-                                                <span class="label label-danger">
-                                                    {{ 'app.contest-view.texts.status.not-finished' | trans }}
+                                                <span class="label label-default">
+                                                    {{ 'app.contest-view.texts.status.not-started' | trans }}
                                                 </span>
                                             {% endif %}
                                         </p>
