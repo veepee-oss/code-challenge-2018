@@ -63,7 +63,7 @@ class RoundEntity
     /**
      * @var int
      * @Assert\NotBlank()
-     * @Assert\Range(min=100, max=5000)
+     * @Assert\Range(min=50, max=5000)
      */
     private $limit = Game::DEFAULT_MOVES_LIMIT;
 
