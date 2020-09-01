@@ -50,7 +50,7 @@ class Position
     /**
      * Moves a position in a direction
      *
-     * @param string $dir
+     * @param string|null $dir
      * @return $this
      */
     public function moveTo(?string $dir) : Position
@@ -82,10 +82,10 @@ class Position
      * Moves a position in a direction, returning a new object.
      *
      * @param Position $pos
-     * @param string $dir
+     * @param string|null $dir
      * @return Position
      */
-    public static function move(Position $pos, string $dir) : Position
+    public static function move(Position $pos, ?string $dir) : Position
     {
         $new = clone $pos;
         return $new->moveTo($dir);

@@ -1,12 +1,12 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}{{ 'app.gameover.title' | trans }} - {{ parent() }}{% endblock %}
+{% block title %}{{ 'app.game-over.title' | trans }} - {{ parent() }}{% endblock %}
 
 {% block content %}
     <div class="container">
         <div class="page-header">
             <h1>
-                {{ 'app.gameover.title' | trans }}
+                {{ 'app.game-over.title' | trans }}
                 <small>
                     {{ 'app.global.title' | trans }}
                 </small>
@@ -15,26 +15,29 @@
 
         {% if now <= start_time %}
             <p class="lead">
-                {{ 'app.gameover.texts.1' | trans | raw }}
+                {{ 'app.game-over.texts.1' | trans | raw }}
             </p>
             <p class="lead">
-                {{ 'app.gameover.texts.2' | trans({ '%date%': start_time | date }) | raw }}
+                {{ 'app.game-over.texts.2' | trans({ '%date%': start_time | date }) | raw }}
             </p>
         {% else %}
             <p class="lead">
-                {{ 'app.gameover.texts.3' | trans | raw }}
+                {{ 'app.game-over.texts.3' | trans | raw }}
             </p>
             <p class="lead">
-                {{ 'app.gameover.texts.4' | trans({ '%date%': end_time | date }) | raw }}
+                {{ 'app.game-over.texts.4' | trans({ '%date%': end_time | date }) | raw }}
             </p>
         {% endif %}
 
         <p class="lead">
-            {{ 'app.gameover.texts.5' | trans({ '%email%': '<a href="mailto:' ~ default_email ~ '">' ~ default_email ~'</a>' }) | raw }}
+            {{ 'app.game-over.texts.5' | trans({ '%email%': '<a href="mailto:' ~ default_email ~ '">' ~ default_email ~'</a>' }) | raw }}
         </p>
 
         <p>
-            <a class="btn btn-default" href="{{ url('homepage') }}">{{ 'app.gameover.buttons.back' | trans }}</a>
+            <a class="btn btn-default" href="{{ url('homepage') }}">
+                <span class="glyphicon glyphicon-chevron-left"></span>
+                {{ 'app.game-over.buttons.back' | trans }}
+            </a>
         </p>
     </div>
 {% endblock %}

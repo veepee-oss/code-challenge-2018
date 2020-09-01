@@ -29,6 +29,15 @@
                         <span class="glyphicon glyphicon-info-sign"></span>
                     </a>
 
+                    {% if openedContests | length > 0 %}
+                        <br>
+
+                        <a class="btn btn-warning btn-block btn-lg" href="{{ url('contest_register') }}" role="button">
+                            {{ 'app.homepage.register' | trans }}
+                            <span class="glyphicon glyphicon-log-in"></span>
+                        </a>
+                    {% endif %}
+
                     <br>
 
                     <a class="btn btn-success btn-block btn-lg" href="{{ url('game_create') }}" role="button">
@@ -48,15 +57,27 @@
                     </p>
                     <ul class="lead">
                         <li class="text-success">
-                            {{ 'app.homepage.score.1' | trans | raw }}
+                            {{ 'app.homepage.score.1' | trans({ '%score%': constant('AppBundle\\Domain\\Service\\GameEngine\\GameEngine::SCORE_KILL_GHOST') }) | raw }}
                         </li>
                         <li class="text-success">
-                            {{ 'app.homepage.score.2' | trans | raw }}
+                            {{ 'app.homepage.score.2' | trans({ '%score%': constant('AppBundle\\Domain\\Service\\GameEngine\\GameEngine::SCORE_KILL_PLAYER') }) | raw }}
                         </li>
                         <li class="text-danger">
-                            {{ 'app.homepage.score.3' | trans | raw }}
+                            {{ 'app.homepage.score.3' | trans({ '%score%': constant('AppBundle\\Domain\\Service\\GameEngine\\GameEngine::SCORE_DEAD') }) | raw }}
                         </li>
                     </ul>
+                    {% if activeContests | length > 0 %}
+                        <p>
+                            {{ 'app.homepage.contests' | trans }}
+                        </p>
+                        <ul class="lead">
+                            {% for contest in activeContests %}
+                                <li>
+                                    <a href="{{ url('contest_view', { 'uuid': contest.uuid }) }}"><strong>{{ contest.name }}</strong></a>.
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
                 </div>
             </div>
         </div>

@@ -13,7 +13,7 @@ class DefaultControllerTest extends WebTestCase
         $crawler = $client->request('GET', '/');
 
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
-        $this->assertContains('Maze Scape', $crawler->filter('.jumbotron .container h1')->text());
+        $this->assertContains('Space Invaders tribute', $crawler->filter('.jumbotron .container h1')->text());
         $this->assertContains('See the rules', $crawler->filter('.jumbotron .container a.btn')->text());
     }
 }

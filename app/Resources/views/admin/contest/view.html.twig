@@ -1,0 +1,352 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ contest.name }} - {{ parent() }}{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <div class="page-header">
+            <h1>
+                {{ contest.name }}
+                <small>
+                    {{ 'app.contest-view.title' | trans }}
+                </small>
+            </h1>
+        </div>
+
+        {#
+         # Contest data panel
+         #}
+        <div class="panel panel-success">
+            <div class="panel-heading">
+                {{ 'app.contest-view.texts.data' | trans }}
+            </div>
+
+            <div class="panel-body">
+                <div class="row">
+                    <div class="col-xs-12">
+                        <p class="text-info small">
+                            {{ 'app.contest-view.texts.description' | trans }}:
+                        </p>
+                        <p class="bg-warning padding-xs">
+                            {{ contest.description | default("--") | raw }}
+                        </p>
+                    </div>
+
+                    <div class="col-xs-12">
+                        <p class="text-info small">
+                            {{ 'app.contest-view.texts.restrictions' | trans }}:
+                        </p>
+                        <p class="bg-warning padding-xs">
+                            {{ contest.emailRestrictionsRegex | default("--") | raw }}
+                        </p>
+                    </div>
+
+                    <div class="col-md-3 col-sm-6 col-xs-12">
+                        <p class="text-info small">
+                            {{ 'app.contest-view.texts.r-start-date' | trans }}:
+                        </p>
+                        <p class="bg-warning padding-xs">
+                            {{ contest.registrationStartDate | date('Y-m-d H:i:s e') }}
+                        </p>
+                    </div>
+
+                    <div class="col-md-3 col-sm-6 col-xs-12">
+                        <p class="text-info small">
+                            {{ 'app.contest-view.texts.r-end-date' | trans }}:
+                        </p>
+                        <p class="bg-warning padding-xs">
+                            {{ contest.registrationEndDate | date('Y-m-d H:i:s e') }}
+                        </p>
+                    </div>
+
+                    <div class="col-md-3 col-sm-6 col-xs-12">
+                        <p class="text-info small">
+                            {{ 'app.contest-view.texts.c-start-date' | trans }}:
+                        </p>
+                        <p class="bg-warning padding-xs">
+                            {{ contest.contestStartDate is empty ? "--" : contest.contestStartDate | date('Y-m-d H:i:s e') }}
+                        </p>
+                    </div>
+
+                    <div class="col-md-3 col-sm-6 col-xs-12">
+                        <p class="text-info small">
+                            {{ 'app.contest-view.texts.c-end-date' | trans }}:
+                        </p>
+                        <p class="bg-warning padding-xs">
+                            {{ contest.contestEndDate is empty ? "--" : contest.contestEndDate | date('Y-m-d H:i:s e') }}
+                        </p>
+                    </div>
+
+                    <div class="col-md-3 col-sm-6 col-xs-12">
+                        <p class="text-info small">
+                            {{ 'app.contest-view.texts.competitors' | trans }}:
+                        </p>
+                        <p class="bg-warning padding-xs">
+                            {{ competitors | length }}
+                            {% if contest.maxCompetitors is not empty %}
+                                {{ 'app.contest-view.texts.of' | trans }}
+                                {{ contest.maxCompetitors }}
+                            {% endif %}
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            {#
+             # Contest data panel buttons
+             #}
+            <div class="panel-footer text-center">
+                <a  role="button"
+                    class="btn btn-warning"
+                    href="{{ url('admin_contest_edit', { 'uuid': contest.uuid }) }}">
+                    <span class="glyphicon glyphicon glyphicon-edit"></span>
+                    {{ 'app.contest-view.buttons.edit' | trans }}
+                </a>
+
+                <button
+                    type="button"
+                    class="btn btn-danger js-btn-remove"
+                    data-question="{{ 'app.contest-view.texts.ask-remove.contest' | trans({ '%name%' : contest.name }) }}"
+                    data-url="{{ url('admin_contest_remove', { 'uuid': contest.uuid }) }}"
+                    data-refresh="{{ url('admin_contest_index') }}">
+                    <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
+                    {{ 'app.contest-view.buttons.remove' | trans }}
+                </button>
+
+                <div class="btn-group">
+                    <button
+                        type="button"
+                        class="btn btn-success dropdown-toggle"
+                        data-toggle="dropdown"
+                        aria-haspopup="true"
+                        aria-expanded="false">
+                        <span class="glyphicon glyphicon-plus"></span>
+                        {{ 'app.contest-view.buttons.add' | trans }}
+                        <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li>
+                            <a href="{{ url('admin_competitor_register', { 'uuid': contest.uuid }) }}">
+                                {{ 'app.contest-view.buttons.add-competitor' | trans }}
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ url('admin_round_create', { 'uuid': contest.uuid }) }}">
+                                {{ 'app.contest-view.buttons.add-round' | trans }}
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
+                <a  role="button"
+                    class="btn btn-default"
+                    href="{{ url('admin_contest_index') }}">
+                    <span class="glyphicon glyphicon-chevron-left"></span>
+                    {{ 'app.contest-view.buttons.go-back' | trans }}
+                </a>
+            </div>
+        </div>
+
+        {#
+         # Navigation panel
+         #}
+        <div class="panel panel-info">
+            <div class="panel-heading">
+                <ul class="nav nav-pills">
+                    <li role="presentation" class="active">
+                        <a href="#tab-competitors" class="js-nav-tab-default">
+                            {{ 'app.contest-view.texts.competitors' | trans }}
+                            <span class="badge">
+                                {{ competitors | length }}
+                            </span>
+                        </a>
+                    </li>
+                    <li role="presentation">
+                        <a href="#tab-rounds" class="js-nav-tab-default">
+                            {{ 'app.contest-view.texts.rounds' | trans }}
+                            <span class="badge">
+                                {{ rounds | length }}
+                            </span>
+                        </a>
+                    </li>
+                    {% for round in rounds %}
+                        <li role="presentation">
+                            <a href="#{{ round.uuid }}" class="js-nav-tab-default">
+                                {{ round.name }}
+                            </a>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+            <div class="panel-body tab-content">
+
+                {#
+                 # Competitors list tab panel
+                 #}
+                <div class="tab-pane panel-list-striped active" role="tabpanel" id="tab-competitors">
+                    {% if competitors is empty %}
+                        <p class="text-danger">
+                            {{ 'app.contest-view.texts.no-competitors' | trans }}
+                        </p>
+                    {% else %}
+                        <div class="row text-info">
+                            <div class="col-sm-3 col-xs-8 padding-xs">
+                                <strong>{{ 'app.contest-view.texts.email-c' | trans }}</strong>
+                            </div>
+                            <div class="col-sm-3 hidden-xs padding-xs">
+                                <strong>{{ 'app.contest-view.texts.name-p' | trans }}</strong>
+                            </div>
+                            <div class="col-sm-3 hidden-xs padding-xs">
+                                <strong>{{ 'app.contest-view.texts.api-url' | trans }}</strong>
+                            </div>
+
+                            <div class="col-sm-3 col-xs-4 padding-xs text-right">
+                                <strong>{{ 'app.contest-view.texts.actions' | trans }}</strong>
+                            </div>
+                        </div>
+                    {% endif %}
+                    {% for competitor in competitors %}
+                        <div class="row">
+                            <div class="col-sm-3 col-xs-8 padding-xs">
+                                {{ competitor.email }}
+                            </div>
+
+                            <div class="col-sm-3 hidden-xs padding-xs">
+                                {{ competitor.name }}
+                            </div>
+
+                            <div class="col-sm-3 hidden-xs padding-xs">
+                                {{ competitor.url }}
+                            </div>
+
+                            <div class="col-sm-3 col-xs-4 padding-xs text-right">
+                                <div class="btn-group" role="group">
+                                    {% if not competitor.validated and competitor.validationToken is not empty %}
+                                        <button
+                                            class="btn btn-xs btn-success js-btn-action"
+                                            title="{{ 'app.contest-view.buttons.validate' | trans }}"
+                                            data-question="{{ 'app.contest-view.texts.ask-validate.email' | trans({ '%email%' : competitor.email }) }}"
+                                            data-url="{{ url('admin_competitor_validate', { 'uuid': competitor.uuid }) }}"
+                                            data-refresh="{{ url('admin_contest_view', { 'uuid': contest.uuid }) }}">
+                                            <span class="glyphicon glyphicon-ok" aria-hidden="true"></span>
+                                        </button>
+                                    {% endif %}
+                                    <button
+                                        class="btn btn-xs btn-danger js-btn-remove"
+                                        title="{{ 'app.contest-view.buttons.remove' | trans }}"
+                                        data-question="{{ 'app.contest-view.texts.ask-remove.competitor' | trans({ '%email%' : competitor.email }) }}"
+                                        data-url="{{ url('admin_competitor_remove', { 'uuid': competitor.uuid }) }}"
+                                        data-refresh="{{ url('admin_contest_view', { 'uuid': contest.uuid }) }}">
+                                        <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+
+                {#
+                 # Round list tab panel
+                 #}
+                <div class="tab-pane panel-list-striped" role="tabpanel" id="tab-rounds">
+                    {% if rounds is empty %}
+                        <p class="text-danger">
+                            {{ 'app.contest-view.texts.no-rounds' | trans }}
+                        </p>
+                    {% else %}
+                        <div class="row text-info">
+                            <div class="col-sm-3 col-xs-8 padding-xs">
+                                <strong>{{ 'app.contest-view.texts.round-name' | trans }}</strong>
+                            </div>
+                            <div class="col-sm-3 hidden-xs padding-xs text-right">
+                                <strong>{{ 'app.contest-view.texts.participants' | trans }}</strong>
+                            </div>
+
+                            <div class="col-sm-3 hidden-xs padding-xs text-right">
+                                <strong>{{ 'app.contest-view.texts.matches' | trans }}</strong>
+                            </div>
+
+                            <div class="col-sm-3 col-xs-4 padding-xs text-right">
+                                <strong>{{ 'app.contest-view.texts.actions' | trans }}</strong>
+                            </div>
+                        </div>
+                    {% endif %}
+                    {% for round in rounds %}
+                        <div class="row">
+                            <div class="col-sm-3 col-xs-8 padding-xs">
+                                {{ round.name }}
+                            </div>
+
+                            <div class="col-sm-3 hidden-xs padding-xs text-right">
+                                {{ round.participants | length }}
+                            </div>
+
+                            <div class="col-sm-3 hidden-xs padding-xs text-right">
+                                {{ matchCount[round.uuid] | default(0) }}
+                            </div>
+
+                            <div class="col-sm-3 col-xs-4 padding-xs text-right">
+                                <div class="btn-group" role="group">
+                                    <button
+                                        class="btn btn-xs btn-success js-btn-action"
+                                        title="{{ 'app.contest-view.buttons.val-scores' | trans }}"
+                                        data-question="{{ 'app.contest-view.texts.ask-validate.round' | trans({ '%name%' : round.name }) }}"
+                                        data-url="{{ url('admin_round_validate', { 'uuid': round.uuid }) }}"
+                                        data-refresh="{{ url('admin_contest_view', { 'uuid': contest.uuid }) }}">
+                                        <span class="glyphicon glyphicon-sort-by-attributes-alt" aria-hidden="true"></span>
+                                    </button>
+                                    <button
+                                        class="btn btn-xs btn-danger js-btn-remove"
+                                        title="{{ 'app.contest-view.buttons.remove' | trans }}"
+                                        data-question="{{ 'app.contest-view.texts.ask-remove.round' | trans({ '%name%' : round.name }) }}"
+                                        data-url="{{ url('admin_round_remove', { 'uuid': round.uuid }) }}"
+                                        data-refresh="{{ url('admin_contest_view', { 'uuid': contest.uuid }) }}">
+                                        <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+
+                {#
+                 # Rounds tab panels
+                 #}
+                {% for round in rounds %}
+                    <div class="tab-pane panel-list-striped" role="tabpanel" id="{{ round.uuid }}">
+                        {% if round.participants is empty %}
+                            <p class="text-danger">
+                                {{ 'app.contest-view.texts.no-participants' | trans }}
+                            </p>
+                        {% else %}
+                            <div class="row text-info">
+                                <div class="col-xs-6 padding-xs">
+                                    <strong>{{ 'app.contest-view.texts.email-p' | trans }}</strong>
+                                </div>
+                                <div class="col-xs-6 padding-xs text-right">
+                                    <strong>{{ 'app.contest-view.texts.score' | trans }}</strong>
+                                </div>
+                            </div>
+                        {% endif %}
+                        {% for participant in round.classification %}
+                            <div class="row">
+                                <div class="col-xs-6 padding-xs">
+                                    {{ participant.competitor.email }}
+                                </div>
+                                <div class="col-xs-6 padding-xs text-right">
+                                    <strong class="{% if participant.classified %}text-success{% else %}text-danger{% endif %}">
+                                        {{ participant.score }}
+                                    </strong>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block more_javascripts %}
+    <script src="{{ asset('js/admin-buttons.js') }}"></script>
+{% endblock %}

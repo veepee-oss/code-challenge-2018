@@ -22,23 +22,26 @@ app:
             4:              "The scoring system is:"
 
         score:
-            1:              "<strong>100 points</strong> to kill another player's starship."
-            2:              "<strong>50 points</strong> to kill a space invader."
-            3:              "<strong>-25 points</strong> when killed by another player or invader."
+            1:              "<strong>%score% points</strong> to kill a space invader."
+            2:              "<strong>%score% points</strong> to kill another player's starship."
+            3:              "<strong>%score% points</strong> when killed by another player or invader."
+
+        contests:   "Current active contests:"
 
         rules:          "See the rules"
-        create:         "Create game"
+        create:         "Create test game"
+        register:       "Register"
 
-    rulespage:
+    rules-page:
         title:          "Rules"
 
-    createpage:
+    create-page:
         title:          "Create new game"
 
         form:
             height:         "Height of the board (10 to 25)"
             width:          "Width of the board (10 to 50)"
-            player-num:     "Number of players (1 to 8)"
+            player-num:     "Number of players (1 to 9)"
             min-ghosts:     "Minimum number of enemies (0 to 50)"
             ghost-rate:     "Movements to create a new enemy (0 for no enemies at all)"
             limit:          "Movements to end the game (100 to 5000)"
@@ -47,14 +50,14 @@ app:
             next:           "Next step"
             create:         "Create game"
 
-    gamepage:
+    game-page:
         buttons:
             start:          "Start game"
             stop:           "Stop game"
             reset:          "Reset game"
             download:       "Download log"
 
-    mazepage:
+    maze-page:
         texts:
             game:           "Game"
             status:         "Status"
@@ -74,18 +77,65 @@ app:
             score:          "Score"
             points:         "points"
 
-    gameover:
+    game-over:
         title:          "Game over"
+
         texts:
             1:              "The <strong>Code Challenge 2018</strong> hasn't started."
             2:              "You can't start creating games until <strong>%date%</strong>."
             3:              "The <strong>Code Challenge 2018</strong> is over."
             4:              "You can't create more games since <strong>%date%</strong>."
             5:              "If you have any question you can email to: <strong>%email%</strong>."
+
         buttons:
             back:           "Go Back"
 
-    adminpage:
+    register-competitor:
+        title:           "Register Competitor"
+
+        texts:
+            info:
+                1:              "After registering for the contest <strong>you will receive an email</strong> in the address provided to <strong>enable your API</strong>."
+                2:              "Keep in mind that you will <strong>not be fully registered</strong> until you enable your API."
+                3:              "The URL you provide during the registration <strong>must be valid</strong>. "
+                4:              "The endpoints of the API must respond with valid data."
+                5:              "Also the email returned by the <code>/name</code> endpoint must be the same provided in the form."
+                6:              "You can register <strong>only one API per email address</strong>."
+                7:              "If you use the same email to register another API, the first one will be deleted without notice."
+
+        form:
+            contest:        "Contest (*)"
+            name:           "Name (*)"
+            email:          "Your email (*)"
+            url:            "The URL of your API (*)"
+            submit:         "Register"
+
+    registered-competitor:
+        title:          "Competitor registered"
+
+        texts:
+            registered:     "Your email and URL <strong>have been registered</strong> to the contest <strong class='text-success'>%contest%</strong>!"
+            email:          "You will receive an email in the address provided to <strong>enable your API</strong>."
+            warning:        "Don't forget to enable your API before the competition starts!"
+
+        buttons:
+            back:           "Go Back"
+
+    validate-competitor:
+        title:          "Competitor validation"
+
+        texts:
+            validated:      "Your email address <strong class='text-success'>%email%</strong> has been validated!"
+            participate:    "You will participate in the contest <strong class='text-success'>%contest%</strong>!"
+            out-of-time:    "<strong class='text-danger'>Unfortunately you are out of time!</strong>"
+            not-validated:  "Your email address <strong class='text-danger'>%email%</strong> can't be validated!"
+            period-ended:   "The registration period for the contest <strong class='text-danger'>%contest%</strong> has ended."
+            reg-period:     "Was from <strong class='text-danger'>%start-date%</strong> to <strong class='text-danger'>%end-date%</strong>."
+
+        buttons:
+            back:           "Go Back"
+
+    admin-page:
         title:          "Game administration"
 
         texts:
@@ -130,9 +180,124 @@ app:
             view-panels:    "View game panels"
             move-finished:  "Move to finished"
             remove:         "Remove game"
+            contests:       "View contests"
 
-    detailspage:
+    details-page:
         title:          "Game Details"
+
+    contest-index:
+        title:          "Contest administration"
+
+        texts:
+            contests:           "Contests"
+            no-contest:         "No contests found!"
+            actions:            "Actions"
+            registration-dates: "Registration dates:"
+            contest-dates:      "Contest dates:"
+            date-from:          "From: <strong>%start-date%</strong>"
+            date-to:            "To: <strong>%end-date%</strong>"
+            competitors:        "Registered competitors: <strong>%count%</strong>"
+            max-competitors:    "<strong>of %count%</strong>"
+            ask-remove:         "Remove contest %name%?"
+
+            buttons:
+                create:         "Create contest"
+                edit:           "Edit"
+                remove:         "Delete"
+                back:           "Back to Admin"
+
+            filters:
+                total:          "Total contests"
+                count:          "Showing"
+                limit:          "Page limit"
+                start:          "Offset"
+                submit:         "Search"
+                first:          "First"
+                next:           "Next"
+
+    contest-edit:
+        title:
+            create:         "Create new Contest"
+            edit:           "Edit contest data"
+
+        form:
+            name:           "Name of the contest (*)"
+            description:    "Description"
+            regex:          "Regular expression to validate emails"
+            r-start-date:   "Registration start date (*)"
+            r-end-date:     "Registration end date (*)"
+            c-start-date:   "Contest start date"
+            c-end-date:     "Contest end date"
+            max-competitors: "Max competitors"
+            create:         "Create"
+            save:           "Save"
+
+    contest-view:
+        title:          "Contest"
+
+        texts:
+            data:           "Contest data"
+            description:    "Description"
+            restrictions:   "Email restrictions"
+            r-start-date:   "Registration start date"
+            r-end-date:     "Registration end date"
+            r-date-from:    "Registration from"
+            r-date-to:      "to"
+            c-start-date:   "Contest start date"
+            c-end-date:     "Contest end date"
+            c-date-from:    "Contest date from"
+            c-date-to:      "to"
+            competitors:    "Competitors"
+            of:             "of"
+            rounds:         "Rounds"
+            participants:   "Participants"
+            classification: "Classification"
+            classified:     "Classified"
+            matches:        "Matches"
+            email-c:        "Competitor email"
+            email-p:        "Participant email"
+            name-p:         "Participant name"
+            api-url:        "API URL"
+            round-name:     "Round name"
+            score:          "Score"
+            actions:        "Actions"
+            no-competitors: "This contest doesn't have any competitor!"
+            no-rounds:      "This contest doesn't have any round!"
+            no-participants: "This round doesn't have any participant!"
+            status:
+                not-finished:   "Not finished"
+                finished:       "Finished"
+                validated:      "Validated"
+            ask-remove:
+                contest:        "Remove contest %name%?"
+                competitor:     "Remove competitor %email%?"
+                round:          "Remove round %name%?"
+            ask-validate:
+                email:          "Validate competitor %email%?"
+                round:          "Validate round %name% scores?"
+
+        buttons:
+            edit:           "Edit"
+            remove:         "Delete"
+            add:            "Add"
+            add-competitor: "Add competitor"
+            add-round:      "Add round"
+            go-back:        "Go back"
+            validate:       "Validate"
+            val-scores:     "Validate scores"
+
+    round-create:
+        title:          "Create round"
+
+        texts:
+            round-name:     "Round #%num%"
+
+        form:
+            name:           "Name of the round"
+            source-round:   "Source round"
+            no-source:      "No source round!"
+            num-matches:    "Matches per player (1 to 10)"
+            submit:         "Create"
 
     credits:
         title:          "License, Credits and Attributions"
@@ -143,3 +308,6 @@ app:
             attributions:   "Attributions"
             libraries:      "Software Libraries"
             graphics:       "Graphics and Icons"
+
+    error-messages:
+        max-competitors:   "Max. competitors reached for contest \"%name%\"!"

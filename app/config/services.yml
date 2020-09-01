@@ -32,6 +32,9 @@ services:
         arguments:
             - "@app.game.move_players_async.service"
             - "@app.ghost.move.factory"
+            - "@=service('doctrine.orm.entity_manager').getRepository('AppBundle:Round')"
+            - "@=service('doctrine.orm.entity_manager').getRepository('AppBundle:Match')"
+            - "@app.contest.score-calculator"
             - "@logger"
         public: true
 
@@ -103,6 +106,42 @@ services:
 
     app.ghost.move.killing:
         class: AppBundle\Domain\Service\MoveGhost\MoveGhostKilling
+
+    app.contest.register.validate_competitor:
+        class: AppBundle\Domain\Service\Register\ValidateCompetitor
+        arguments:
+            - "@app.player.validate.service"
+
+    app.contest.register.validate_competitor_ex:
+        class: AppBundle\Service\Register\ValidateCompetitorEx
+        arguments:
+            - "@app.player.validate.service"
+            - "@=service('doctrine.orm.entity_manager').getRepository('AppBundle:Competitor')"
+        public: true
+
+    app.contest.register.generate_token:
+        class: AppBundle\Domain\Service\Register\GenerateToken
+        arguments:
+            - "%secret%"
+        public: true
+
+    app.contest.round.manager:
+        class: AppBundle\Service\Contest\RoundManager
+        arguments:
+            - "@=service('doctrine.orm.entity_manager').getRepository('AppBundle:Competitor')"
+            - "@=service('doctrine.orm.entity_manager').getRepository('AppBundle:Round')"
+        public: true
+
+    app.contest.match.manager:
+        class: AppBundle\Service\Contest\MatchManager
+        arguments:
+            - "@app.maze.builder"
+            - "@app.game.engine"
+        public: true
+
+    app.contest.score-calculator:
+        class: AppBundle\Domain\Service\Contest\ScoreCalculator
+        public: true
 
     app.logger:
         class: AppBundle\Service\LoggerService\LoggerService

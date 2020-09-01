@@ -51,5 +51,5 @@ security:
 
     access_control:
         # require ROLE_ADMIN for /game/admin*
-        - { path: ^/game/admin, roles: ROLE_ADMIN }
+        - { path: ^/admin, roles: ROLE_ADMIN }
         - { path: ^/login$, roles: [ IS_AUTHENTICATED_FULLY, IS_AUTHENTICATED_REMEMBERED ] }

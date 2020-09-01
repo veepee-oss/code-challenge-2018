@@ -1,0 +1,154 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ contest.name }} - {{ parent() }}{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <div class="jumbotron">
+            <h1>
+                {{ contest.name }}
+                <small>
+                    {{ 'app.contest-view.title' | trans }}
+                </small>
+            </h1>
+
+            {% if contest.description is not empty %}
+                <p>
+                    {{ contest.description }}
+                </p>
+            {% endif %}
+
+            <p class="text-info">
+                <span class="glyphicon glyphicon-calendar"></span>
+                {{ 'app.contest-view.texts.r-date-from' | trans }}
+                <strong>{{ contest.registrationStartDate | date('Y-m-d H:i:s e') }}</strong>
+                {{ 'app.contest-view.texts.r-date-to' | trans }}
+                <strong>{{ contest.registrationEndDate | date('Y-m-d H:i:s e') }}</strong>.
+            </p>
+
+            {% if contest.contestStartDate is not empty or contest.contestEndDate is not empty %}
+                <p class="text-info">
+                    <span class="glyphicon glyphicon-calendar"></span>
+                    {{ 'app.contest-view.texts.c-date-from' | trans }}
+                    <strong>{{ contest.contestStartDate is empty ? "--" : contest.contestStartDate | date('Y-m-d H:i:s e') }}</strong>
+                    {{ 'app.contest-view.texts.c-date-to' | trans }}
+                    <strong>{{ contest.contestEndDate is empty ? "--" : contest.contestEndDate | date('Y-m-d H:i:s e') }}</strong>.
+                </p>
+            {% endif %}
+
+            <p class="text-info">
+                <span class="glyphicon glyphicon-user"></span>
+                {{ 'app.contest-view.texts.competitors' | trans }}
+                <strong>{{ contest.countCompetitors }}</strong>
+                {% if contest.maxCompetitors is not empty %}
+                    {{ 'app.contest-view.texts.of' | trans }}
+                    <strong>{{ contest.maxCompetitors }}</strong>
+                {% endif %}
+            </p>
+        </div>
+
+        {% for round in rounds %}
+            <div class="panel panel-info">
+                <div class="panel-heading lead">
+                    <strong>
+                        {{ round.name }}
+                    </strong>
+
+                    &nbsp;
+
+                    {% if round.finished %}
+                        <span class="label label-success">
+                            {{ 'app.contest-view.texts.status.finished' | trans }}
+                        </span>
+                    {% else %}
+                        <span class="label label-danger">
+                            {{ 'app.contest-view.texts.status.not-finished' | trans }}
+                        </span>
+                    {% endif %}
+                </div>
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="col-sm-4">
+                            <ul class="list-group">
+                                <li class="list-group-item active">
+                                    <strong class="list-group-item-heading">{{ 'app.contest-view.texts.classification' | trans }}</strong>
+                                </li>
+                                {% for participant in round.classification %}
+                                    <li class="list-group-item {% if participant.classified %}text-success{% endif %}">
+                                        <strong>
+                                            {{ participant.competitor.name }}
+                                        </strong>
+
+                                        {% if participant.classified %}
+                                            &nbsp;
+                                            <span class="label label-success">
+                                                {{ 'app.contest-view.texts.classified' | trans }}
+                                            </span>
+                                        {% endif %}
+
+                                        <span class="badge">
+                                            {{ participant.score }}
+                                        </span>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                        <div class="col-sm-8">
+                            <div class="list-group">
+                                <div class="list-group-item active">
+                                    <strong class="list-group-item-heading">{{ 'app.contest-view.texts.matches' | trans }}</strong>
+                                </div>
+                                {% for match in matches if match.roundUuid == round.uuid %}
+                                    <div class="list-group-item">
+                                        <p class="list-group-item-heading">
+                                            <strong>
+                                                <a target="_blank" href="{{ url('game_view', { 'uuid': match.game.uuid }) }}">
+                                                    {% if match.game is empty %}
+                                                        {{ match.uuid }}
+                                                    {% else %}
+                                                        {{ match.game.name }}
+                                                    {% endif %}
+                                                </a>
+                                            </strong>
+
+                                            &nbsp;
+
+                                            {% if match.validated %}
+                                                <span class="label label-success">
+                                                    {{ 'app.contest-view.texts.status.validated' | trans }}
+                                                </span>
+                                            {% elseif match.finished %}
+                                                <span class="label label-warning">
+                                                    {{ 'app.contest-view.texts.status.finished' | trans }}
+                                                </span>
+                                            {% else %}
+                                                <span class="label label-danger">
+                                                    {{ 'app.contest-view.texts.status.not-finished' | trans }}
+                                                </span>
+                                            {% endif %}
+
+                                            <ol>
+                                                {% for result in match.classification %}
+                                                    <li>
+                                                        {% for competitor in competitors %}
+                                                            {% if competitor.uuid == result.competitor %}
+                                                                {{ competitor.name }}
+                                                                <span class="pull-right badge">
+                                                                    {{ result.score }}
+                                                                </span>
+                                                            {% endif %}
+                                                        {% endfor %}
+                                                    </li>
+                                                {% endfor %}
+                                            </ol>
+                                        </p>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% endblock %}

@@ -8,11 +8,11 @@ Your API will move a starship competing with the other player APIs in a real tim
 All the starships will start in a different random position.
 The winner will be the starship with the highest score.
 
-* **+100 points** to kill another player's starship.
-* **+50 points** to kill a space invader.
-* **-25 points** when killed by another player or invader.
+* **+50 points** to kill another player's starship.
+* **+25 points** to kill a space invader.
+* **-100 points** when killed by another player or invader.
 
-[See the full rules](http://code-challenge-2018.privalia.com/rules).
+Shee the [full rules](docs/rules.md) or the [API documentation](docs/api.md).
 
 ## Development
 
@@ -44,6 +44,8 @@ $ docker/start.sh
 $ docker/composer.sh install
 $ docker/console.sh doctrine:database:create
 $ docker/console.sh doctrine:schema:create
+$ docker/console.sh -e prod cache:clear
+$ docker/console.sh -e prod cache:warmup
 ```
 
 ## License

@@ -8,7 +8,7 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
- * Class PlayerForm
+ * Form type: PlayerForm
  *
  * @package AppBundle\Form\CreateGame
  */
@@ -41,7 +41,7 @@ class PlayerForm extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder->add('url', UrlType::class, array(
-            'label' => 'app.createpage.form.url'
+            'label' => 'app.create-page.form.url'
         ));
     }
 }

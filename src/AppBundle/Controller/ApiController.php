@@ -22,10 +22,10 @@ class ApiController extends Controller
     /**
      * Return the name of the API
      *
-     * @Route("/name", name="api_start")
+     * @Route("/name", name="api_name")
      * @return JsonResponse
      */
-    public function startAction()
+    public function nameAction()
     {
         $candidates = array(
             'Tyrion Lanister'       => 'the.imp@test.com',
@@ -79,6 +79,7 @@ class ApiController extends Controller
      * Move the player
      *
      * @Route("/move", name="api_move")
+     * @Route("/contest/move")
      * @return JsonResponse
      */
     public function moveAction()
@@ -103,6 +104,20 @@ class ApiController extends Controller
 
         return new JsonResponse(array(
             'move' => $moves[$index]
+        ));
+    }
+
+    /**
+     * Return the name of the API to use in a contest
+     *
+     * @Route("/contest/name")
+     * @return JsonResponse
+     */
+    public function contestNameAction()
+    {
+        return new JsonResponse(array(
+            'name'  => 'David Amigo',
+            'email' => 'david.amigo@privalia.com'
         ));
     }
 }

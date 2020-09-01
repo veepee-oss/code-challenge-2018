@@ -199,6 +199,28 @@
 
 /**********************************************************************************************************************/
 
+.x-maze .x-player9-right {
+    background: transparent url("../images/starship-player09-right.png") no-repeat;
+    background-size: 100%;
+}
+
+.x-maze .x-player9-left {
+    background: transparent url("../images/starship-player09-left.png") no-repeat;
+    background-size: 100%;
+}
+
+.x-maze .x-player9-up {
+    background: transparent url("../images/starship-player09-up.png") no-repeat;
+    background-size: 100%;
+}
+
+.x-maze .x-player9-down {
+    background: transparent url("../images/starship-player09-down.png") no-repeat;
+    background-size: 100%;
+}
+
+/**********************************************************************************************************************/
+
 .x-maze .x-starship-explosion {
     background: transparent url("../images/starship-explosion.png") no-repeat;
     background-size: 100%;

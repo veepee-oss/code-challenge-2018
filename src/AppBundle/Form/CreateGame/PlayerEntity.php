@@ -5,7 +5,7 @@ namespace AppBundle\Form\CreateGame;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
- * Class PlayerEntity
+ * Form entity: PlayerEntity
  *
  * @package AppBundle\Form\CreateGame
  */

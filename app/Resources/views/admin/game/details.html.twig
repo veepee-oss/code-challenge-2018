@@ -1,0 +1,159 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'app.admin-page.title' | trans }} - {{ parent() }}{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <div class="page-header">
+            <h1>
+                {{ 'app.details-page.title' | trans }}
+                <small>
+                    {{ 'app.global.title' | trans }}
+                </small>
+            </h1>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-6">
+                <dl>
+                    <dt class="small">UUID:</dt>
+                    <dd class="text-info">{{ game.uuid }}</dd>
+
+                    <dt class="small">Name:</dt>
+                    <dd class="text-info">{{ game.name }}</dd>
+
+                    <dt class="small">Size:</dt>
+                    <dd class="text-info">{{ game.height }} x {{ game.width }}</dd>
+
+                    <dt class="small">Players:</dt>
+                    <dd class="text-info">{{ game.players | length }}</dd>
+
+                    <dt class="small">Ghosts:</dt>
+                    <dd class="text-info">{{ game.ghosts | length }}</dd>
+
+                    <dt class="small">Ghost rate:</dt>
+                    <dd class="text-info">{{ game.ghostRate }}</dd>
+
+                    <dt class="small">Min. ghost:</dt>
+                    <dd class="text-info">{{ game.minGhosts }}</dd>
+
+                    <dt class="small">Moves:</dt>
+                    <dd class="text-info">{{ game.moves }} of {{ game.limit }}</dd>
+
+                    <dt class="small">Last updated:</dt>
+                    <dd class="text-info">
+                        {{ game.lastUpdatedAt | date }} ({{ game.lastUpdatedAt | ago }})
+                    </dd>
+
+                    <dt class="small">Status:</dt>
+                    <dd class="text-info">{{ 'app.maze-page.texts.status-text' | transchoice(game.status) }}</dd>
+                </dl>
+
+                <div class="btn-group-vertical">
+                    <a  class="btn btn-default js-btn-view"
+                        title="{{ 'app.admin-page.buttons.view' | trans }}"
+                        href="{{ url('game_view', { 'uuid': game.uuid }) }}">
+                        <span class="glyphicon glyphicon-expand" aria-hidden="true"></span>
+                        {{ 'app.admin-page.buttons.view' | trans }}
+                    </a>
+                    <a  class="btn btn-info js-btn-view-maze"
+                        title="{{ 'app.admin-page.buttons.view-maze' | trans }}"
+                        href="{{ url('game_view_maze', { 'uuid': game.uuid }) }}">
+                        <span class="glyphicon glyphicon-tower" aria-hidden="true"></span>
+                        {{ 'app.admin-page.buttons.view-maze' | trans }}
+                    </a>
+                    <a  class="btn btn-info js-btn-view-panels"
+                        title="{{ 'app.admin-page.buttons.view-panels' | trans }}"
+                        href="{{ url('game_view_panels', { 'uuid': game.uuid }) }}">
+                        <span class="glyphicon glyphicon-list-alt" aria-hidden="true"></span>
+                        {{ 'app.admin-page.buttons.view-panels' | trans }}
+                    </a>
+                    {% if game.matchUuid is empty %}
+                        {% if not game.finished %}
+                            <button
+                                class="btn btn-warning js-btn-action"
+                                title="{{ 'app.admin-page.buttons.move-finished' | trans }}"
+                                data-question="{{ 'app.admin-page.texts.ask-finish' | trans({ '%uuid%' : game.uuid }) }}"
+                                data-url="{{ url('game_finish', { 'uuid': game.uuid }) }}"
+                                data-refresh="{{ url('admin_index') }}">
+                                <span class="glyphicon glyphicon-ban-circle" aria-hidden="true"></span>
+                                {{ 'app.admin-page.buttons.move-finished' | trans }}
+                            </button>
+                        {% endif %}
+                        <button
+                            class="btn btn-danger js-btn-remove"
+                            title="{{ 'app.admin-page.buttons.remove' | trans }}"
+                            data-question="{{ 'app.admin-page.texts.ask-remove' | trans({ '%uuid%' : game.uuid }) }}"
+                            data-url="{{ url('admin_game_remove', { 'uuid': game.uuid }) }}"
+                            data-refresh="{{ url('admin_index') }}">
+                            <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
+                            {{ 'app.admin-page.buttons.remove' | trans }}
+                        </button>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="col-xs-6">
+                {% for player in game.players %}
+                    <dl>
+                        <dt class="small">Num:</dt>
+                        <dd class="text-info">{{ game.playerNum(player) }}</dd>
+
+                        <dt class="small">Id:</dt>
+                        <dd class="text-info">{{ player.uuid }}</dd>
+
+                        <dt class="small">Name:</dt>
+                        <dd class="text-info">{{ player.name }}</dd>
+
+                        <dt class="small">E-mail:</dt>
+                        <dd class="text-info">
+                            {% if player.email is empty %}
+                                &ndash;
+                            {% else %}
+                                <a href="mailto: {{ player.email }}">
+                                    {{ player.email }}
+                                </a>
+                            {% endif %}
+                        </dd>
+
+                        <dt class="small">Endpoint (URL):</dt>
+                        <dd class="text-info">
+                            <a target="_blank" href="{{ player.url }}/name">
+                                {{ player.url }}
+                            </a>
+                        </dd>
+
+                        <dt class="small">Last updated:</dt>
+                        <dd class="text-info">
+                            {{ player.timestamp | date }} ({{ player.timestamp | ago }})
+                        </dd>
+
+                        <dt class="small">Status:</dt>
+                        <dd>
+                            {% if player.isPowered %}
+                                <span class="text-success">Powered</span>
+                            {% elseif player.isKilled %}
+                                <span class="text-danger">Killed</span>
+                            {% elseif player.isReloading %}
+                                <span class="text-mute">Reloading</span>
+                            {% else %}
+                                <span class="text-info">Regular</span>
+                            {% endif %}
+                            {% if player.statusCount > 0 %}
+                                ({{ player.StatusCount }})
+                            {% endif %}
+                        </dd>
+
+                        <dt class="small">Score:</dt>
+                        <dd class="text-info">{{ player.score }} points</dd>
+                    </dl>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block more_javascripts %}
+    <script src="{{ asset('js/admin-buttons.js') }}"></script>
+{% endblock %}

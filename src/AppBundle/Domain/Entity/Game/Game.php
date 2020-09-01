@@ -15,13 +15,17 @@ use Ramsey\Uuid\Uuid;
  */
 class Game
 {
-    /** @var int Game statuses */
+    /** @var int the constants form the game statuses */
     const STATUS_NOT_STARTED = 0;
     const STATUS_RUNNING = 1;
     const STATUS_PAUSED = 8;
     const STATUS_FINISHED = 16;
 
-    /** @var int the default limit of moves */
+    /** @var int the default values for a game */
+    const DEFAULT_MAZE_HEIGHT = 15;
+    const DEFAULT_MAZE_WIDTH  = 30;
+    const DEFAULT_MIN_GHOSTS  = 10;
+    const DEFAULT_GHOST_RATE  = 10;
     const DEFAULT_MOVES_LIMIT = 100;
 
     /** @var int The default view range and fire range */
@@ -60,6 +64,9 @@ class Game
     /** @var string the name of the game (optional) */
     protected $name;
 
+    /** @var string the uuid of the match (optional) */
+    protected $matchUUid;
+
     /**
      * Game constructor.
      *
@@ -74,6 +81,7 @@ class Game
      * @param int $limit
      * @param string $uuid
      * @param string $name
+     * @param string $matchUUid
      * @throws \Exception
      */
     public function __construct(
@@ -87,7 +95,8 @@ class Game
         $moves = 0,
         $limit = self::DEFAULT_MOVES_LIMIT,
         $uuid = null,
-        $name = null
+        $name = null,
+        $matchUUid = null
     ) {
         $this->maze = $maze;
         $this->players = $players;
@@ -100,6 +109,7 @@ class Game
         $this->limit = $limit;
         $this->uuid = $uuid ?: Uuid::uuid4()->toString();
         $this->name = $name ?: $this->uuid;
+        $this->matchUUid = $matchUUid;
     }
 
     /**
@@ -213,6 +223,16 @@ class Game
     }
 
     /**
+     * Get the uuid of the match (optional)
+     *
+     * @return string|null
+     */
+    public function matchUUid(): ?string
+    {
+        return $this->matchUUid;
+    }
+
+    /**
      * Returns if the game is started
      *
      * @return bool
@@ -292,6 +312,7 @@ class Game
      * Resets the game to its initial position
      *
      * @return $this
+     * @throws \Exception
      */
     public function resetPlaying()
     {
@@ -444,7 +465,7 @@ class Game
             $condition = $p2->score() <=> $p1->score();
             if (0 == $condition) {
                 // Order by timestamp when the same score
-                $condition = $p2->timestamp()->getTimestamp() <=> $p1->timestamp()->getTimestamp();
+                $condition = $p1->timestamp()->getTimestamp() <=> $p2->timestamp()->getTimestamp();
             }
             return $condition;
         });

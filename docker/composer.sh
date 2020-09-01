@@ -17,6 +17,7 @@ while [[ $# -ge 1 ]]; do
     shift
 done;
 
-docker exec -it -u ${DOCKER_SERVER_USER} ${DOCKER_SERVER} ${APP_COMPOSER} ${ARGS}
+docker exec -it -u ${DOCKER_SERVER_USER} ${DOCKER_SERVER} ${APP_PHP} -d memory_limit=-1 ${APP_COMPOSER} ${ARGS}
 
 echo -e ""
+
