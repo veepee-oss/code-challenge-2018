@@ -137,12 +137,16 @@
                                                     {{ 'app.contest-view.texts.status.validated' | trans }}
                                                 </span>
                                             {% elseif match.finished %}
-                                                <span class="label label-danger">
+                                                <span class="label label-success">
                                                     {{ 'app.contest-view.texts.status.finished' | trans }}
                                                 </span>
                                             {% elseif match.playing %}
                                                 <span class="label label-warning">
                                                     {{ 'app.contest-view.texts.status.running' | trans }}
+                                                </span>
+                                                &nbsp;
+                                                <span class="label label-default">
+                                                    {{ 'app.contest-view.texts.movs-left' | trans({ '%count%': match.game.movesLeft }) }}
                                                 </span>
                                             {% else %}
                                                 <span class="label label-default">

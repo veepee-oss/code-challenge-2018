@@ -262,6 +262,7 @@ app:
             score:          "Score"
             actions:        "Actions"
             not-validated:  "Not validated"
+            movs-left:      "%count% movements left"
             no-competitors: "This contest doesn't have any competitor!"
             no-rounds:      "This contest doesn't have any round!"
             no-participants: "This round doesn't have any participant!"

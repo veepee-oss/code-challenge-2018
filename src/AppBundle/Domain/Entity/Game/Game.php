@@ -274,6 +274,16 @@ class Game
     }
 
     /**
+     * Returns the movements left
+     *
+     * @return int
+     */
+    public function movesLeft()
+    {
+        return $this->limit - $this->moves;
+    }
+
+    /**
      * Starts playing the game
      *
      * @return $this
