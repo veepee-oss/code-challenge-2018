@@ -206,6 +206,39 @@ class GameController extends Controller
     }
 
     /**
+     * View Game stacked (Maze & Panels)
+     *
+     * @Route("/{uuid}/view/stacked", name="game_view_stacked",
+     *     requirements={"uuid": "[0-9a-f]{8}\-[0-9a-f]{4}\-[0-9a-f]{4}\-[0-9a-f]{4}\-[0-9a-f]{12}"})
+     *
+     * @param string $uuid
+     * @return Response
+     * @throws \Exception
+     */
+    public function viewStackedAction($uuid)
+    {
+        $this->checkDaemon();
+
+        /** @var \AppBundle\Entity\Game $entity */
+        $entity = $this->getGameDoctrineRepository()->findOneBy(array(
+            'uuid' => $uuid
+        ));
+
+        if (!$entity) {
+            throw new NotFoundHttpException();
+        }
+
+        $renderer = $this->getMazeRendererService();
+        $game = $entity->toDomainEntity();
+        $maze = $renderer->render($game);
+
+        return $this->render(':game:stacked.html.twig', array(
+            'game' => $game,
+            'maze' => $maze
+        ));
+    }
+
+    /**
      * View Game Maze
      *
      * @Route("/{uuid}/view/maze", name="game_view_maze",
