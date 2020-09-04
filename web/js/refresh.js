@@ -19,20 +19,26 @@
      * configureButtons()
      */
     var configureButtons = function() {
-        $btnStart.click(function(ev) {
-            ev.preventDefault();
-            startPlaying();
-        });
+        if ($btnStart.length > 0) {
+            $btnStart.click(function (ev) {
+                ev.preventDefault();
+                startPlaying();
+            });
+        }
 
-        $btnStop.click(function(ev) {
-            ev.preventDefault();
-            stopPlaying();
-        });
+        if ($btnStop.length > 0) {
+            $btnStop.click(function (ev) {
+                ev.preventDefault();
+                stopPlaying();
+            });
+        }
 
-        $btnReset.click(function(ev) {
-            ev.preventDefault();
-            resetPlaying();
-        });
+        if ($btnReset.length > 0) {
+            $btnReset.click(function (ev) {
+                ev.preventDefault();
+                resetPlaying();
+            });
+        }
     };
 
     /**
@@ -84,7 +90,8 @@
      * startTimer()
      */
     var startTimer = function () {
-        if ($btnStop.attr('disabled') != 'disabled') {
+        if ($btnStop.length > 0
+            && $btnStop.attr('disabled') != 'disabled') {
             if (refreshTimer !== null) {
                 win.clearTimeout(refreshTimer);
                 refreshTimer = null;
@@ -102,13 +109,12 @@
             }
             num++;
             win.location.hash = num;
-            if (num < 120) {
+            if (num < 240) {
                 refreshTimer = win.setTimeout(function () {
                     location.reload();
                 }, 30000);
             }
         }
-
     };
 
     /**

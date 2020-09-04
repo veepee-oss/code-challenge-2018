@@ -106,7 +106,7 @@ class Game
      *
      * @var int
      *
-     * @ORM\Column(name="moves_limit", type="integer", options={"default"=500})
+     * @ORM\Column(name="moves_limit", type="integer", options={"default"=100})
      */
     protected $limit;
 

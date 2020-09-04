@@ -7,14 +7,15 @@
 
         <p></p>
 
-        <div class="js-panels">
-            {% include ':game:viewPanels.html.twig' with { 'game': game, 'maze': maze } %}
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4 col-md-offset-4">
+                    <div class="js-panels">
+                        {% include ':game:viewPanels.html.twig' with { 'game': game, 'maze': maze } %}
+                    </div>
+                </div>
+            </div>
         </div>
-
-        <div class="hidden js-buttons">
-            {% include ':game:viewButtons.html.twig' with { 'game': game } %}
-        </div>
-
     </div>
 {% endblock %}
 

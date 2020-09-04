@@ -99,6 +99,18 @@ class Match
     }
 
     /**
+     * Return if the game is running
+     *
+     * @return bool
+     */
+    public function isPlaying(): bool
+    {
+        return $this->status >= self::STATUS_NOT_STARTED
+            && $this->game != null
+            && $this->game->playing();
+    }
+
+    /**
      * Return if the status is finished
      *
      * @return bool

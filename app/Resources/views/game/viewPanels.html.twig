@@ -1,87 +1,78 @@
-<div class="container">
-    <div class="row">
-        <div class="col-sm-3">
-            <div class="panel panel-primary">
-                <div class="panel-body">
-                    {% if game.name is not empty and game.name != game.uuid %}
-                        <p>
-                            {{ 'app.maze-page.texts.game' | trans }}:
-                            <strong class="text-info">{{ game.name }}</strong>
-                        </p>
-                    {% endif %}
-                    <p>
-                        {{ 'app.maze-page.texts.status' | trans }}:
-                        <strong class="text-info">{{ 'app.maze-page.texts.status-text' | transchoice(game.status) }}</strong>
-                    </p>
-                    <p>
-                        {{ 'app.maze-page.texts.moves' | trans }}:
-                        <strong class="text-info">{{ game.moves }}</strong>
-                        {% if game.limit > 0 %}
-                            {{ 'app.maze-page.texts.of' | trans }}
-                            <strong class="text-info">{{ game.limit }}</strong>
-                        {% endif %}
-                    </p>
-                    <p>
-                        {{ 'app.maze-page.texts.players' | trans }}:
-                        <strong class="text-info">{{ game.players | length }}</strong>
-                    </p>
-                    <p>
-                        {{ 'app.maze-page.texts.ghosts' | trans }}:
-                        <strong class="text-info">{{ game.ghosts | length }}</strong>
-                    </p>
-                    <p>
-                        {{ 'app.maze-page.texts.min-ghosts' | trans }}:
-                        <strong class="text-info">{{ game.minGhosts }}</strong>
-                    </p>
-                    <p>
-                        {{ 'app.maze-page.texts.ghosts-rate' | trans }}:
-                        <strong class="text-info">{{ game.ghostRate }}</strong>
-                    </p>
-                </div>
+<div class="panel panel-info">
+    <div class="panel-heading">
+        <h3 class="panel-title">
+            {{ 'app.maze-page.texts.score' | trans }}
+        </h3>
+    </div>
+    <div class="panel-body">
+        {% for player in game.classification %}
+            <img
+                    src="{{ asset('images/starship-player0' ~ game.playerNum(player) ~ '-right.png') }}"
+                    class="pull-left image-players"
+                    alt="{{ player.name }}"
+                    title="{{ player.name }}">
+
+            <p class="text-info">
+                {% if player.email is empty %}
+                    {{ player.name }}
+                {% else %}
+                    <span title="{{ player.email }}">
+                        {{ player.name }}
+                    </span>
+                {% endif %}
+                <br>
+                <span class="lead">
+                    <strong>{{ player.score }}</strong>
+                    {{ 'app.maze-page.texts.points' | trans }}
+                </span>
+            </p>
+        {% else %}
+            <div class="col-sm-12">
+                {{ 'app.maze-page.texts.no-players' | trans }}
             </div>
-        </div>
+        {% endfor %}
+    </div>
+</div>
 
-        <div class="col-sm-9">
-            <div class="panel panel-info">
-                <div class="panel-heading">
-                    <h3 class="panel-title">
-                        {{ 'app.maze-page.texts.score' | trans }}
-                    </h3>
-                </div>
-                <div class="panel-body">
-                    <div class="row">
-                        {% for player in game.classification %}
-                            <div class="col-sm-4">
-                                <img
-                                    src="{{ asset('images/starship-player0' ~ game.playerNum(player) ~ '-right.png') }}"
-                                    class="pull-left image-players"
-                                    alt="{{ player.name }}"
-                                    title="{{ player.name }}">
-
-                                <p class="text-info">
-                                    {% if player.email is empty %}
-                                        {{ player.name }}
-                                    {% else %}
-                                        <span title="{{ player.email }}">
-                                            {{ player.name }}
-                                        </span>
-                                    {% endif %}
-                                    <br>
-                                    <span class="lead">
-                                        <strong>{{ player.score }}</strong>
-                                        {{ 'app.maze-page.texts.points' | trans }}
-                                    </span>
-                                </p>
-                            </div>
-                        {% else %}
-                            <div class="col-sm-12">
-                                {{ 'app.maze-page.texts.no-players' | trans }}
-                            </div>
-                        {% endfor %}
-                    </div>
-                </div>
-            </div>
-        </div>
-
+<div class="panel panel-primary">
+    <div class="panel-body">
+        {% if game.name is not empty and game.name != game.uuid %}
+            <p>
+                {{ 'app.maze-page.texts.game' | trans }}:
+                <strong class="text-info">{{ game.name }}</strong>
+            </p>
+        {% endif %}
+        <p>
+            {{ 'app.maze-page.texts.status' | trans }}:
+            <strong class="text-info">{{ 'app.maze-page.texts.status-text' | transchoice(game.status) }}</strong>
+        </p>
+        <p>
+            {{ 'app.maze-page.texts.moves' | trans }}:
+            <strong class="text-info">{{ game.moves }}</strong>
+            {% if game.limit > 0 %}
+                {{ 'app.maze-page.texts.of' | trans }}
+                <strong class="text-info">{{ game.limit }}</strong>
+            {% endif %}
+        </p>
+        <p>
+            {{ 'app.maze-page.texts.players' | trans }}:
+            <strong class="text-info">{{ game.players | length }}</strong>
+        </p>
+        <p>
+            {{ 'app.maze-page.texts.ghosts' | trans }}:
+            <strong class="text-info">{{ game.ghosts | length }}</strong>
+        </p>
+        <p>
+            {{ 'app.maze-page.texts.min-ghosts' | trans }}:
+            <strong class="text-info">{{ game.minGhosts }}</strong>
+        </p>
+        <p>
+            {{ 'app.maze-page.texts.ghosts-rate' | trans }}:
+            <strong class="text-info">{{ game.ghostRate }}</strong>
+        </p>
+        <p>
+            {{ 'app.maze-page.texts.dimensions' | trans }}:
+            <strong class="text-info">{{ game.width }} x {{ game.height }}</strong>
+        </p>
     </div>
 </div>

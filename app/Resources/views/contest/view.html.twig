@@ -4,6 +4,10 @@
 
 {% block content %}
     <div class="container">
+
+        {#
+         # Contest information
+         #}
         <div class="jumbotron">
             <h1>
                 {{ contest.name }}
@@ -47,7 +51,10 @@
             </p>
         </div>
 
-        {% for round in rounds %}
+        {#
+         # For each round...
+         #}
+        {% for round in rounds | reverse %}
             <div class="panel panel-info">
                 <div class="panel-heading lead">
                     <strong>
@@ -68,6 +75,10 @@
                 </div>
                 <div class="panel-body">
                     <div class="row">
+
+                        {#
+                         # Round classification
+                         #}
                         <div class="col-sm-4">
                             <ul class="list-group">
                                 <li class="list-group-item active">
@@ -93,11 +104,19 @@
                                 {% endfor %}
                             </ul>
                         </div>
+
+                        {#
+                         # Round matches
+                         #}
                         <div class="col-sm-8">
                             <div class="list-group">
                                 <div class="list-group-item active">
                                     <strong class="list-group-item-heading">{{ 'app.contest-view.texts.matches' | trans }}</strong>
                                 </div>
+
+                                {#
+                                 # For each match...
+                                 #}
                                 {% for match in matches if match.roundUuid == round.uuid %}
                                     <div class="list-group-item">
                                         <p class="list-group-item-heading">
@@ -118,30 +137,41 @@
                                                     {{ 'app.contest-view.texts.status.validated' | trans }}
                                                 </span>
                                             {% elseif match.finished %}
-                                                <span class="label label-warning">
+                                                <span class="label label-success">
                                                     {{ 'app.contest-view.texts.status.finished' | trans }}
                                                 </span>
+                                            {% elseif match.playing %}
+                                                <span class="label label-warning">
+                                                    {{ 'app.contest-view.texts.status.running' | trans }}
+                                                </span>
+                                                &nbsp;
+                                                <span class="label label-default">
+                                                    {{ 'app.contest-view.texts.movs-left' | trans({ '%count%': match.game.movesLeft }) }}
+                                                </span>
                                             {% else %}
-                                                <span class="label label-danger">
-                                                    {{ 'app.contest-view.texts.status.not-finished' | trans }}
+                                                <span class="label label-default">
+                                                    {{ 'app.contest-view.texts.status.not-started' | trans }}
                                                 </span>
                                             {% endif %}
-
-                                            <ol>
-                                                {% for result in match.classification %}
-                                                    <li>
-                                                        {% for competitor in competitors %}
-                                                            {% if competitor.uuid == result.competitor %}
-                                                                {{ competitor.name }}
-                                                                <span class="pull-right badge">
-                                                                    {{ result.score }}
-                                                                </span>
-                                                            {% endif %}
-                                                        {% endfor %}
-                                                    </li>
-                                                {% endfor %}
-                                            </ol>
                                         </p>
+
+                                        {#
+                                         # Match classification
+                                         #}
+                                        <ol>
+                                            {% for result in match.classification %}
+                                                <li>
+                                                    {% for competitor in competitors %}
+                                                        {% if competitor.uuid == result.competitor %}
+                                                            {{ competitor.name }}
+                                                            <span class="pull-right badge">
+                                                                {{ result.score }}
+                                                            </span>
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                </li>
+                                            {% endfor %}
+                                        </ol>
                                     </div>
                                 {% endfor %}
                             </div>
@@ -150,5 +180,37 @@
                 </div>
             </div>
         {% endfor %}
+
+        {#
+        # Competitors
+        #}
+        <div class="panel panel-success">
+            <div class="panel-heading lead">
+                <strong>
+                    {{ 'app.contest-view.texts.competitors' | trans }}
+                </strong>
+            </div>
+            <div class="panel-body">
+                <div class="row">
+                    {% for competitor in competitors %}
+                        <div class="col-sm-4 col-xs-6">
+                            <div class="alert {% if competitor.validated %}alert-info{% else %}alert-danger{% endif %}">
+                                <span class="glyphicon glyphicon-user"></span>
+                                {{ competitor.name }}
+                                {% if not competitor.validated %}
+                                    <span class="label label-default pull-right">
+                                        {{ 'app.contest-view.texts.not-validated' | trans }}
+                                    </span>
+                                {% endif %}
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
     </div>
+{% endblock %}
+
+{% block more_javascripts %}
+    <script src="{{ asset('js/refresh.js') }}"></script>
 {% endblock %}
