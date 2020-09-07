@@ -12,7 +12,7 @@ The winner will be the starship with the highest score.
 * **+25 points** to kill a space invader.
 * **-100 points** when killed by another player or invader.
 
-Shee the [full rules](docs/rules.md) or the [API documentation](docs/api.md).
+She the [full rules](docs/rules.md) or the [API documentation](docs/api.md).
 
 ## Development
 
@@ -32,7 +32,8 @@ The `docker` folder contains the particular images used in the development envir
 - `docker/bash.sh` - Access bash shell of the API container. The containers must be started before run this script.
 - `docker/su.sh` - Access bash shell of the API container with the `root`user. The containers must be started before run this script.
 
-NOTE: All these scripts assume there is an user `david` in the host. You can change it for your user name to avoid  permission problems.
+NOTE: All these scripts assume there is an user `david` in the host.
+You can change it for your user name to avoid permission problems.
 
 ### Installation
 
@@ -44,6 +45,77 @@ $ docker/start.sh
 $ docker/composer.sh install
 $ docker/console.sh doctrine:database:create
 $ docker/console.sh doctrine:schema:create
+$ docker/console.sh -e prod cache:clear
+$ docker/console.sh -e prod cache:warmup
+```
+
+#### Params
+
+The following program params are suitable to use with the default docker installation:
+
+NOTE: The following params will in the file `app/config/params.yml` after running
+the `docker/composer.sh install` command.
+It's mandatory to clear and warmup the cache before changing any of these params
+in `prod` environment.
+
+* MySQL database:
+    * database_host: **cc18_mysql**
+    * database_port: **3306**
+    * database_name: **cc18_db**
+    * database_user: **cc18_user**
+    * database_password: **cc18_pass**
+
+* RabbitMQ message broker:
+    * rabbitmq_host: **cc18_rabbitmq**
+    * rabbitmq_port: **5672**
+    * rabbitmq_user: **guest**
+    * rabbitmq_pass: **guest**
+    * rabbitmq_vhost: **/**
+
+* Security:
+    * secret: **<super-secret-string>**
+    * admin_password: **null**
+    * guest_password: **null**
+
+* Game settings:
+    * default_email: **<admin@email.com>**
+    * default_time_format: **Y-m-d H:i:s**
+    * default_timeout: **3**
+    * game_start_time: **null**
+    * game_end_time: **null**
+    * game_free_time: **null**
+
+### Setting passwords
+
+There are two special users with different privileges: `admin`and `guess`.
+To set the password for any of those users you have to run a console command:
+
+```
+$ docker/console.sh security:encode-password <password>
+  
+  Symfony Password Encoder Utility
+  ================================
+  
+   ------------------ ---------------------------------------------------------------
+    Key                Value
+   ------------------ ---------------------------------------------------------------
+    Encoder used       Symfony\Component\Security\Core\Encoder\BCryptPasswordEncoder
+    Encoded password   $2y$12$buqWDQ.ca9ICbPg9JUNvi.WJBQu8Qi5CGBauWQTTowmFphD4qEZHC
+   ------------------ ---------------------------------------------------------------
+```
+
+Then you have to copy the new password in the file `app/config/params.yml`:
+
+```
+parameters:
+    (...)
+    admin_password: $2y$12$buqWDQ.ca9ICbPg9JUNvi.WJBQu8Qi5CGBauWQTTowmFphD4qEZHC
+    guest_password: null
+```
+
+And finally you have to clear and warmup the Symfony cache:
+
+```
 $ docker/console.sh -e prod cache:clear
 $ docker/console.sh -e prod cache:warmup
 ```
