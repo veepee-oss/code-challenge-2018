@@ -6,6 +6,7 @@ services:
         build:
             args:
                 - "DOCKER_USER=david"
+                - "SERVER_TIME_ZONE=CET"
 
         environment:
             APACHE_RUN_USER: "david"
