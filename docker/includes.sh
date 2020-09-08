@@ -3,6 +3,9 @@
 DOCKER_COMPOSE_FILE="-f docker-compose.yml -f docker-compose.dev.yml"
 DOCKER_SERVER_USER="david"
 DOCKER_SERVER="docker_cc18_server"
+DOCKER_MYSQL="docker_cc18_mysql"
+DOCKER_MYSQL_USER="cc18_user"
+DOCKER_MYSQL_PASSWORD="cc18_pass"
 
 APP_PHP="/usr/local/bin/php"
 APP_COMPOSER="/usr/local/bin/composer"
