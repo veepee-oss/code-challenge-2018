@@ -318,7 +318,7 @@ class AdminContestController extends Controller
         // Create the competitor data form
         $form = $this->createForm(CompetitorForm::class, $formEntity, [
             'action' => $this->generateUrl('admin_competitor_register', [ 'uuid' => $uuid ]),
-            'admin'  => true
+            'mode'   => 'admin'
         ]);
 
         // Handle the request & if the data is valid...
@@ -399,7 +399,7 @@ class AdminContestController extends Controller
         // Create the competitor data form
         $form = $this->createForm(CompetitorForm::class, $formEntity, [
             'action' => $this->generateUrl('admin_competitor_edit', [ 'uuid' => $uuid ]),
-            'admin'  => true
+            'mode'   => 'admin'
         ]);
 
         // Handle the request & if the data is valid...

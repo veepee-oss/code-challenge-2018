@@ -124,7 +124,8 @@ class ContestController extends Controller
 
         // Create the competitor data form
         $form = $this->createForm(CompetitorForm::class, $formEntity, [
-            'action' => $this->generateUrl('contest_register')
+            'action' => $this->generateUrl('contest_register'),
+            'mode'   => 'register'
         ]);
 
         // Handle the request & if the data is valid...

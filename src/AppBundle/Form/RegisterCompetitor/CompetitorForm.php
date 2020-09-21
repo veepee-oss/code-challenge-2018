@@ -38,16 +38,16 @@ class CompetitorForm extends AbstractType
         $resolver->setDefaults([
             'data_class' => CompetitorEntity::class,
             'action'     => null,
-            'admin'      => false
+            'mode'       => 'register'
         ]);
 
         $resolver->setAllowedTypes('action', 'string');
-        $resolver->setAllowedTypes('admin', 'bool');
+        $resolver->setAllowedTypes('mode', 'string');
+        $resolver->setAllowedValues('mode', [ 'register', 'validate', 'admin' ]);
 
         $resolver->setDefaults([
             'validation_groups' => function (FormInterface $form) {
-                $isAdmin = $form->getConfig()->getOption('admin');
-                return ($isAdmin) ? ['admin'] : ['default'];
+                return $form->getConfig()->getOption('mode');
             }
         ]);
     }
@@ -68,21 +68,54 @@ class CompetitorForm extends AbstractType
     {
         $builder->setAction($options['action']);
 
-        if (!$options['admin']) {
+        switch ($options['mode']) {
+
+            case 'register':
+                $this->addContest($builder, true)
+                    ->addEmail($builder, false)
+                    ->addUrl($builder, true)
+                    ->addSubmit($builder, 'register');
+                break;
+
+            case 'validate':
+                $this->addContest($builder, false)
+                    ->addEmail($builder, true)
+                    ->addName($builder)
+                    ->addUrl($builder, true)
+                    ->addSubmit($builder, 'validate');
+                break;
+
+            case 'admin':
+                $this->addContest($builder, false)
+                    ->addEmail($builder, false)
+                    ->addName($builder)
+                    ->addUrl($builder, false)
+                    ->addValidated($builder)
+                    ->addSubmit($builder, 'admin');
+                break;
+
+            default:
+                break;
+        }
+    }
+
+    private function addContest(FormBuilderInterface $builder, bool $entityType): CompetitorForm
+    {
+        if ($entityType) {
             $builder->add('contest', EntityType::class, [
-                'label'         => 'app.register-competitor.form.contest',
-                'class'         => 'AppBundle:Contest',
-                'choice_label'  => 'name',
+                'label' => 'app.register-competitor.form.contest',
+                'class' => 'AppBundle:Contest',
+                'choice_label' => 'name',
                 'query_builder' => function (ContestRepository $repo) {
                     return $repo->getFindOpenedContestsQueryBuilder();
                 },
-                'required'      => true
+                'required' => true
             ]);
         } else {
             $builder->add('visibleContest', TextType::class, [
-                'label'         => 'app.register-competitor.form.contest',
-                'mapped'        => false,
-                'disabled'      => true
+                'label' => 'app.register-competitor.form.contest',
+                'mapped' => false,
+                'disabled' => true
             ]);
 
             $builder->addEventListener(FormEvents::POST_SET_DATA, function (FormEvent $event) {
@@ -96,35 +129,75 @@ class CompetitorForm extends AbstractType
             });
         }
 
+        return $this;
+    }
+
+    private function addEmail(FormBuilderInterface $builder, bool $disabled): CompetitorForm
+    {
         $builder->add('email', EmailType::class, [
             'label'         => 'app.register-competitor.form.email',
+            'required'      => true,
+            'disabled'      => $disabled
+        ]);
+
+        return $this;
+    }
+
+    private function addName(FormBuilderInterface $builder): CompetitorForm
+    {
+        $builder->add('name', TextType::class, [
+            'label'         => 'app.register-competitor.form.name',
             'required'      => true
         ]);
 
-        if ($options['admin']) {
-            $builder->add('name', TextType::class, [
-                'label'         => 'app.register-competitor.form.name',
-                'required'      => true
-            ]);
+        return $this;
+    }
 
-            $builder->add('url', UrlType::class, [
-                'label'         => 'app.register-competitor.form.url-opt',
-                'required'      => false
-            ]);
+    private function addUrl(FormBuilderInterface $builder, bool $required): CompetitorForm
+    {
+        $label = $required
+            ? 'app.register-competitor.form.url'
+            : 'app.register-competitor.form.url-opt';
 
-            $builder->add('validated', CheckboxType::class, [
-                'label' => 'app.register-competitor.form.validated',
-                'required' => false
-            ]);
-        } else {
-            $builder->add('url', UrlType::class, [
-                'label'         => 'app.register-competitor.form.url',
-                'required'      => true
-            ]);
+        $builder->add('url', UrlType::class, [
+            'label'         => $label,
+            'required'      => $required
+        ]);
+
+        return $this;
+    }
+
+    private function addValidated(FormBuilderInterface $builder): CompetitorForm
+    {
+        $builder->add('validated', CheckboxType::class, [
+            'label' => 'app.register-competitor.form.validated',
+            'required' => false
+        ]);
+
+        return $this;
+    }
+
+    private function addSubmit(FormBuilderInterface $builder, string $mode): CompetitorForm
+    {
+        switch ($mode) {
+            default:
+            case 'register':
+                $label = 'app.register-competitor.form.submit.register';
+                break;
+
+            case 'validate':
+                $label = 'app.register-competitor.form.submit.validate';
+                break;
+
+            case 'admin':
+                $label = 'app.register-competitor.form.submit.save';
+                break;
         }
 
         $builder->add('submit', SubmitType::class, array(
-            'label'         => 'app.register-competitor.form.submit'
+            'label'         => $label
         ));
+
+        return $this;
     }
 }
