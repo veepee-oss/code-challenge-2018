@@ -110,6 +110,7 @@ app:
             name:           "Name (*)"
             url:            "The URL of your API (*)"
             url-opt:        "The URL of your API"
+            validated:      "Validated?"
             submit:         "Register"
 
     registered-competitor:

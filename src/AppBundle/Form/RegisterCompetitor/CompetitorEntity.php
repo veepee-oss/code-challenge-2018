@@ -40,6 +40,16 @@ class CompetitorEntity
     private $url = null;
 
     /**
+     * @var boolean
+     */
+    private $validated = false;
+
+    /**
+     * The URL can't be empty in both the domain entity and the data model.
+     */
+    private const NULL_URL = "/dev/null";
+
+    /**
      * Converts the entity to a domain entity
      *
      * @return Competitor
@@ -47,15 +57,37 @@ class CompetitorEntity
      */
     public function toDomainEntity(): Competitor
     {
+        $domainUrl = $this->url ?? self::NULL_URL;
         return new Competitor(
             null,
             $this->contest->getUuid(),
             $this->email,
             $this->name,
-            $this->url,
-            null,
+            $domainUrl,
+            $this->validated,
             null
         );
+    }
+
+    /**
+     * Loads the competitor form entity from a competitor domain entity.
+     *
+     * @param Competitor $competitor
+     * @return $this
+     */
+    public function fromDomainEntity(Competitor  $competitor) : CompetitorEntity
+    {
+        $formUrl = $competitor->url();
+        if ($formUrl == self::NULL_URL) {
+            $formUrl = null;
+        }
+
+        $this->contest = $competitor->contest();
+        $this->email = $competitor->email();
+        $this->name = $competitor->name();
+        $this->url = $formUrl;
+        $this->validated = $competitor->validated();
+        return $this;
     }
 
     /**
@@ -67,7 +99,7 @@ class CompetitorEntity
     }
 
     /**
-     * @param Contest $contest
+     * @param Contest|null $contest
      * @return CompetitorEntity
      */
     public function setContest(?Contest $contest): CompetitorEntity
@@ -121,12 +153,30 @@ class CompetitorEntity
     }
 
     /**
-     * @param string $url
+     * @param string|null $url
      * @return CompetitorEntity
      */
     public function setUrl(?string $url): CompetitorEntity
     {
         $this->url = $url;
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isValidated(): bool
+    {
+        return $this->validated;
+    }
+
+    /**
+     * @param bool $validated
+     * @return CompetitorEntity
+     */
+    public function setValidated(bool $validated): CompetitorEntity
+    {
+        $this->validated = $validated;
         return $this;
     }
 }

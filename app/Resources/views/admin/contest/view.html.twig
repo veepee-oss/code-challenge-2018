@@ -210,8 +210,8 @@
                             <div class="col-sm-3 col-xs-8 padding-xs">
                                 {{ competitor.email }}
                                 <span class="visible-xs-inline">
-                                        ({{ competitor.name }})
-                                    </span>
+                                    ({{ competitor.name }})
+                                </span>
                             </div>
 
                             <div class="col-sm-3 hidden-xs padding-xs">
@@ -234,6 +234,12 @@
                                             <span class="glyphicon glyphicon-ok" aria-hidden="true"></span>
                                         </button>
                                     {% endif %}
+                                    <a  role="button"
+                                        class="btn btn-xs btn-warning"
+                                        title="{{ 'app.contest-view.buttons.edit' | trans }}"
+                                        href="{{ url('admin_competitor_edit', { 'uuid': competitor.uuid }) }}">
+                                        <span class="glyphicon glyphicon glyphicon-edit" aria-hidden="true"></span>
+                                    </a>
                                     <button
                                         class="btn btn-xs btn-danger js-btn-remove"
                                         title="{{ 'app.contest-view.buttons.remove' | trans }}"

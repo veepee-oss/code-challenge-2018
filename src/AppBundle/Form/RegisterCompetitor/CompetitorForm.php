@@ -5,6 +5,7 @@ namespace AppBundle\Form\RegisterCompetitor;
 use AppBundle\Repository\ContestRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -109,6 +110,11 @@ class CompetitorForm extends AbstractType
             $builder->add('url', UrlType::class, [
                 'label'         => 'app.register-competitor.form.url-opt',
                 'required'      => false
+            ]);
+
+            $builder->add('validated', CheckboxType::class, [
+                'label' => 'app.register-competitor.form.validated',
+                'required' => false
             ]);
         } else {
             $builder->add('url', UrlType::class, [
