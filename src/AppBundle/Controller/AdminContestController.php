@@ -6,6 +6,7 @@ use AppBundle\Domain\Entity\Contest\Competitor;
 use AppBundle\Domain\Entity\Contest\Contest;
 use AppBundle\Domain\Entity\Contest\Match;
 use AppBundle\Domain\Entity\Contest\Round;
+use AppBundle\Domain\Service\Register\GenerateTokenInterface;
 use AppBundle\Entity\Competitor as CompetitorEntity;
 use AppBundle\Entity\Contest as ContestEntity;
 use AppBundle\Entity\Game as GameEntity;
@@ -323,9 +324,25 @@ class AdminContestController extends Controller
         // Handle the request & if the data is valid...
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
+
+            // Depending of some conditions the competitor can be auto validated
+            $autoValidate = true;
+
+            // The URL can be null in the form but not in the domain
+            if (null == $formEntity->getUrl()) {
+                $formEntity->setUrl("/dev/null");
+                $autoValidate = false;
+            }
+
             /** @var Competitor $competitor */
             $competitor = $formEntity->toDomainEntity();
-            $competitor->setValidated();
+            if ($autoValidate) {
+                $competitor->setValidated();
+            } else {
+                /** @var GenerateTokenInterface $generator */
+                $generator = $this->get('app.contest.register.generate_token');
+                $generator->addToken($competitor);
+            }
 
             $em = $this->getDoctrine()->getManager();
             $entity = new CompetitorEntity($competitor);

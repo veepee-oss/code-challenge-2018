@@ -46,10 +46,7 @@ class CompetitorForm extends AbstractType
         $resolver->setDefaults([
             'validation_groups' => function (FormInterface $form) {
                 $isAdmin = $form->getConfig()->getOption('admin');
-                if (!$isAdmin) {
-                    return ['default'];
-                }
-                return ['default', 'admin'];
+                return ($isAdmin) ? ['admin'] : ['default'];
             }
         ]);
     }
@@ -108,12 +105,17 @@ class CompetitorForm extends AbstractType
                 'label'         => 'app.register-competitor.form.name',
                 'required'      => true
             ]);
-        }
 
-        $builder->add('url', UrlType::class, [
-            'label'         => 'app.register-competitor.form.url',
-            'required'      => true
-        ]);
+            $builder->add('url', UrlType::class, [
+                'label'         => 'app.register-competitor.form.url-opt',
+                'required'      => false
+            ]);
+        } else {
+            $builder->add('url', UrlType::class, [
+                'label'         => 'app.register-competitor.form.url',
+                'required'      => true
+            ]);
+        }
 
         $builder->add('submit', SubmitType::class, array(
             'label'         => 'app.register-competitor.form.submit'

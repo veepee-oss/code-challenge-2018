@@ -106,9 +106,10 @@ app:
 
         form:
             contest:        "Contest (*)"
-            name:           "Name (*)"
             email:          "Your email (*)"
+            name:           "Name (*)"
             url:            "The URL of your API (*)"
+            url-opt:        "The URL of your API"
             submit:         "Register"
 
     registered-competitor:

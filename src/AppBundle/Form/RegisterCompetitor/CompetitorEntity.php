@@ -15,14 +15,14 @@ class CompetitorEntity
 {
     /**
      * @var Contest
-     * @Assert\NotBlank(groups={"default"})
+     * @Assert\NotBlank(groups={"default", "admin"})
      */
     private $contest = null;
 
     /**
      * @var string
-     * @Assert\NotBlank(groups={"default"})
-     * @Assert\Email(groups={"default"})
+     * @Assert\NotBlank(groups={"default", "admin"})
+     * @Assert\Email(groups={"default", "admin"})
      */
     private $email = null;
 
@@ -35,7 +35,7 @@ class CompetitorEntity
     /**
      * @var string
      * @Assert\NotBlank(groups={"default"})
-     * @Assert\Url(groups={"default"})
+     * @Assert\Url(groups={"default", "admin"})
      */
     private $url = null;
 
