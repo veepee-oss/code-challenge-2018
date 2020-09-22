@@ -3,7 +3,7 @@
 namespace AppBundle\Domain\Service\Register;
 
 /**
- * Class to hold the validation results when registeriong a competitor to a contest
+ * Class to hold the validation results when registering a competitor to a contest
  *
  * Returns an array with the next structure:
  *
