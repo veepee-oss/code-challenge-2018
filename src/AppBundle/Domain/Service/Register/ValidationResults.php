@@ -27,6 +27,16 @@ class ValidationResults
     private $result = [];
 
     /**
+     * Return if the validation is OK
+     *
+     * @return bool
+     */
+    public function isValidated(): bool
+    {
+        return $this->status != self::STATUS_ERROR;
+    }
+
+    /**
      * Return the status
      *
      * @return int
@@ -71,5 +81,21 @@ class ValidationResults
         $this->status = self::STATUS_ERROR;
         $this->result[$field][] = $message;
         return $this;
+    }
+
+    /**
+     * Merges the current validation results with another results
+     *
+     * @param ValidationResults $results
+     * @return $this
+     */
+    public function mergeResults(ValidationResults $results) : ValidationResults
+    {
+        foreach ($results->result() as $field => $messages) {
+            foreach ($messages as $message) {
+                $this->addFieldError($message, $field);
+            }
+        }
+        return  $this;
     }
 }

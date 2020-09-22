@@ -107,7 +107,7 @@ app:
         form:
             contest:        "Contest (*)"
             email:          "Your email (*)"
-            name:           "Name (*)"
+            name:           "Your display name (*)"
             url:            "The URL of your API (*)"
             url-opt:        "The URL of your API"
             validated:      "Validated?"
@@ -131,12 +131,27 @@ app:
         title:          "Competitor validation"
 
         texts:
-            validated:      "Your email address <strong class='text-success'>%email%</strong> has been validated!"
-            participate:    "You will participate in the contest <strong class='text-success'>%contest%</strong>!"
-            out-of-time:    "<strong class='text-danger'>Unfortunately you are out of time!</strong>"
-            not-validated:  "Your email address <strong class='text-danger'>%email%</strong> can't be validated!"
-            period-ended:   "The registration period for the contest <strong class='text-danger'>%contest%</strong> has ended."
-            reg-period:     "Was from <strong class='text-danger'>%start-date%</strong> to <strong class='text-danger'>%end-date%</strong>."
+            info:
+                1:              "By pressing the <code>Validate</code> button all your data will be validated and"
+                2:              "if all goes well <strong>your API will be enabled</strong> to participate in the contest <strong>%contest%</strong>."
+                3:              "The URL of your API <strong>must be valid</strong> and the endpoints must respond with valid data."
+
+            reg-period:     "The registration period for this contest is from <strong>%start-date%</strong> to <strong>%end-date%</strong>."
+
+        errors:
+            global:         "One or more error found in the competitor data or the contest conditions. please fix it before validating it!"
+            not-started:    "The registration period for this contest didn't started yet!"
+            out-of-time:    "The registration period for this contest is now over!"
+
+    validated-competitor:
+        title:          "Competitor validated"
+
+        texts:
+            validated:      "Your email address <code>%email%</code> has been validated!"
+
+            participate:
+                1:              "You will participate in the contest <strong class='text-info'>%contest%</strong>"
+                2:              "as <code>%name%</code>!"
 
         buttons:
             back:           "Go Back"

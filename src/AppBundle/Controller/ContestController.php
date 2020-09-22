@@ -26,6 +26,7 @@ use Symfony\Component\Form\FormError;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\Translation\TranslatorInterface;
 
 /**
  * Contest controller
@@ -119,7 +120,7 @@ class ContestController extends Controller
      */
     public function registerAction(Request $request) : Response
     {
-        // Create competitor data entity
+        // Create competitor form data entity
         $formEntity = new CompetitorFormEntity();
 
         // Create the competitor data form
@@ -131,7 +132,7 @@ class ContestController extends Controller
         // Handle the request & if the data is valid...
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-            $competitor = $formEntity->toDomainEntity();
+            $competitor = $formEntity->toDomainEntity(null);
             $contest = $formEntity->getContest()->toDomainEntity();
 
             $competitorCounts = $this->getCompetitorDoctrineRepository()
@@ -156,10 +157,10 @@ class ContestController extends Controller
 
                 /** @var ValidateCompetitorInterface $validator */
                 $validator = $this->get('app.contest.register.validate_competitor_ex');
-                $result = $validator->validate($competitor, $contest);
+                $validationResult = $validator->validate($competitor, $contest);
 
-                if (ValidationResults::STATUS_ERROR == $result->status()) {
-                    foreach ($result->result() as $field => $messages) {
+                if (!$validationResult->isValidated()) {
+                    foreach ($validationResult->result() as $field => $messages) {
                         try {
                             $control = $form->get($field);
                         } catch (\OutOfBoundsException $exc) {
@@ -202,7 +203,7 @@ class ContestController extends Controller
     }
 
     /**
-     * Registered to a contest page
+     * Page to show a competitor has been registered to a contest
      *
      * @Route("/{uuid}/registered", name="contest_registered",
      *     requirements={"uuid": "[0-9a-f]{8}\-[0-9a-f]{4}\-[0-9a-f]{4}\-[0-9a-f]{4}\-[0-9a-f]{12}"})
@@ -231,20 +232,18 @@ class ContestController extends Controller
     }
 
     /**
-     * Validate a competitor using the sent token
+     * Page to validate a competitor using the sent token
      *
-     * @Route("/validate/{token}", name="contest_validate",
+     * @Route("/validate/{token}", name="contest_validate_token",
      *     requirements={"token": "[0-9a-f]{64}"})
      *
+     * @param Request $request
      * @param string $token
      * @return Response
      * @throws \Exception
      */
-    public function validateAction(string $token) : Response
+    public function validateTokenAction(Request $request, string $token) : Response
     {
-        /** @var EntityManager $em */
-        $em = $this->getDoctrine()->getManager();
-
         /** @var CompetitorEntity $competitorEntity */
         $competitorEntity = $this->getCompetitorDoctrineRepository()->findOneBy(array(
             'token' => $token
@@ -265,20 +264,124 @@ class ContestController extends Controller
         /** @var Contest $contest */
         $contest = $contestEntity->toDomainEntity();
 
-        $validated = false;
+        // Some validations must be done
+        $validationResult = new ValidationResults();
+
+        /** @var ValidateCompetitorInterface $validator */
+        $competitorValidator = $this->get('app.contest.register.validate_competitor_ex');
+
+        /** @var TranslatorInterface $translator */
+        $translator = $this->get('translator');
+
+        // The first time, the API URL is checked to get the name to display
+        $checkApiUrl = $request->query->get('check', 1);
+        if ($checkApiUrl) {
+            $validationResult = $competitorValidator->validate($competitor, $contest);
+        }
+
+        // Validate the registration dates
         $now = new \DateTime();
-        if ($now >= $contest->registrationStartDate() && $now <= $contest->registrationEndDate()) {
-            $competitor->setValidated();
-            $competitorEntity->fromDomainEntity($competitor);
-            $em->persist($competitorEntity);
-            $em->flush();
-            $validated = true;
+        if ($now < $contest->registrationStartDate()) {
+            $validationResult->addGlobalError($translator->trans('app.validate-competitor.errors.not-started'));
+        } elseif ($now > $contest->registrationEndDate()) {
+            $validationResult->addGlobalError($translator->trans('app.validate-competitor.errors.out-of-time'));
+        }
+
+        // Create competitor form data entity
+        $formEntity = new CompetitorFormEntity();
+        $formEntity->fromDomainEntity($competitor);
+        $formEntity->setContest($contestEntity);
+
+        // Create the competitor data form
+        $form = $this->createForm(CompetitorForm::class, $formEntity, [
+            'action' => $this->generateUrl('contest_validate_token', [ 'token' => $token, 'check' => 0 ]),
+            'mode'   => 'validate'
+        ]);
+
+        // Handle the request & if the data is valid...
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid() && $validationResult->isValidated()) {
+            $competitor = $formEntity->toDomainEntity($competitor);
+            $contest = $formEntity->getContest()->toDomainEntity();
+
+            // Validate the API URL set by the user
+            $validationResult->mergeResults(
+                $competitorValidator->validate(clone ($competitor), $contest)
+            );
+
+            // If all the data have been validated
+            if ($validationResult->isValidated())  {
+                $competitor->setValidated();
+                $competitorEntity->fromDomainEntity($competitor);
+
+                /** @var EntityManager $em */
+                $em = $this->getDoctrine()->getManager();
+                $em->persist($competitorEntity);
+                $em->flush();
+
+                return $this->redirectToRoute('contest_competitor_validated', [
+                    'uuid' => $competitor->uuid()
+                ]);
+            }
+        }
+
+        // Add the error messages from the pre-validations to the form
+        if (!$validationResult->isValidated()) {
+            $form->addError(new FormError($translator->trans('app.validate-competitor.errors.global')));
+            foreach ($validationResult->result() as $field => $messages) {
+                try {
+                    $control = $form->get($field);
+                } catch (\OutOfBoundsException $exc) {
+                    $control = $form;
+                }
+                foreach ($messages as $message) {
+                    $control->addError(new FormError($message));
+                }
+            }
         }
 
         return $this->render('contest/validate.html.twig', [
+            'form'       => $form->createView(),
             'contest'    => $contest,
-            'competitor' => $competitor,
-            'validated'  => $validated
+            'competitor' => $competitor
+        ]);
+    }
+
+    /**
+     * Page to show a competitor has been validated to a contest
+     *
+     * @Route("/competitor/{uuid}/validated", name="contest_competitor_validated",
+     *     requirements={"uuid": "[0-9a-f]{8}\-[0-9a-f]{4}\-[0-9a-f]{4}\-[0-9a-f]{4}\-[0-9a-f]{12}"})
+     *
+     * @param string $uuid the UUID of the competitor
+     * @return Response
+     * @throws \Exception
+     */
+    public function validatedAction(string $uuid) : Response
+    {
+        /** @var CompetitorEntity $competitorEntity */
+        $competitorEntity = $this->getCompetitorDoctrineRepository()->findOneBy([
+            'uuid' => $uuid
+        ]);
+
+        if (null === $competitorEntity) {
+            throw new NotFoundHttpException();
+        }
+
+        /** @var Competitor $competitor */
+        $competitor = $competitorEntity->toDomainEntity();
+
+        /** @var ContestEntity $contestEntity */
+        $contestEntity = $this->getContestDoctrineRepository()->findOneBy([
+            'uuid' => $competitor->contest()
+        ]);
+
+        /** @var Contest $contest */
+        $contest = $contestEntity->toDomainEntity();
+
+        return $this->render('contest/validated.html.twig', [
+            'contest'    => $contest,
+            'competitor' => $competitor
         ]);
     }
 

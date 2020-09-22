@@ -1,0 +1,34 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'app.validated-competitor.title' | trans }} - {{ parent() }}{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <div class="page-header">
+            <h1>
+                {{ 'app.validated-competitor.title' | trans }}
+                <small>
+                    {{ contest.name }}
+                </small>
+            </h1>
+        </div>
+
+        <div class="text-justify">
+            <p class="lead">
+                {{ 'app.validated-competitor.texts.validated' | trans({ "%email%": competitor.email }) | raw }}
+            </p>
+
+            <p class="lead">
+                {{ 'app.validated-competitor.texts.participate.1' | trans({ "%contest%": contest.name }) | raw }}
+                {{ 'app.validated-competitor.texts.participate.2' | trans({ "%name%": competitor.name }) | raw }}
+            </p>
+
+            <p>
+                <a class="btn btn-default" href="{{ url('homepage') }}">
+                    <span class="glyphicon glyphicon-chevron-left"></span>
+                    {{ 'app.validated-competitor.buttons.back' | trans }}
+                </a>
+            </p>
+        </div>
+    </div>
+{% endblock %}

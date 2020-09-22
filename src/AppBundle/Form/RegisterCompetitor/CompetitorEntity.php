@@ -52,14 +52,16 @@ class CompetitorEntity
     /**
      * Converts the entity to a domain entity
      *
+     * @param Competitor|null $source the optional source entity
      * @return Competitor
      * @throws \Exception
      */
-    public function toDomainEntity(): Competitor
+    public function toDomainEntity(?Competitor $source): Competitor
     {
+        $uuid = $source ? $source->uuid() : null;
         $domainUrl = $this->url ?? self::NULL_URL;
         return new Competitor(
-            null,
+            $uuid,
             $this->contest->getUuid(),
             $this->email,
             $this->name,
@@ -75,7 +77,7 @@ class CompetitorEntity
      * @param Competitor $competitor
      * @return $this
      */
-    public function fromDomainEntity(Competitor  $competitor) : CompetitorEntity
+    public function fromDomainEntity(Competitor $competitor) : CompetitorEntity
     {
         $formUrl = $competitor->url();
         if ($formUrl == self::NULL_URL) {

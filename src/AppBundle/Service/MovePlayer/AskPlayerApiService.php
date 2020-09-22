@@ -275,7 +275,7 @@ class AskPlayerApiService implements AskNextMovementInterface, AskPlayerNameInte
         string $player,
         string $game = null
     ) : string {
-        $msg = 'An error occurrer calling a player API! ';
+        $msg = 'An error occurred calling a player API! ';
         $msg .= PHP_EOL . 'URL: ' . $endpointURL;
         $msg .= PHP_EOL . 'Message: ' . $message;
         $msg .= PHP_EOL . 'Player ' . $player;

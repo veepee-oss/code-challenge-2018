@@ -1,5 +1,7 @@
 {% extends 'base.html.twig' %}
 
+{% form_theme form 'bootstrap_3_horizontal_layout.html.twig' %}
+
 {% block title %}{{ 'app.validate-competitor.title' | trans }} - {{ parent() }}{% endblock %}
 
 {% block content %}
@@ -14,38 +16,19 @@
         </div>
 
         <div class="text-justify">
-            {% if validated %}
-                <p class="lead">
-                    {{ 'app.validate-competitor.texts.validated' | trans({ "%email%": competitor.email }) | raw }}
-                </p>
+            <p class="lead">
+                {{ 'app.validate-competitor.texts.info.1' | trans | raw }}
+                {{ 'app.validate-competitor.texts.info.2' | trans({ "%contest%": contest.name }) | raw }}
+                {{ 'app.validate-competitor.texts.info.3' | trans | raw }}
+            </p>
 
-                <p class="lead">
-                    {{ 'app.validate-competitor.texts.participate' | trans({ "%contest%": contest.name }) | raw }}
-                </p>
-            {% else %}
-                <p class="lead">
-                    {{ 'app.validate-competitor.texts.out-of-time' | trans | raw }}
-                </p>
-
-                <p class="lead">
-                    {{ 'app.validate-competitor.texts.not-validated' | trans({ "%email%": competitor.email }) | raw }}
-                </p>
-
-                <p class="lead">
-                    {{ 'app.validate-competitor.texts.period-ended' | trans({ "%contest%": contest.name }) | raw }}
-                </p>
-
-                <p class="lead">
-                    {{ 'app.validate-competitor.texts.reg-period' | trans({ "%start-date%": contest.registrationStartDate| date('Y-m-d H:i e'), "%end-date%": contest.registrationEndDate| date('Y-m-d H:i e') }) | raw }}
-                </p>
-            {% endif %}
-
-            <p>
-                <a class="btn btn-default" href="{{ url('homepage') }}">
-                    <span class="glyphicon glyphicon-chevron-left"></span>
-                    {{ 'app.validate-competitor.buttons.back' | trans }}
-                </a>
+            <p class="lead">
+                {{ 'app.validate-competitor.texts.reg-period' | trans({ "%start-date%": contest.registrationStartDate| date('Y-m-d H:i e'), "%end-date%": contest.registrationEndDate| date('Y-m-d H:i e') }) | raw }}
             </p>
         </div>
+
+        {{ form_start(form) }}
+        {{ form_widget(form) }}
+        {{ form_end(form) }}
     </div>
 {% endblock %}
