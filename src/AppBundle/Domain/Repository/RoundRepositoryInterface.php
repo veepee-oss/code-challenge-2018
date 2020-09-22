@@ -15,9 +15,9 @@ interface RoundRepositoryInterface
      * Reads a round from the database
      *
      * @param string $uuid
-     * @return Round
+     * @return Round|null
      */
-    public function readRound(string $uuid): Round;
+    public function readRound(string $uuid): ?Round;
 
     /**
      * @param string $contestUuid
