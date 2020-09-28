@@ -64,7 +64,7 @@ class RoundManager implements RoundManagerInterface
                 }
             }
         } else {
-            // Add all the participants from the contest
+            // Add all the validated participants from the contest
 
             /** @var CompetitorEntity[] $competitorEntities */
             $competitorEntities = $this->competitorRepo->findBy([
@@ -73,8 +73,10 @@ class RoundManager implements RoundManagerInterface
 
             /** @var CompetitorEntity $competitorEntity */
             foreach ($competitorEntities as $competitorEntity) {
-                $participant = new Participant($competitorEntity->toDomainEntity(), null, null);
-                $round->addParticipant($participant);
+                if ($competitorEntity->isValidated()) {
+                    $participant = new Participant($competitorEntity->toDomainEntity(), null, null);
+                    $round->addParticipant($participant);
+                }
             }
         }
 
