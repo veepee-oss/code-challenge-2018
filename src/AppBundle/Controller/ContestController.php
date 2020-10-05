@@ -6,6 +6,8 @@ use AppBundle\Domain\Entity\Contest\Competitor;
 use AppBundle\Domain\Entity\Contest\Contest;
 use AppBundle\Domain\Entity\Contest\Match;
 use AppBundle\Domain\Entity\Contest\Round;
+use AppBundle\Domain\Service\Mailer\MailerException;
+use AppBundle\Domain\Service\Mailer\MailerInterface;
 use AppBundle\Domain\Service\Register\GenerateTokenInterface;
 use AppBundle\Domain\Service\Register\ValidateCompetitorInterface;
 use AppBundle\Domain\Service\Register\ValidationResults;
@@ -188,7 +190,14 @@ class ContestController extends Controller
                     $em->persist($entity);
                     $em->flush();
 
-                    // TODO: Send email to the user
+                    // Send email to the user
+                    try {
+                        /** @var MailerInterface mailer */
+                        $mailer = $this->get('app.contest.mailer');
+                        $mailer->sendTokenToCompetitor($competitor, $contest);
+                    } catch (MailerException $exc) {
+                        // Do nothing
+                    }
 
                     return $this->redirectToRoute('contest_registered', [
                         'uuid' => $competitor->contest()

@@ -335,4 +335,12 @@ app:
             graphics:       "Graphics and Icons"
 
     error-messages:
-        max-competitors:   "Max. competitors reached for contest \"%name%\"!"
+        max-competitors: "Max. competitors reached for contest \"%name%\"!"
+
+    mail:
+        subject:        "New competitor registered to %contest%"
+        content:
+            1:              "Your email has been registered to participate in the contest %contest%!\r\n"
+            2:              "\r\n- Email: %email%\r\n- Display name: %name%\r\n- Api URL: %url%\r\n"
+            3:              "\r\nTo validate your email and activate your URL please press here: %url%\r\n"
+            4:              "\r\nGood luck!\r\n\r\n"
