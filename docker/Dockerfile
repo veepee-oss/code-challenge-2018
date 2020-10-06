@@ -4,7 +4,9 @@ FROM php:7.2-apache
 ARG DOCKER_USER
 ARG SERVER_TIME_ZONE=UTC
 
-RUN apt-get update && apt-get install zip unzip
+RUN apt-get update && \
+    apt-get install zip unzip && \
+    apt-get clean
 
 RUN docker-php-ext-install pdo_mysql bcmath opcache && \
     docker-php-ext-enable pdo_mysql bcmath opcache
