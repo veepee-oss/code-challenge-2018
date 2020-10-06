@@ -236,7 +236,8 @@ class ContestController extends Controller
         }
 
         return $this->render('contest/registered.html.twig', [
-            'contest' => $contestEntity->toDomainEntity()
+            'contest' => $contestEntity->toDomainEntity(),
+            'email'   => $this->getParameter('default_email')
         ]);
     }
 

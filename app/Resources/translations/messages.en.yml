@@ -121,8 +121,9 @@ app:
 
         texts:
             registered:     "Your email and URL <strong>have been registered</strong> to the contest <strong class='text-success'>%contest%</strong>!"
-            email:          "You will receive an email in the address provided to <strong>enable your API</strong>."
-            warning:        "Don't forget to enable your API before the competition starts!"
+            email:          "You will receive an email at the address provided to <strong>enable your API</strong>."
+            no-email:       "If you don't, please sean an email to <a href=\"mailto:%email%?subject=Registered to %contest%\">%email%</a> asking for API activation."
+            warning:        "Don't forget to enable your API <strong>before the competition starts</strong>!"
 
         buttons:
             back:           "Go Back"
