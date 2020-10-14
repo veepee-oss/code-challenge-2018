@@ -22,10 +22,10 @@ class Player extends MazeObject
     const STATUS_KILLED = 8;
 
     /** @var int default values */
-    const DEFAULT_STATUS_COUNT = 6;
-
-    /** @var int Default fire range */
     const DEFAULT_FIRE_RANGE = Fire::DEFAULT_FIRE_RANGE;
+    const DEFAULT_POWERED_TURNS = 3;
+    const DEFAULT_RELOAD_TURNS = 4;
+    const DEFAULT_KILLED_TURNS = 5;
 
     /** @var int the current status of the player: regular, powered, reloading, killed */
     protected $status;
@@ -63,9 +63,9 @@ class Player extends MazeObject
     /**
      * Player constructor.
      *
-     * @param string $url
-     * @param Position $position
-     * @param Position $previous
+     * @param string        $url
+     * @param Position      $position
+     * @param Position|null $previous
      * @throws \Exception
      */
     public function __construct(
@@ -210,8 +210,8 @@ class Player extends MazeObject
     /**
      * Sets the name and the email of the player
      *
-     * @param string $name
-     * @param string $email
+     * @param string      $name
+     * @param string|null $email
      * @return $this
      */
     public function setPlayerIds(string $name, ?string $email) : Player
@@ -264,21 +264,21 @@ class Player extends MazeObject
     /**
      * Change the player status to powered
      *
-     * @param int $countMoves
+     * @param int|null $countMoves
      * @return $this
      */
     public function powered(int $countMoves = null) : Player
     {
         $this->status = static::STATUS_POWERED;
-        $this->statusCount = $countMoves ?? static::DEFAULT_STATUS_COUNT;
+        $this->statusCount = $countMoves ?? static::DEFAULT_POWERED_TURNS;
         return $this;
     }
 
     /**
      * The player fires, change the status to reloading
      *
-     * @param string $firingDir
-     * @param int $reloadMoves
+     * @param string   $firingDir
+     * @param int|null $reloadMoves
      * @return $this
      */
     public function fire(string $firingDir, int $reloadMoves = null) : Player
@@ -287,7 +287,7 @@ class Player extends MazeObject
             $this->status = static::STATUS_RELOADING;
             $this->firingDir = $firingDir;
             $this->fireRange = self::DEFAULT_FIRE_RANGE;
-            $this->statusCount = $reloadMoves ?? static::DEFAULT_STATUS_COUNT;
+            $this->statusCount = $reloadMoves ?? static::DEFAULT_RELOAD_TURNS;
         }
         return $this;
     }
@@ -295,13 +295,13 @@ class Player extends MazeObject
     /**
      * The player has been killed
      *
-     * @param int $countMoves
+     * @param int|null $countMoves
      * @return $this
      */
     public function killed(int $countMoves = null) : Player
     {
         $this->status = static::STATUS_KILLED;
-        $this->statusCount = $countMoves ?? static::DEFAULT_STATUS_COUNT;
+        $this->statusCount = $countMoves ?? static::DEFAULT_KILLED_TURNS;
         return $this;
     }
 
