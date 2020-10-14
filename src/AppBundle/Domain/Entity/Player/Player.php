@@ -222,6 +222,18 @@ class Player extends MazeObject
     }
 
     /**
+     * Sets the URL of the player
+     *
+     * @param string $url
+     * @return $this
+     */
+    public function setUrl(string $url) : Player
+    {
+        $this->url = $url;
+        return $this;
+    }
+
+    /**
      * Get if player is powered
      *
      * @return bool
