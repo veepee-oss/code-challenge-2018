@@ -210,8 +210,8 @@
                             <div class="col-sm-3 col-xs-8 padding-xs">
                                 {{ competitor.email }}
                                 <span class="visible-xs-inline">
-                                        ({{ competitor.name }})
-                                    </span>
+                                    ({{ competitor.name }})
+                                </span>
                             </div>
 
                             <div class="col-sm-3 hidden-xs padding-xs">
@@ -225,15 +225,19 @@
                             <div class="col-sm-3 col-xs-4 padding-xs text-right">
                                 <div class="btn-group" role="group">
                                     {% if not competitor.validated and competitor.validationToken is not empty %}
-                                        <button
-                                            class="btn btn-xs btn-success js-btn-action"
+                                        <a  role="button"
+                                            class="btn btn-xs btn-success"
                                             title="{{ 'app.contest-view.buttons.validate' | trans }}"
-                                            data-question="{{ 'app.contest-view.texts.ask-validate.email' | trans({ '%email%' : competitor.email }) }}"
-                                            data-url="{{ url('admin_competitor_validate', { 'uuid': competitor.uuid }) }}"
-                                            data-refresh="{{ url('admin_contest_view', { 'uuid': contest.uuid }) }}">
+                                            href="{{ url('contest_validate_token', { 'token': competitor.validationToken }) }}">
                                             <span class="glyphicon glyphicon-ok" aria-hidden="true"></span>
-                                        </button>
+                                        </a>
                                     {% endif %}
+                                    <a  role="button"
+                                        class="btn btn-xs btn-warning"
+                                        title="{{ 'app.contest-view.buttons.edit' | trans }}"
+                                        href="{{ url('admin_competitor_edit', { 'uuid': competitor.uuid }) }}">
+                                        <span class="glyphicon glyphicon glyphicon-edit" aria-hidden="true"></span>
+                                    </a>
                                     <button
                                         class="btn btn-xs btn-danger js-btn-remove"
                                         title="{{ 'app.contest-view.buttons.remove' | trans }}"

@@ -15,9 +15,9 @@ interface MatchRepositoryInterface
      * Reads a match from the database
      *
      * @param string $uuid
-     * @return Match
+     * @return Match|null
      */
-    public function readMatch(string $uuid): Match;
+    public function readMatch(string $uuid): ?Match;
 
     /**
      * @param string $roundUuid

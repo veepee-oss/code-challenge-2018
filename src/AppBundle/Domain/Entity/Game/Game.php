@@ -284,6 +284,131 @@ class Game
     }
 
     /**
+     * Get the height of the maze
+     *
+     * @return int
+     */
+    public function height()
+    {
+        return $this->maze()->height();
+    }
+
+    /**
+     * Get the width of the maze
+     *
+     * @return int
+     */
+    public function width()
+    {
+        return $this->maze()->width();
+    }
+
+    /**
+     * Get the last update date
+     *
+     * @return \DateTime
+     */
+    public function lastUpdatedAt()
+    {
+        $datetime = null;
+        foreach ($this->players as $player) {
+            $timestamp = $player->timestamp();
+            if (null === $datetime || $timestamp > $datetime) {
+                $datetime = $timestamp;
+            }
+        }
+        return $datetime;
+    }
+
+    /**
+     * Finds the players at a position in the maze
+     *
+     * @param Position $pos
+     * @return Player[]
+     */
+    public function playersAtPosition(Position $pos)
+    {
+        $result = [];
+        foreach ($this->players as $player) {
+            if ($player->position()->equals($pos)) {
+                $result[] = $player;
+            }
+        }
+        return $result;
+    }
+
+    /**
+     * Get the current classification (based on players score)
+     *
+     * @return Player[]
+     */
+    public function classification()
+    {
+        $playersCopy = $this->players;
+        usort($playersCopy, function (Player $p1, Player $p2) {
+            // Order by score in the first time
+            $condition = $p2->score() <=> $p1->score();
+            if (0 == $condition) {
+                // Order by timestamp when the same score
+                $condition = $p1->timestamp()->getTimestamp() <=> $p2->timestamp()->getTimestamp();
+            }
+            return $condition;
+        });
+        return $playersCopy;
+    }
+
+    /**
+     * Finds the ghosts at a position in the maze
+     *
+     * @param Position $pos
+     * @return Ghost[]
+     */
+    public function ghostsAtPosition(Position $pos)
+    {
+        $result = [];
+        foreach ($this->ghosts as $ghost) {
+            if ($ghost->position()->equals($pos)) {
+                $result[] = $ghost;
+            }
+        }
+        return $result;
+    }
+
+    /**
+     * Get the player number
+     *
+     * @param Player $player
+     * @return int
+     */
+    public function playerNum(Player $player)
+    {
+        $index = 0;
+        foreach ($this->players as $p) {
+            ++$index;
+            if ($player->uuid() == $p->uuid()) {
+                return $index;
+            }
+        }
+        return -1;
+    }
+
+    /**
+     * Finds a player by its UUID
+     *
+     * @param string $uuid
+     * @return Player|null
+     */
+    public function playerByUuid(string $uuid) : ?Player
+    {
+        foreach ($this->players as $player) {
+            if ($uuid == $player->uuid()) {
+                return $player;
+            }
+        }
+        return null;
+    }
+
+    /**
      * Starts playing the game
      *
      * @return $this
@@ -348,43 +473,6 @@ class Game
     }
 
     /**
-     * Get the height of the maze
-     *
-     * @return int
-     */
-    public function height()
-    {
-        return $this->maze()->height();
-    }
-
-    /**
-     * Get the width of the maze
-     *
-     * @return int
-     */
-    public function width()
-    {
-        return $this->maze()->width();
-    }
-
-    /**
-     * Get the last update date
-     *
-     * @return \DateTime
-     */
-    public function lastUpdatedAt()
-    {
-        $datetime = null;
-        foreach ($this->players as $player) {
-            $timestamp = $player->timestamp();
-            if (null === $datetime || $timestamp > $datetime) {
-                $datetime = $timestamp;
-            }
-        }
-        return $datetime;
-    }
-
-    /**
      * Increments the moves counter
      *
      * @return $this
@@ -394,6 +482,28 @@ class Game
         $this->moves++;
         if ($this->moves >= $this->limit) {
             $this->endGame();
+        }
+        return $this;
+    }
+
+    /**
+     * Adds a new player or replaces an existing player
+     *
+     * @param Player $player
+     * @return $this
+     */
+    public function addPlayer(Player $player) : Game
+    {
+        $updated = false;
+        for ($i = 0; $i < sizeof($this->players); ++$i) {
+            if ($this->players[$i]->uuid() == $player->uuid()) {
+                $this->players[$i] = clone $player;
+                $updated = true;
+                break;
+            }
+        }
+        if (!$updated) {
+            $this->players[] = clone $player;
         }
         return $this;
     }
@@ -426,77 +536,5 @@ class Game
             }
         }
         return $this;
-    }
-
-    /**
-     * Finds the ghosts at a position in the maze
-     *
-     * @param Position $pos
-     * @return Ghost[]
-     */
-    public function ghostsAtPosition(Position $pos)
-    {
-        $result = [];
-        foreach ($this->ghosts as $ghost) {
-            if ($ghost->position()->equals($pos)) {
-                $result[] = $ghost;
-            }
-        }
-        return $result;
-    }
-
-    /**
-     * Finds the players at a position in the maze
-     *
-     * @param Position $pos
-     * @return Player[]
-     */
-    public function playersAtPosition(Position $pos)
-    {
-        $result = [];
-        foreach ($this->players as $player) {
-            if ($player->position()->equals($pos)) {
-                $result[] = $player;
-            }
-        }
-        return $result;
-    }
-
-    /**
-     * Get the current classification (based on playes score)
-     *
-     * @return Player[]
-     */
-    public function classification()
-    {
-        $playersCopy = $this->players;
-        usort($playersCopy, function (Player $p1, Player $p2) {
-            // Order by score in the first time
-            $condition = $p2->score() <=> $p1->score();
-            if (0 == $condition) {
-                // Order by timestamp when the same score
-                $condition = $p1->timestamp()->getTimestamp() <=> $p2->timestamp()->getTimestamp();
-            }
-            return $condition;
-        });
-        return $playersCopy;
-    }
-
-    /**
-     * Get the player number
-     *
-     * @param Player $player
-     * @return int
-     */
-    public function playerNum(Player $player)
-    {
-        $index = 0;
-        foreach ($this->players as $p) {
-            ++$index;
-            if ($player->uuid() == $p->uuid()) {
-                return $index;
-            }
-        }
-        return -1;
     }
 }

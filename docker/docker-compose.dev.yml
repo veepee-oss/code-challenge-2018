@@ -6,6 +6,8 @@ services:
         build:
             args:
                 - "DOCKER_USER=david"
+                - "SERVER_TIME_ZONE=CET"
+                - "PHP_DEBUG_ENABLED=true"
 
         environment:
             APACHE_RUN_USER: "david"

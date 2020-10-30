@@ -3,7 +3,7 @@
 namespace AppBundle\Domain\Service\Register;
 
 /**
- * Class to hold the validation results when registeriong a competitor to a contest
+ * Class to hold the validation results when registering a competitor to a contest
  *
  * Returns an array with the next structure:
  *
@@ -25,6 +25,16 @@ class ValidationResults
 
     /** @var array */
     private $result = [];
+
+    /**
+     * Return if the validation is OK
+     *
+     * @return bool
+     */
+    public function isValidated(): bool
+    {
+        return $this->status != self::STATUS_ERROR;
+    }
 
     /**
      * Return the status
@@ -71,5 +81,21 @@ class ValidationResults
         $this->status = self::STATUS_ERROR;
         $this->result[$field][] = $message;
         return $this;
+    }
+
+    /**
+     * Merges the current validation results with another results
+     *
+     * @param ValidationResults $results
+     * @return $this
+     */
+    public function mergeResults(ValidationResults $results) : ValidationResults
+    {
+        foreach ($results->result() as $field => $messages) {
+            foreach ($messages as $message) {
+                $this->addFieldError($message, $field);
+            }
+        }
+        return  $this;
     }
 }

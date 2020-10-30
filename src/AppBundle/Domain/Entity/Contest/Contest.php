@@ -40,7 +40,7 @@ class Contest
     /** @var int|null the max competitors */
     protected $maxCompetitors;
 
-    /** @var int|null the current competitors count */
+    /** @var int|null the current competitors count - externally set */
     protected $countCompetitors;
 
     /**
@@ -49,7 +49,7 @@ class Contest
      * @param string|null    $uuid
      * @param string         $name
      * @param string|null    $description
-     * @param string         $emailRestrictionsRegex
+     * @param string|null    $emailRestrictionsRegex
      * @param \DateTime      $registrationStartDate
      * @param \DateTime      $registrationEndDate
      * @param \DateTime|null $contestStartDate

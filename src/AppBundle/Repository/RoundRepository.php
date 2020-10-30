@@ -21,9 +21,9 @@ class RoundRepository extends EntityRepository implements RoundRepositoryInterfa
      * Reads a round from the database
      *
      * @param string $uuid
-     * @return Round
+     * @return Round|null
      */
-    public function readRound(string $uuid): Round
+    public function readRound(string $uuid): ?Round
     {
         try {
             $roundEntity = $this->findRoundEntity($uuid);

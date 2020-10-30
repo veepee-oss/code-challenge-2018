@@ -20,6 +20,7 @@
 
             <p class="lead">
                 {{ 'app.registered-competitor.texts.email' | trans | raw }}
+                {{ 'app.registered-competitor.texts.no-email' | trans({ "%email%": email, "%contest%": contest.name }) | raw }}
             </p>
 
             <p class="lead">

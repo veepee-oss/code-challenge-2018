@@ -20,9 +20,9 @@ class MatchRepository extends EntityRepository implements MatchRepositoryInterfa
      * Reads a match from the database
      *
      * @param string $uuid
-     * @return Match
+     * @return Match|null
      */
-    public function readMatch(string $uuid): Match
+    public function readMatch(string $uuid): ?Match
     {
         try {
             $matchEntity = $this->findMatchEntity($uuid);

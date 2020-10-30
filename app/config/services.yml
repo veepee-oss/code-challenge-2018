@@ -149,6 +149,14 @@ services:
             - "@doctrine.orm.entity_manager"
         public: true
 
+    app.contest.mailer:
+        class: AppBundle\Service\Mailer\MailerService
+        arguments:
+            - "@translator"
+            - "@router"
+            - "%default_email%"
+        public: true
+
     rabbitmq.connection:
         class: PhpAmqpLib\Connection\AMQPStreamConnection
         arguments:

@@ -19,9 +19,9 @@ class MovePlayerService implements MovePlayerServiceInterface
     /**
      * Moves the player
      *
-     * @param Player $player the player to move
-     * @param Game   $game   the game where belongs
-     * @param string $move   the move to do
+     * @param Player      $player the player to move
+     * @param Game        $game   the game where it belongs
+     * @param string|null $move   the move to do
      * @return bool true=success, false=error
      */
     public function move(Player& $player, Game $game, string $move = null) : bool

@@ -6,6 +6,7 @@ use AppBundle\Domain\Entity\Contest\Competitor;
 use AppBundle\Domain\Entity\Contest\Contest;
 use AppBundle\Domain\Entity\Contest\Match;
 use AppBundle\Domain\Entity\Contest\Round;
+use AppBundle\Domain\Service\Register\GenerateTokenInterface;
 use AppBundle\Entity\Competitor as CompetitorEntity;
 use AppBundle\Entity\Contest as ContestEntity;
 use AppBundle\Entity\Game as GameEntity;
@@ -118,12 +119,14 @@ class AdminContestController extends Controller
             $em->persist($contestEntity);
             $em->flush();
 
-            return $this->redirectToRoute('admin_contest_view', ['uuid' => $contestEntity->getUuid()]);
+            return $this->redirectToRoute('admin_contest_view', [
+                'uuid' => $contestEntity->getUuid()
+            ]);
         }
 
-        return $this->render('admin/contest/edit.html.twig', array(
-            'form' => $form->createView(),
-        ));
+        return $this->render('admin/contest/edit.html.twig', [
+            'form' => $form->createView()
+        ]);
     }
 
     /**
@@ -227,12 +230,14 @@ class AdminContestController extends Controller
             $em->persist($contestEntity);
             $em->flush();
 
-            return $this->redirectToRoute('admin_contest_view', ['uuid' => $contestEntity->getUuid()]);
+            return $this->redirectToRoute('admin_contest_view', [
+                'uuid' => $contestEntity->getUuid()
+            ]);
         }
 
-        return $this->render('admin/contest/edit.html.twig', array(
+        return $this->render('admin/contest/edit.html.twig', [
             'form' => $form->createView(),
-        ));
+        ]);
     }
 
     /**
@@ -270,7 +275,7 @@ class AdminContestController extends Controller
     }
 
     /**
-     * Create competitor for a contest without validations
+     * Create competitor for a contest using a form, skipping some validations
      *
      * @Route("/{uuid}/competitor/register", name="admin_competitor_register",
      *     requirements={"uuid": "[0-9a-f]{8}\-[0-9a-f]{4}\-[0-9a-f]{4}\-[0-9a-f]{4}\-[0-9a-f]{12}"})
@@ -317,19 +322,27 @@ class AdminContestController extends Controller
         // Create the competitor data form
         $form = $this->createForm(CompetitorForm::class, $formEntity, [
             'action' => $this->generateUrl('admin_competitor_register', [ 'uuid' => $uuid ]),
-            'admin'  => true
+            'mode'   => 'admin'
         ]);
 
         // Handle the request & if the data is valid...
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
+
             /** @var Competitor $competitor */
-            $competitor = $formEntity->toDomainEntity();
-            $competitor->setValidated();
+            $competitor = $formEntity->toDomainEntity(null);
+
+            if (!$competitor->validated()) {
+                /** @var GenerateTokenInterface $generator */
+                $generator = $this->get('app.contest.register.generate_token');
+                $generator->addToken($competitor);
+            }
+
+            /** @var CompetitorEntity $competitorEntity */
+            $competitorEntity = new CompetitorEntity($competitor);
 
             $em = $this->getDoctrine()->getManager();
-            $entity = new CompetitorEntity($competitor);
-            $em->persist($entity);
+            $em->persist($competitorEntity);
             $em->flush();
 
             return $this->redirectToRoute('admin_contest_view', [
@@ -337,9 +350,90 @@ class AdminContestController extends Controller
             ]);
         }
 
-        return $this->render('admin/contest/register-competitor.html.twig', array(
-            'form' => $form->createView(),
+        return $this->render('admin/contest/register-competitor.html.twig', [
+            'form' => $form->createView()
+        ]);
+    }
+
+    /**
+     * Edit a competitor for a contest
+     *
+     * @Route("/competitor/{uuid}/edit", name="admin_competitor_edit",
+     *     requirements={"uuid": "[0-9a-f]{8}\-[0-9a-f]{4}\-[0-9a-f]{4}\-[0-9a-f]{4}\-[0-9a-f]{12}"})
+     *
+     * @param Request $request  the request data
+     * @param string $uuid      the UUID of the competitor
+     * @return Response
+     * @throws \Exception
+     */
+    public function competitorEditAction(Request $request, string $uuid)
+    {
+        /** @var CompetitorRepository $competitorRepo */
+        $competitorRepo = $this->getCompetitorDoctrineRepository();
+
+        /** @var CompetitorEntity $competitorEntity */
+        $competitorEntity = $competitorRepo->findOneBy(array(
+            'uuid' => $uuid
         ));
+
+        if (!$competitorEntity) {
+            throw new NotFoundHttpException();
+        }
+
+        /** @var Competitor $competitor */
+        $competitor = $competitorEntity->toDomainEntity();
+
+        /** @var ContestEntity $contestEntity */
+        $contestEntity = $this->getContestDoctrineRepository()->findOneBy(array(
+            'uuid' => $competitor->contest()
+        ));
+
+        if (!$contestEntity) {
+            throw new NotFoundHttpException();
+        }
+
+        /** @var Contest $contest */
+        $contest = $contestEntity->toDomainEntity();
+
+        // Create competitor data entity
+        $formEntity = new CompetitorFormEntity();
+        $formEntity->fromDomainEntity($competitor);
+        $formEntity->setContest($contestEntity);
+
+        // Create the competitor data form
+        $form = $this->createForm(CompetitorForm::class, $formEntity, [
+            'action' => $this->generateUrl('admin_competitor_edit', [ 'uuid' => $uuid ]),
+            'mode'   => 'admin'
+        ]);
+
+        // Handle the request & if the data is valid...
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+
+            /** @var Competitor $competitor */
+            $competitor = $formEntity->toDomainEntity($competitor);
+
+            if (!$competitor->validated()) {
+                /** @var GenerateTokenInterface $generator */
+                $generator = $this->get('app.contest.register.generate_token');
+                $generator->addToken($competitor);
+            }
+
+            /** @var CompetitorEntity $competitorEntity */
+            $competitorEntity->fromDomainEntity($competitor);
+
+            $em = $this->getDoctrine()->getManager();
+            $em->persist($competitorEntity);
+            $em->flush();
+
+            return $this->redirectToRoute('admin_contest_view', [
+                'uuid' => $contest->uuid()
+            ]);
+        }
+
+        return $this->render('admin/contest/register-competitor.html.twig', [
+            'form' => $form->createView(),
+        ]);
     }
 
     /**
@@ -371,39 +465,6 @@ class AdminContestController extends Controller
 
         // Remove the entity and its relations
         $repo->removeCompetitor($competitorEntity);
-        $em->flush();
-
-        return new Response('', 204);
-    }
-
-    /**
-     * Validate a competitor to participate to a contest
-     *
-     * @Route("/competitor/{uuid}/validate", name="admin_competitor_validate",
-     *     requirements={"uuid": "[0-9a-f]{8}\-[0-9a-f]{4}\-[0-9a-f]{4}\-[0-9a-f]{4}\-[0-9a-f]{12}"})
-     *
-     * @param string $uuid
-     * @return Response
-     * @throws \Exception
-     */
-    public function competitorValidateAction(string $uuid) : Response
-    {
-        /** @var CompetitorEntity $competitorEntity */
-        $competitorEntity = $this->getCompetitorDoctrineRepository()->findOneBy(array(
-            'uuid' => $uuid
-        ));
-
-        if (!$competitorEntity) {
-            throw new NotFoundHttpException();
-        }
-
-        /** @var Competitor $competitor */
-        $competitor = $competitorEntity->toDomainEntity();
-        $competitor->setValidated();
-        $competitorEntity->fromDomainEntity($competitor);
-
-        $em = $this->getDoctrine()->getManager();
-        $em->persist($competitorEntity);
         $em->flush();
 
         return new Response('', 204);

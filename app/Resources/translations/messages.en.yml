@@ -106,18 +106,24 @@ app:
 
         form:
             contest:        "Contest (*)"
-            name:           "Name (*)"
             email:          "Your email (*)"
+            name:           "Your display name (*)"
             url:            "The URL of your API (*)"
-            submit:         "Register"
+            url-opt:        "The URL of your API"
+            validated:      "Validated?"
+            submit:
+                register:       "Register"
+                validate:       "Validate"
+                save:           "Save"
 
     registered-competitor:
         title:          "Competitor registered"
 
         texts:
             registered:     "Your email and URL <strong>have been registered</strong> to the contest <strong class='text-success'>%contest%</strong>!"
-            email:          "You will receive an email in the address provided to <strong>enable your API</strong>."
-            warning:        "Don't forget to enable your API before the competition starts!"
+            email:          "You will receive an email at the address provided to <strong>enable your API</strong>."
+            no-email:       "If you don't, please sean an email to <a href=\"mailto:%email%?subject=Registered to %contest%\">%email%</a> asking for API activation."
+            warning:        "Don't forget to enable your API <strong>before the competition starts</strong>!"
 
         buttons:
             back:           "Go Back"
@@ -126,12 +132,27 @@ app:
         title:          "Competitor validation"
 
         texts:
-            validated:      "Your email address <strong class='text-success'>%email%</strong> has been validated!"
-            participate:    "You will participate in the contest <strong class='text-success'>%contest%</strong>!"
-            out-of-time:    "<strong class='text-danger'>Unfortunately you are out of time!</strong>"
-            not-validated:  "Your email address <strong class='text-danger'>%email%</strong> can't be validated!"
-            period-ended:   "The registration period for the contest <strong class='text-danger'>%contest%</strong> has ended."
-            reg-period:     "Was from <strong class='text-danger'>%start-date%</strong> to <strong class='text-danger'>%end-date%</strong>."
+            info:
+                1:              "By pressing the <code>Validate</code> button all your data will be validated and"
+                2:              "if all goes well <strong>your API will be enabled</strong> to participate in the contest <strong>%contest%</strong>."
+                3:              "The URL of your API <strong>must be valid</strong> and the endpoints must respond with valid data."
+
+            reg-period:     "The registration period for this contest is from <strong>%start-date%</strong> to <strong>%end-date%</strong>."
+
+        errors:
+            global:         "One or more error found in the competitor data or the contest conditions. please fix it before validating it!"
+            not-started:    "The registration period for this contest didn't started yet!"
+            out-of-time:    "The registration period for this contest is now over!"
+
+    validated-competitor:
+        title:          "Competitor validated"
+
+        texts:
+            validated:      "Your email address <code>%email%</code> has been validated!"
+
+            participate:
+                1:              "You will participate in the contest <strong class='text-info'>%contest%</strong>"
+                2:              "as <code>%name%</code>!"
 
         buttons:
             back:           "Go Back"
@@ -179,12 +200,22 @@ app:
             view-details:   "View game details"
             view-maze:      "View game board"
             view-panels:    "View game panels"
+            player-edit:    "Edit player %num% data"
             move-finished:  "Move to finished"
             remove:         "Remove game"
             contests:       "View contests"
 
     details-page:
         title:          "Game Details"
+
+    player-edit:
+        title:          "Edit player data"
+
+        form:
+            name:           "Display name (*)"
+            email:          "Email (*)"
+            url:            "URL of the API (*)"
+            submit:         "Save"
 
     contest-index:
         title:          "Contest administration"
@@ -315,4 +346,12 @@ app:
             graphics:       "Graphics and Icons"
 
     error-messages:
-        max-competitors:   "Max. competitors reached for contest \"%name%\"!"
+        max-competitors: "Max. competitors reached for contest \"%name%\"!"
+
+    mail:
+        subject:        "New competitor registered to %contest%"
+        content:
+            1:              "Your email has been registered to participate in the contest %contest%!\r\n"
+            2:              "\r\n- Email: %email%\r\n- Display name: %name%\r\n- Api URL: %url%\r\n"
+            3:              "\r\nTo validate your email and activate your URL please press here: %url%\r\n"
+            4:              "\r\nGood luck!\r\n\r\n"

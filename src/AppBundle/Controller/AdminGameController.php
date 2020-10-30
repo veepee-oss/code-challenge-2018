@@ -3,8 +3,11 @@
 namespace AppBundle\Controller;
 
 use AppBundle\Domain\Entity\Game\Game;
+use AppBundle\Domain\Entity\Player\Player;
 use AppBundle\Domain\Service\GameEngine\ConsumerDaemonManagerInterface;
 use AppBundle\Domain\Service\GameEngine\GameDaemonManagerInterface;
+use AppBundle\Form\EditPlayer\PlayerEntity;
+use AppBundle\Form\EditPlayer\PlayerForm;
 use AppBundle\Repository\GameRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
@@ -123,6 +126,70 @@ class AdminGameController extends Controller
 
         return $this->render('admin/game/details.html.twig', array(
             'game' => $game
+        ));
+    }
+
+    /**
+     * Edit player data
+     *
+     * @Route("/{guuid}/player/{puuid}/edit", name="admin_player_edit", requirements={
+     *    "guuid": "[0-9a-f]{8}\-[0-9a-f]{4}\-[0-9a-f]{4}\-[0-9a-f]{4}\-[0-9a-f]{12}",
+     *    "puuid": "[0-9a-f]{8}\-[0-9a-f]{4}\-[0-9a-f]{4}\-[0-9a-f]{4}\-[0-9a-f]{12}"
+     * })
+     *
+     * @param Request $request the request data object
+     * @param string  $guuid   the uuid of the game
+     * @param string  $puuid   the uuid of the player
+     * @return Response
+     * @throws \Exception
+     */
+    public function editPlayerAction(Request $request, string $guuid, string $puuid) : Response
+    {
+        /** @var \AppBundle\Entity\Game $gameEntity */
+        $gameEntity = $this->getGameDoctrineRepository()->findOneBy(array(
+            'uuid' => $guuid
+        ));
+
+        if (!$gameEntity) {
+            throw new NotFoundHttpException();
+        }
+
+        /** @var Game $game */
+        $game = $gameEntity->toDomainEntity();
+
+        /** @var Player $player */
+        $player = $game->playerByUuid($puuid);
+
+        if (!$player) {
+            throw new NotFoundHttpException();
+        }
+
+        // Create player form data entity
+        $playerFormEntity = new PlayerEntity($player);
+
+        // Create the player data form
+        $form = $this->createForm(PlayerForm::class, $playerFormEntity, [
+            'action' => $this->generateUrl('admin_player_edit', ['guuid' => $guuid, 'puuid' => $puuid])
+        ]);
+
+        // Handle the request & if the data is valid...
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            $player = $playerFormEntity->toDomainEntity($player);
+            $game->addPlayer($player);
+            $gameEntity->fromDomainEntity($game);
+
+            $em = $this->getDoctrine()->getManager();
+            $em->persist($gameEntity);
+            $em->flush();
+
+            return $this->redirectToRoute('admin_game_details', [
+                'uuid' => $guuid
+            ]);
+        }
+
+        return $this->render('admin/game/editPlayer.html.twig', array(
+            'form' => $form->createView(),
         ));
     }
 

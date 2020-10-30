@@ -3,14 +3,14 @@
 # http://symfony.com/doc/current/best_practices/configuration.html#infrastructure-related-configuration
 parameters:
     # MySQL database connection
-    database_host:          "cc18_mysql"
-    database_port:          "3306"
-    database_name:          "cc18_db"
-    database_user:          "cc18_user"
-    database_password:      "cc18_pass"
+    database_host:          "127.0.0.1"
+    database_port:          ~
+    database_name:          "symfony"
+    database_user:          "root"
+    database_password:      ~
 
     # RabbitMQ connection
-    rabbitmq_host:          "cc18_rabbitmq"
+    rabbitmq_host:          "localhost"
     rabbitmq_port:          "5672"
     rabbitmq_user:          "guest"
     rabbitmq_pass:          "guest"
@@ -24,9 +24,9 @@ parameters:
     guest_password: ~
 
     # Defaults: mail address, time limit, timeout
-    default_email:          "david.amigo@veepee.com"
+    default_email:          "david.amigo@privalia.com"
     default_time_format:    "Y-m-d H:i:s"
     default_timeout:        3
-    game_start_time:        ~
-    game_end_time:          ~
-    game_free_time:         ~
+    game_start_time:        "2018-11-30 00:00:00"
+    game_end_time:          "2018-12-13 23:59:59"
+    game_free_time:         "2018-12-15 00:00:00"
