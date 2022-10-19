@@ -38,7 +38,7 @@ RUN a2enmod rewrite
 RUN useradd -m -u 1000 -U $DOCKER_USER
 
 RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" \
- && php composer-setup.php --install-dir=/usr/local/bin --filename=composer \
+ && php composer-setup.php --install-dir=/usr/local/bin --filename=composer --version=2.2.9 \
  && php -r "unlink('composer-setup.php');"
 
 WORKDIR /var/www/html
