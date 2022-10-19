@@ -6,6 +6,6 @@ source ./includes.sh
 
 echo -e "Building ${DOCKER_COMPOSE_FILE}..."
 
-docker-compose ${DOCKER_COMPOSE_FILE} build --pull --force --no-cache
+COMPOSE_DOCKER_CLI_BUILD=1 DOCKER_BUILDKIT=1 docker-compose ${DOCKER_COMPOSE_FILE} build --pull --force --no-cache
 
 echo -e ""
